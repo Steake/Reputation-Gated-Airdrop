@@ -1,0 +1,12 @@
+
+<script lang="ts">
+    import Check from 'lucide-svelte/icons/check';
+    export let text: string;
+</script>
+
+<div class="flex items-start">
+    <div class="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-brand-light text-brand-dark">
+        <Check class="h-4 w-4" />
+    </div>
+    <p class="ml-3 text-gray-700">{text}</p>
+</div>

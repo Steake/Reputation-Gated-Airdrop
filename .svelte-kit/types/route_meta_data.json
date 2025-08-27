@@ -1,0 +1,17 @@
+{
+	"/": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/attest": [
+		"src/routes/+layout.ts"
+	],
+	"/claim": [
+		"src/routes/claim/+page.ts",
+		"src/routes/+layout.ts"
+	],
+	"/debug": [
+		"src/routes/debug/+page.server.ts",
+		"src/routes/+layout.ts"
+	]
+}

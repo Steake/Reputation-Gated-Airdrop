@@ -1,0 +1,95 @@
+<script lang="ts">
+  import { wallet } from "$lib/stores/wallet";
+  import { connectWallet, disconnectWallet } from "$lib/chain/client";
+  import { shortenAddress } from "$lib/utils";
+  import { LogIn, LogOut } from "lucide-svelte";
+
+  let connecting = false;
+
+  async function handleConnect() {
+    connecting = true;
+    try {
+      await connectWallet();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      connecting = false;
+    }
+  }
+
+  async function handleDisconnect() {
+    try {
+      await disconnectWallet();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+</script>
+
+{#if $wallet.connected}
+  <div class="flex items-center space-x-3">
+    <!-- Compact wallet preview -->
+    <div class="flex items-center space-x-3 card bd-radius p-2">
+      <div
+        class="h-9 w-9 bd-radius center-vertical bg-gradient-to-br from-[var(--brand)] to-[var(--brand-dark)] text-white font-bold"
+        aria-hidden="true"
+      >
+        {#if $wallet.address}
+          {@const short = shortenAddress($wallet.address)}
+          {short.slice(2, 8).toUpperCase()}
+        {/if}
+      </div>
+
+      <div class="hidden sm:block">
+        <div class="text-sm font-medium mono">
+          {#if $wallet.address}{shortenAddress($wallet.address)}{:else}—{/if}
+        </div>
+        <div class="text-xs muted">Connected</div>
+      </div>
+    </div>
+
+    <button
+      on:click={handleDisconnect}
+      class="btn-outline inline-flex items-center gap-2 px-3 py-2 dark:border-gray-600 dark:text-gray-200"
+      aria-label="Disconnect wallet"
+    >
+      <LogOut class="h-4 w-4" /> Disconnect
+    </button>
+  </div>
+{:else}
+  <button
+    on:click={handleConnect}
+    disabled={connecting}
+    class="btn inline-flex items-center justify-center gap-2 px-4 py-2"
+    aria-label="Connect wallet"
+  >
+    {#if connecting}
+      <svg
+        class="animate-spin h-4 w-4 text-white"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="3"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+        ></path>
+      </svg>
+      Connecting...
+    {:else}
+      <LogIn class="h-4 w-4" />
+      <span class="hidden sm:inline">Connect Wallet</span>
+      <span class="sm:hidden">Connect</span>
+    {/if}
+  </button>
+{/if}

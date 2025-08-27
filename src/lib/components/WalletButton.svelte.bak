@@ -1,0 +1,48 @@
+
+<script lang="ts">
+  import { wallet } from '$lib/stores/wallet';
+  import { connectWallet, disconnectWallet } from '$lib/chain/client';
+  import { shortenAddress } from '$lib/utils';
+  import LogIn from 'lucide-svelte/icons/log-in';
+  import LogOut from 'lucide-svelte/icons/log-out';
+
+  let connecting = false;
+
+  async function handleConnect() {
+    connecting = true;
+    try {
+      await connectWallet();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      connecting = false;
+    }
+  }
+</script>
+
+{#if $wallet.connected}
+  <div class="flex items-center space-x-2">
+    <span class="font-mono text-sm bg-gray-100 px-3 py-1.5 rounded-md">
+      {shortenAddress($wallet.address)}
+    </span>
+    <button
+      on:click={disconnectWallet}
+      class="p-2 rounded-md hover:bg-gray-100 text-gray-500 hover:text-gray-800"
+      aria-label="Disconnect wallet"
+    >
+      <LogOut class="h-5 w-5" />
+    </button>
+  </div>
+{:else}
+  <button
+    on:click={handleConnect}
+    disabled={connecting}
+    class="inline-flex items-center justify-center rounded-md bg-brand-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary disabled:opacity-50"
+  >
+    {#if connecting}
+      Connecting...
+    {:else}
+      <LogIn class="mr-2 h-4 w-4" /> Connect Wallet
+    {/if}
+  </button>
+{/if}

@@ -1,0 +1,189 @@
+
+import { Onboard } from '@web3$lib/web3/onboard';
+import injectedModule from '@web3-onboard/injected-wallets';
+import walletConnectModule from '@web3-onboard/walletconnect';
+import coinbaseModule from '@web3-onboard/coinbase';
+import { createPublicClient, http, createWalletClient, custom, type PublicClient, type WalletClient, type Abi, type Hex } from 'viem';
+import { getChainInfo } from './constants';
+import { wallet, type WalletState } from '$lib/stores/wallet';
+import { toasts } from '$lib/stores/ui';
+import { parseConfig } from '$lib/config';
+
+let onboardSingleton: ReturnType<typeof Onboard>;
+let publicClient: PublicClient;
+
+function getOnboard() {
+  if (!onboardSingleton) {
+    const config = parseConfig();
+    if ('error' in config) {
+      throw new Error("Invalid config for Onboard initialization");
+    }
+
+    const injected = injectedModule();
+    const walletConnect = walletConnectModule({
+      projectId: config.WALLETCONNECT_PROJECT_ID,
+      requiredChains: [config.CHAIN_ID]
+    });
+    const coinbase = coinbaseModule();
+
+    const chainInfo = getChainInfo();
+
+    onboardSingleton = Onboard({
+      wallets: [injected, walletConnect, coinbase],
+      chains: [
+        {
+          id: chainInfo.id,
+          token: chainInfo.token,
+          label: chainInfo.label,
+          rpcUrl: chainInfo.rpcUrl,
+        },
+      ],
+      appMetadata: {
+        name: 'Shadowgraph Airdrop',
+        icon: '<svg>...</svg>', // Add your app icon here
+        description: 'Claim your reputation-scaled airdrop.'
+      },
+      accountCenter: {
+        desktop: { enabled: true, position: 'bottomRight' },
+        mobile: { enabled: true, position: 'bottomRight' }
+      }
+    });
+  }
+  return onboardSingleton;
+}
+
+export function getPublicClient(): PublicClient {
+    if (!publicClient) {
+        const chainInfo = getChainInfo();
+        const config = parseConfig();
+        if ('error' in config) {
+            throw new Error("Invalid config for public client");
+        }
+        
+        const chain = {
+            id: config.CHAIN_ID,
+            name: chainInfo.label,
+            nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+            rpcUrls: {
+                default: { http: [chainInfo.rpcUrl] }
+            }
+        };
+
+        publicClient = createPublicClient({
+            chain,
+            transport: http(),
+        });
+    }
+    return publicClient;
+}
+
+
+async function getWalletClient(): Promise<WalletClient | null> {
+    const onboard = getOnboard();
+    const [primaryWallet] = onboard.state.get().wallets;
+    if (!primaryWallet) {
+        return null;
+    }
+    const config = parseConfig();
+    if ('error' in config) {
+      throw new Error("Invalid config for wallet client");
+    }
+
+    const chainInfo = getChainInfo();
+    const chain = {
+        id: config.CHAIN_ID,
+        name: chainInfo.label,
+        nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+        rpcUrls: {
+            default: { http: [chainInfo.rpcUrl] }
+        }
+    };
+    
+    return createWalletClient({
+        chain: chain,
+        transport: custom(primaryWallet.provider)
+    });
+}
+
+export async function connectWallet() {
+  const onboard = getOnboard();
+  const wallets = await onboard.connectWallet();
+  if (wallets[0]) {
+    const { accounts, chain, provider } = wallets[0];
+    const address = accounts[0].address as `0x${string}`;
+    const chainId = parseInt(chain.id, 16);
+    wallet.set({ address, chainId, connected: true });
+  }
+}
+
+export async function disconnectWallet() {
+  const onboard = getOnboard();
+  const [primaryWallet] = onboard.state.get().wallets;
+  if (primaryWallet) {
+    await onboard.disconnectWallet({ label: primaryWallet.label });
+  }
+  wallet.set({ connected: false });
+}
+
+export async function switchNetwork() {
+  const onboard = getOnboard();
+  const chainInfo = getChainInfo();
+  await onboard.setChain({ chainId: chainInfo.id });
+}
+
+// Subscribe to wallet changes from Onboard
+const onboard = getOnboard();
+onboard.state.select('wallets').subscribe((wallets) => {
+  if (wallets[0]) {
+    const { accounts, chain } = wallets[0];
+    const state: WalletState = {
+      address: accounts[0]?.address as `0x${string}`,
+      chainId: parseInt(chain.id, 16),
+      connected: true
+    };
+    wallet.set(state);
+  } else {
+    wallet.set({ connected: false });
+  }
+});
+
+
+// Contract interaction wrappers
+export async function readContract<T>(
+    address: Hex,
+    abi: Abi,
+    functionName: string,
+    args: unknown[]
+): Promise<T> {
+    const client = getPublicClient();
+    return (await client.readContract({
+        address,
+        abi,
+        functionName,
+        args,
+    })) as T;
+}
+
+export async function writeContract(
+    address: Hex,
+    abi: Abi,
+    functionName: string,
+    args: unknown[],
+    account: Hex
+): Promise<Hex> {
+    const client = await getWalletClient();
+    if (!client) {
+        throw new Error('Wallet not connected');
+    }
+
+    const { request } = await publicClient.simulateContract({
+        address,
+        abi,
+        functionName,
+        args,
+        account
+    });
+    
+    const hash = await client.writeContract(request);
+    return hash;
+}

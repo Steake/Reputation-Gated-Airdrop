@@ -1,0 +1,265 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --------------------------------------------------------------------------
+   Design tokens & global resets
+   -------------------------------------------------------------------------- */
+:root {
+  --brand: #6c5ce7;
+  --brand-dark: #5546d1;
+  --muted: #6b7280;
+
+  /* Semantic tokens for theming */
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --glass: rgba(255, 255, 255, 0.6);
+
+  /* Text / surface tokens */
+  --text: #0f172a;
+  --muted-text: #334155;
+
+  /* Form / border */
+  --border: rgba(15, 23, 42, 0.06);
+  --input-bg: #ffffff;
+  --glass-border: rgba(255, 255, 255, 0.4);
+
+  --radius: 0.75rem;
+  --max-width: 1200px;
+  --shadow-1: 0 6px 18px rgba(15, 23, 42, 0.06);
+  --shadow-2: 0 10px 30px rgba(2, 6, 23, 0.08);
+}
+
+/* Dark mode overrides (applies when the `dark` class is present on <html>) */
+.dark {
+  --bg: #0b1220;
+  --card: #0f1724;
+  --glass: rgba(255, 255, 255, 0.03);
+
+  /* Text for dark surfaces */
+  --text: #e6eef8;
+  --muted-text: #9fb0c9;
+
+  /* Borders / inputs in dark mode */
+  --border: rgba(255, 255, 255, 0.06);
+  --input-bg: #08101a;
+  --glass-border: rgba(255, 255, 255, 0.06);
+}
+
+/* Base page styles */
+html,
+body {
+  height: 100%;
+  background-color: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    "Noto Sans",
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol";
+  line-height: 1.4;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+/* Tighter container utility for the site */
+.site-container {
+  max-width: var(--max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Small utility helpers */
+.muted {
+  color: var(--muted);
+}
+.brand-ink {
+  color: var(--brand);
+}
+.bd-radius {
+  border-radius: var(--radius);
+}
+
+/* --------------------------------------------------------------------------
+   Tailwind component utilities (kept inside layers so they play nice with JIT)
+   -------------------------------------------------------------------------- */
+@layer components {
+  /* Primary button */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2 font-semibold text-white shadow;
+    background-color: var(--brand);
+    transition:
+      background-color 0.15s ease,
+      transform 0.08s ease;
+  }
+  .btn:hover {
+    background-color: var(--brand-dark);
+    transform: translateY(-1px);
+  }
+  .btn:active {
+    transform: translateY(0);
+  }
+
+  /* Outline / secondary button */
+  .btn-outline {
+    @apply inline-flex items-center justify-center rounded-md px-3 py-2 font-medium text-gray-700 border;
+    border-color: rgba(15, 23, 42, 0.06);
+    background: transparent;
+  }
+  .btn-outline:hover {
+    @apply bg-gray-50;
+  }
+
+  /* Card surface */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-1);
+    border: 1px solid rgba(15, 23, 42, 0.03);
+  }
+
+  /* Soft glass / header */
+  .glass {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.8),
+      rgba(255, 255, 255, 0.6)
+    );
+    backdrop-filter: blur(6px);
+    border-radius: var(--radius);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+
+  /* Tiny badge */
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700;
+  }
+
+  /* Stat / placeholder helpers */
+  .stat {
+    @apply bg-gray-50 p-3 rounded-lg;
+  }
+  .skeleton {
+    @apply animate-pulse bg-gray-200 rounded;
+  }
+
+  /* Toast / notification */
+  .toast {
+    @apply bg-white p-4 rounded-lg shadow;
+    border: 1px solid rgba(15, 23, 42, 0.04);
+  }
+
+  /* Accessibility helper — expanded instead of using @apply to avoid circular dependency */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Compact score ring sizing */
+  .score-ring {
+    width: 5.5rem;
+    height: 5.5rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Small custom utilities (exposed alongside Tailwind utilities)
+   -------------------------------------------------------------------------- */
+@layer utilities {
+  .bg-brand {
+    background-color: var(--brand);
+  }
+  .text-brand {
+    color: var(--brand);
+  }
+  .hover\:bg-brand-dark:hover {
+    background-color: var(--brand-dark);
+  }
+
+  /* Responsive helpers */
+  .center-vertical {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Better readable code blocks */
+  .mono {
+    font-family:
+      ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New",
+      monospace;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Light tonal tweaks for form elements to improve contrast and spacing
+   -------------------------------------------------------------------------- */
+input,
+textarea,
+select,
+button {
+  @apply rounded-md border px-3 py-2 text-sm;
+  border-color: var(--border);
+  background-color: var(--input-bg);
+  transition:
+    box-shadow 0.12s ease,
+    border-color 0.12s ease,
+    background-color 0.12s ease;
+}
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.08);
+  border-color: var(--brand);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive layout niceties
+   -------------------------------------------------------------------------- */
+@media (min-width: 640px) {
+  .site-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .site-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Small visual polish for headings and paragraphs */
+h1,
+h2,
+h3,
+h4 {
+  color: var(--text);
+  line-height: 1.15;
+}
+p {
+  color: var(--muted-text);
+}

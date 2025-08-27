@@ -1,0 +1,59 @@
+{
+  "name": "shadowgraph-airdrop-client",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "npm run test:unit",
+    "test:unit": "vitest",
+    "test:e2e": "playwright test",
+    "lint": "prettier --check . && eslint .",
+    "format": "prettier --write .",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "@sveltejs/adapter-auto": "^3.0.0",
+    "@sveltejs/kit": "^2.0.0",
+    "@sveltejs/vite-plugin-svelte": "^3.0.0",
+    "@tailwindcss/forms": "^0.5.7",
+    "@testing-library/svelte": "^4.1.0",
+    "@types/eslint": "^8.56.7",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-svelte": "^2.36.0",
+    "globals": "^15.0.0",
+    "husky": "^8.0.0",
+    "jsdom": "^24.0.0",
+    "lint-staged": "^15.2.2",
+    "postcss": "^8.4.38",
+    "prettier": "^3.2.5",
+    "prettier-plugin-svelte": "^3.2.3",
+    "svelte": "^4.2.7",
+    "svelte-check": "^3.6.0",
+    "tailwindcss": "^3.4.3",
+    "tslib": "^2.4.1",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.0.0-alpha.20",
+    "vite": "^5.0.3",
+    "vitest": "^1.5.0"
+  },
+  "dependencies": {
+    "@web3-onboard/coinbase": "^2.2.6",
+    "@web3-onboard/core": "^2.24.1",
+    "@web3-onboard/injected-wallets": "^2.11.3",
+    "@web3-onboard/walletconnect": "^2.6.2",
+    "dotenv": "^17.2.1",
+    "lucide-svelte": "^0.378.0",
+    "viem": "^2.36.0",
+    "web3": "^4.16.0",
+    "zod": "^3.23.8"
+  },
+  "type": "module",
+  "lint-staged": {
+    "*.{js,ts,svelte,css,md}": "prettier --write"
+  }
+}

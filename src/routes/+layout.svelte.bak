@@ -1,0 +1,82 @@
+
+<script lang="ts">
+  import '../app.css';
+  import WalletButton from '$lib/components/WalletButton.svelte';
+  import { toasts } from '$lib/stores/ui';
+  import Toast from '$lib/components/Toast.svelte';
+  import { page } from '$app/stores';
+  import { airdrop } from '$lib/stores/airdrop';
+  import { readContract } from '$lib/chain/client';
+  import erc20abi from '$lib/abi/erc20.abi.json';
+  import { onMount } from 'svelte';
+  import type { Hex } from 'viem';
+
+  let tokenDecimals: number | undefined;
+
+  $: if ($page.data.config && !tokenDecimals) {
+    // Set airdrop config from page data
+    airdrop.set({
+      floor: $page.data.config.FLOOR_SCORE,
+      cap: $page.data.config.CAP_SCORE,
+      curve: $page.data.config.CURVE,
+      minPayout: $page.data.config.MIN_PAYOUT,
+      maxPayout: $page.data.config.MAX_PAYOUT,
+      campaign: $page.data.config.CAMPAIGN as `0x${string}`,
+      tokenAddress: $page.data.config.TOKEN_ADDR as `0x${string}`
+    });
+  }
+
+  onMount(async () => {
+      if ($page.data.config?.TOKEN_ADDR) {
+        try {
+            const decimals = await readContract<number>($page.data.config.TOKEN_ADDR as Hex, erc20abi, 'decimals', []);
+            airdrop.update(a => ({...a, decimals}));
+            tokenDecimals = decimals;
+        } catch(e) {
+            console.error("Failed to fetch token decimals", e);
+            toasts.error("Could not fetch token information.");
+        }
+      }
+  });
+
+</script>
+
+<div class="min-h-screen flex flex-col">
+  <header class="bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b border-gray-200">
+    <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="/" class="flex items-center space-x-2">
+          <svg class="h-8 w-8 text-brand-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <span class="font-semibold text-lg">Shadowgraph Airdrop</span>
+        </a>
+        <div class="flex items-center space-x-4">
+          <a href="/claim" class="text-gray-600 hover:text-brand-primary font-medium">Claim</a>
+          <a href="/attest" class="text-gray-600 hover:text-brand-primary font-medium">Earn Reputation</a>
+          {#if $page.data.config?.DEBUG}
+            <a href="/debug" class="text-gray-600 hover:text-brand-primary font-medium">Debug</a>
+          {/if}
+          <WalletButton />
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <slot />
+  </main>
+
+  <footer class="border-t border-gray-200 py-4">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
+      Powered by Shadowgraph
+    </div>
+  </footer>
+</div>
+
+<!-- Toast Container -->
+<div aria-live="assertive" class="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start z-50">
+  <div class="w-full flex flex-col items-center space-y-4 sm:items-end">
+    {#each $toasts as toast (toast.id)}
+      <Toast {toast} on:dismiss={() => toasts.remove(toast.id)} />
+    {/each}
+  </div>
+</div>
