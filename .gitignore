@@ -26,3 +26,10 @@ dist-ssr
 .env.local
 .env.development
 .env.production
+
+# Test results
+test-results/
+
+# SvelteKit build artifacts
+.svelte-kit/output/
+.svelte-kit/generated/client-optimized/

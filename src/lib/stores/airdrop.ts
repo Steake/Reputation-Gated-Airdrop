@@ -1,6 +1,5 @@
-
-import type { Curve } from '$lib/types';
-import { writable } from 'svelte/store';
+import type { Curve } from "$lib/types";
+import { writable } from "svelte/store";
 
 export type AirdropState = {
   floor: number;

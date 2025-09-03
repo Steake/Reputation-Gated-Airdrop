@@ -1,4 +1,3 @@
-
 # Shadowgraph Reputation-Scaled Airdrop Client
 
 This is a SvelteKit dApp client for participating in a Shadowgraph reputation-scaled airdrop campaign. It supports both ECDSA-based claims and ZK-proof-based claims.
@@ -113,4 +112,7 @@ If both are configured, the UI will prioritize the ZK path by default.
 - `npm run test:e2e`: Run end-to-end tests with Playwright.
 - `npm run lint`: Check for linting and formatting issues.
 - `npm run format`: Automatically format the code.
+
+```
+
 ```

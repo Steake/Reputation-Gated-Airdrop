@@ -1,15 +1,18 @@
+import { z } from "zod";
 
-import { z } from 'zod';
-
-export type Curve = 'LIN' | 'SQRT' | 'QUAD';
+export type Curve = "LIN" | "SQRT" | "QUAD";
 
 export const ScoreResponseSchema = z.object({
   addr: z.string(),
   score1e6: z.number(),
-  components: z.array(z.object({
-    label: z.string(),
-    delta: z.number(),
-  })).optional(),
+  components: z
+    .array(
+      z.object({
+        label: z.string(),
+        delta: z.number(),
+      }),
+    )
+    .optional(),
   updatedAt: z.string().datetime(),
 });
 export type ScoreResponse = z.infer<typeof ScoreResponseSchema>;
@@ -31,8 +34,8 @@ export const ClaimArtifactSchema = z.object({
 export type ClaimArtifact = z.infer<typeof ClaimArtifactSchema>;
 
 export const ProofMetaSchema = z.object({
-    score1e6: z.number(),
-    calldata: z.string().regex(/^0x[0-9a-fA-F]*$/),
+  score1e6: z.number(),
+  calldata: z.string().regex(/^0x[0-9a-fA-F]*$/),
 });
 export type ProofMeta = z.infer<typeof ProofMetaSchema>;
 
@@ -46,5 +49,5 @@ export interface PayoutQuote {
 export interface ToastMessage {
   id: number;
   message: string;
-  type: 'info' | 'success' | 'warning' | 'error';
+  type: "info" | "success" | "warning" | "error";
 }

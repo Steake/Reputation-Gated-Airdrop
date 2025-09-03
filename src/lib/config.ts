@@ -1,25 +1,40 @@
+import { z } from "zod";
 
-import { z } from 'zod';
-
-const configSchema = z.object({
-  CHAIN_ID: z.coerce.number().int().positive(),
-  RPC_URL: z.string().url(),
-  AIRDROP_ECDSA_ADDR: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional(),
-  AIRDROP_ZK_ADDR: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional(),
-  VERIFIER_ADDR: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional(),
-  TOKEN_ADDR: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
-  CAMPAIGN: z.string().regex(/^0x[a-fA-F0-9]{64}$/),
-  FLOOR_SCORE: z.coerce.number().int().min(0),
-  CAP_SCORE: z.coerce.number().int().min(0).max(1000000),
-  MIN_PAYOUT: z.coerce.bigint().min(0n),
-  MAX_PAYOUT: z.coerce.bigint().min(0n),
-  CURVE: z.enum(['LIN', 'SQRT', 'QUAD']),
-  API_BASE: z.string().url().optional(),
-  DEBUG: z.string().transform(val => val === 'true').optional().default('false'),
-  WALLETCONNECT_PROJECT_ID: z.string().min(1),
-}).refine(data => data.AIRDROP_ECDSA_ADDR || data.AIRDROP_ZK_ADDR, {
-  message: 'At least one airdrop contract address (VITE_AIRDROP_ECDSA_ADDR or VITE_AIRDROP_ZK_ADDR) must be provided.',
-});
+const configSchema = z
+  .object({
+    CHAIN_ID: z.coerce.number().int().positive(),
+    RPC_URL: z.string().url(),
+    AIRDROP_ECDSA_ADDR: z
+      .string()
+      .regex(/^0x[a-fA-F0-9]{40}$/)
+      .optional(),
+    AIRDROP_ZK_ADDR: z
+      .string()
+      .regex(/^0x[a-fA-F0-9]{40}$/)
+      .optional(),
+    VERIFIER_ADDR: z
+      .string()
+      .regex(/^0x[a-fA-F0-9]{40}$/)
+      .optional(),
+    TOKEN_ADDR: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
+    CAMPAIGN: z.string().regex(/^0x[a-fA-F0-9]{64}$/),
+    FLOOR_SCORE: z.coerce.number().int().min(0),
+    CAP_SCORE: z.coerce.number().int().min(0).max(1000000),
+    MIN_PAYOUT: z.coerce.bigint().min(0n),
+    MAX_PAYOUT: z.coerce.bigint().min(0n),
+    CURVE: z.enum(["LIN", "SQRT", "QUAD"]),
+    API_BASE: z.string().url().optional(),
+    DEBUG: z
+      .string()
+      .transform((val) => val === "true")
+      .optional()
+      .default("false"),
+    WALLETCONNECT_PROJECT_ID: z.string().min(1),
+  })
+  .refine((data) => data.AIRDROP_ECDSA_ADDR || data.AIRDROP_ZK_ADDR, {
+    message:
+      "At least one airdrop contract address (VITE_AIRDROP_ECDSA_ADDR or VITE_AIRDROP_ZK_ADDR) must be provided.",
+  });
 
 export type Config = z.infer<typeof configSchema>;
 
