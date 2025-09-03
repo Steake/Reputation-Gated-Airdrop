@@ -1,5 +1,4 @@
-
-import { writable } from 'svelte/store';
+import { writable } from "svelte/store";
 
 export type WalletState = {
   address?: `0x${string}`;
