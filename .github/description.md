@@ -1,0 +1,1 @@
+A novel airdrop mechanism that leverages peer-to-peer attestations with EBSL (Ethereum Booster Sampling Layer) and EZKL (Easy Zero-Knowledge Learning) to create verifiable reputation-based token distributions. This system implements ZKML (Zero-Knowledge Machine Learning) proofs to ensure fair and sybil-resistant token allocations based on genuine user reputation.
