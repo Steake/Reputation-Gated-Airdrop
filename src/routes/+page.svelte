@@ -19,7 +19,7 @@
   import type { Hex } from "viem";
 
   // Accept params prop to silence HMR unknown-prop warnings
-  export let params: Record<string, any>;
+  export const params = undefined;
 
   let quote: PayoutQuote | null = null;
   let quoteLoading = false;

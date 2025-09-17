@@ -18,7 +18,7 @@
       else document.documentElement.classList.remove("dark");
       localStorage.setItem("theme", d ? "dark" : "light");
       isDark = d;
-    } catch (e) {
+    } catch {
       // ignore
     }
   }
@@ -76,13 +76,13 @@
       aria-hidden="true"
     />
     <!-- Slide-over panel -->
-    <aside
+    <div
       bind:this={panel}
       class="absolute right-0 top-0 h-full w-full max-w-sm bg-white dark:bg-[var(--card)] shadow-lg border-l border-gray-100 dark:border-gray-700 focus:outline-none"
       role="dialog"
       aria-modal="true"
       aria-label="Mobile menu"
-      tabindex="0"
+      tabindex="-1"
       on:keydown={onKeydown}
       transition:fly={{ x: 300, duration: 260 }}
     >
@@ -202,7 +202,7 @@
           <p>Need help? Visit our docs or open an issue.</p>
         </div>
       </div>
-    </aside>
+    </div>
   </div>
 {/if}
 

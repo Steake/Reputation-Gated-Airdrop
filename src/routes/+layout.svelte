@@ -34,14 +34,10 @@
     isDark = !isDark;
     try {
       localStorage.setItem("theme", isDark ? "dark" : "light");
-    } catch (e) {
+    } catch {
       // ignore localStorage errors (e.g. incognito)
     }
     applyThemeToHtml(isDark);
-  }
-
-  function openMobile() {
-    mobileOpen = true;
   }
 
   $: if ($page.data.config && !tokenDecimals) {
@@ -87,7 +83,7 @@
           window.matchMedia &&
           window.matchMedia("(prefers-color-scheme: dark)").matches;
       }
-    } catch (e) {
+    } catch {
       isDark =
         typeof window !== "undefined" &&
         window.matchMedia &&
