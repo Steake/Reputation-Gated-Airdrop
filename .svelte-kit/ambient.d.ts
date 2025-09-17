@@ -83,6 +83,7 @@ declare module '$env/static/private' {
 	export const SYSTEMD_EXEC_PID: string;
 	export const DBUS_SESSION_BUS_ADDRESS: string;
 	export const GITHUB_GRAPHQL_URL: string;
+	export const GITHUB_DOWNLOADS_URL: string;
 	export const COLOR: string;
 	export const NVM_DIR: string;
 	export const DOTNET_SKIP_FIRST_TIME_EXPERIENCE: string;
@@ -134,12 +135,14 @@ declare module '$env/static/private' {
 	export const RUNNER_TRACKING_ID: string;
 	export const INVOCATION_ID: string;
 	export const RUNNER_TOOL_CACHE: string;
+	export const GITHUB_UPLOADS_URL: string;
 	export const REQUESTS_CA_BUNDLE: string;
 	export const NODE: string;
 	export const npm_package_name: string;
 	export const GITHUB_ACTION: string;
 	export const GITHUB_RUN_NUMBER: string;
 	export const GITHUB_TRIGGERING_ACTOR: string;
+	export const COPILOT_EXPERIMENTS: string;
 	export const RUNNER_ARCH: string;
 	export const XDG_RUNTIME_DIR: string;
 	export const AGENT_TOOLSDIRECTORY: string;
@@ -196,6 +199,7 @@ declare module '$env/static/private' {
 	export const GITHUB_OUTPUT: string;
 	export const npm_config_global_prefix: string;
 	export const EDGEWEBDRIVER: string;
+	export const COPILOT_EXPERIMENT_ASSIGNMENT_CONTEXT: string;
 	export const npm_command: string;
 	export const ANDROID_NDK: string;
 	export const SGX_AESM_ADDR: string;
@@ -212,7 +216,13 @@ declare module '$env/static/private' {
 	export const COPILOT_AGENT_TIMEOUT_MIN: string;
 	export const INIT_CWD: string;
 	export const EDITOR: string;
+	export const TEST: string;
+	export const VITEST: string;
 	export const NODE_ENV: string;
+	export const PROD: string;
+	export const DEV: string;
+	export const BASE_URL: string;
+	export const MODE: string;
 }
 
 /**
@@ -225,11 +235,11 @@ declare module '$env/static/private' {
  * ```
  */
 declare module '$env/static/public' {
-	export const PUBLIC_WALLETCONNECT_PROJECT_ID: string;
 	export const PUBLIC_CHAIN_ID: string;
 	export const PUBLIC_RPC_URL: string;
 	export const PUBLIC_TOKEN_ADDR: string;
 	export const PUBLIC_CAMPAIGN: string;
+	export const PUBLIC_WALLETCONNECT_PROJECT_ID: string;
 }
 
 /**
@@ -303,6 +313,7 @@ declare module '$env/dynamic/private' {
 		SYSTEMD_EXEC_PID: string;
 		DBUS_SESSION_BUS_ADDRESS: string;
 		GITHUB_GRAPHQL_URL: string;
+		GITHUB_DOWNLOADS_URL: string;
 		COLOR: string;
 		NVM_DIR: string;
 		DOTNET_SKIP_FIRST_TIME_EXPERIENCE: string;
@@ -354,12 +365,14 @@ declare module '$env/dynamic/private' {
 		RUNNER_TRACKING_ID: string;
 		INVOCATION_ID: string;
 		RUNNER_TOOL_CACHE: string;
+		GITHUB_UPLOADS_URL: string;
 		REQUESTS_CA_BUNDLE: string;
 		NODE: string;
 		npm_package_name: string;
 		GITHUB_ACTION: string;
 		GITHUB_RUN_NUMBER: string;
 		GITHUB_TRIGGERING_ACTOR: string;
+		COPILOT_EXPERIMENTS: string;
 		RUNNER_ARCH: string;
 		XDG_RUNTIME_DIR: string;
 		AGENT_TOOLSDIRECTORY: string;
@@ -416,6 +429,7 @@ declare module '$env/dynamic/private' {
 		GITHUB_OUTPUT: string;
 		npm_config_global_prefix: string;
 		EDGEWEBDRIVER: string;
+		COPILOT_EXPERIMENT_ASSIGNMENT_CONTEXT: string;
 		npm_command: string;
 		ANDROID_NDK: string;
 		SGX_AESM_ADDR: string;
@@ -432,7 +446,13 @@ declare module '$env/dynamic/private' {
 		COPILOT_AGENT_TIMEOUT_MIN: string;
 		INIT_CWD: string;
 		EDITOR: string;
+		TEST: string;
+		VITEST: string;
 		NODE_ENV: string;
+		PROD: string;
+		DEV: string;
+		BASE_URL: string;
+		MODE: string;
 		[key: `PUBLIC_${string}`]: undefined;
 		[key: `${string}`]: string | undefined;
 	}
@@ -450,11 +470,11 @@ declare module '$env/dynamic/private' {
  */
 declare module '$env/dynamic/public' {
 	export const env: {
-		PUBLIC_WALLETCONNECT_PROJECT_ID: string;
 		PUBLIC_CHAIN_ID: string;
 		PUBLIC_RPC_URL: string;
 		PUBLIC_TOKEN_ADDR: string;
 		PUBLIC_CAMPAIGN: string;
+		PUBLIC_WALLETCONNECT_PROJECT_ID: string;
 		[key: `PUBLIC_${string}`]: string | undefined;
 	}
 }
