@@ -47,6 +47,7 @@
     "@web3-onboard/injected-wallets": "^2.11.3",
     "@web3-onboard/walletconnect": "^2.6.2",
     "dotenv": "^17.2.1",
+    "ethers": "^6.15.0",
     "lucide-svelte": "^0.378.0",
     "viem": "^2.36.0",
     "web3": "^4.16.0",

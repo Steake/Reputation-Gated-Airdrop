@@ -5,6 +5,7 @@
   import { score } from '$lib/stores/score';
   import { airdrop } from '$lib/stores/airdrop';
   import Copy from '$lib/components/Copy.svelte';
+  import ZKMLProver from '$lib/components/ZKMLProver.svelte';
 </script>
 
 <div class="max-w-4xl mx-auto space-y-8">
@@ -31,5 +32,8 @@
      <pre class="bg-gray-100 p-4 rounded text-sm overflow-x-auto"><code>{JSON.stringify($airdrop, (key, value) => 
       typeof value === 'bigint' ? value.toString() : value, 2)}</code></pre>
   </div>
+
+  <!-- ZKML Prover Component -->
+  <ZKMLProver contractAddress="0x1234567890123456789012345678901234567890" />
   
 </div>
