@@ -428,8 +428,44 @@ select:focus {
 }
 
 /* --------------------------------------------------------------------------
-   Responsive layout niceties
+   Responsive layout fixes and mobile optimization
    -------------------------------------------------------------------------- */
+
+/* Prevent horizontal overflow */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Mobile-first responsive utilities */
+.container-responsive {
+  @apply w-full max-w-none px-4 sm:px-6 lg:px-8 mx-auto;
+  max-width: 1040px;
+}
+
+/* Fix button sizing for mobile */
+.btn-mobile-safe {
+  min-width: 44px;
+  min-height: 44px;
+  @apply px-3 py-2 sm:px-4 sm:py-2;
+}
+
+/* Prevent content overflow */
+.content-safe {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Mobile-optimized card spacing */
+.card-mobile {
+  @apply p-4 sm:p-6 lg:p-8;
+}
+
 @media (min-width: 640px) {
   .site-container {
     padding-left: 1.5rem;

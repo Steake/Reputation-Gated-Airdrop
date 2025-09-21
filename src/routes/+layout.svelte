@@ -46,6 +46,10 @@
     applyThemeToHtml(isDark);
   }
 
+  function openMobile() {
+    mobileOpen = true;
+  }
+
   $: if ($page.data.config && !tokenDecimals) {
     // Set airdrop config from page data
     airdrop.set({
@@ -101,15 +105,15 @@
 
 <div class="min-h-screen flex flex-col">
   <header class="sticky top-0 z-20 bg-[var(--bg-subtle)] backdrop-blur-sm border-b border-[var(--border-base)]" style="height: 64px;">
-    <div class="max-w-[1040px] mx-auto px-6">
+    <div class="max-w-[1040px] mx-auto px-4 sm:px-6">
       <div class="flex items-center justify-between h-16">
-        <a href="/" class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <div
             class="rounded-lg bg-[var(--accent-brand)] p-2 text-white flex items-center justify-center"
             aria-hidden="true"
           >
             <svg
-              class="h-6 w-6"
+              class="h-5 w-5 sm:h-6 sm:w-6"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="none"
@@ -126,13 +130,13 @@
             </svg>
           </div>
           <div class="leading-tight">
-            <div class="font-semibold text-lg text-[var(--fg-primary)]">Shadowgraph</div>
-            <div class="text-xs text-[var(--fg-muted)]">Reputation Airdrop</div>
+            <div class="font-semibold text-base sm:text-lg text-[var(--fg-primary)]">Shadowgraph</div>
+            <div class="text-xs text-[var(--fg-muted)] hidden sm:block">Reputation Airdrop</div>
           </div>
         </a>
 
         <!-- Desktop nav with new tab design -->
-        <nav class="hidden md:flex items-center" role="navigation" aria-label="Main navigation">
+        <nav class="hidden md:flex items-center">
           <div class="flex items-center space-x-1 mr-6">
             <a 
               href="/attest" 
@@ -167,7 +171,8 @@
           </div>
         </nav>
 
-        <div class="flex items-center space-x-3">
+        <!-- Desktop controls -->
+        <div class="hidden md:flex items-center space-x-3 flex-shrink-0">
           <button
             aria-label="Toggle dark mode"
             class="inline-flex items-center justify-center rounded-lg p-2 border border-[var(--border-base)] 
@@ -210,24 +215,22 @@
               </svg>
             {/if}
           </button>
-
-          <div class="ml-2">
-            <WalletButton />
-          </div>
+          <WalletButton />
         </div>
 
-        <!-- Mobile: show compact actions -->
-        <div class="md:hidden flex items-center space-x-2">
+        <!-- Mobile controls -->
+        <div class="md:hidden flex items-center space-x-2 flex-shrink-0">
           <button
-            aria-label="Open menu"
-            class="inline-flex items-center justify-center rounded-lg p-2 border border-[var(--border-base)] 
-                   hover:bg-[var(--bg-surfaceElev)] transition-colors duration-200"
-            on:click={() => (mobileOpen = true)}
+            aria-label="Toggle mobile menu"
+            class="inline-flex items-center justify-center rounded-lg p-2 text-[var(--fg-muted)] 
+                   hover:text-[var(--fg-primary)] hover:bg-[var(--bg-surfaceElev)] transition-colors duration-200
+                   focus:outline-none focus:ring-2 focus:ring-[var(--accent-brand-subtle)] focus:ring-opacity-60 focus:ring-offset-2"
+            on:click={openMobile}
             title="Open menu"
             style="min-width: 44px; min-height: 44px;"
           >
             <svg
-              class="h-6 w-6 text-[var(--fg-secondary)]"
+              class="h-5 w-5"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -239,47 +242,6 @@
               <path d="M3 12h18M3 6h18M3 18h18" />
             </svg>
           </button>
-
-          <a href="/attest" class="btn-outline px-3 py-2 text-sm">Earn</a>
-
-          <button
-            aria-label="Toggle dark mode"
-            class="inline-flex items-center justify-center rounded-md p-2 border hover:bg-gray-50 dark:hover:bg-gray-700"
-            on:click={toggleTheme}
-            title="Toggle dark / light"
-          >
-            {#if isDark}
-              <svg
-                class="h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle cx="12" cy="12" r="4" />
-                <path
-                  d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
-                />
-              </svg>
-            {:else}
-              <svg
-                class="h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-              </svg>
-            {/if}
-          </button>
-
           <WalletButton />
         </div>
       </div>
@@ -289,8 +251,7 @@
   <MobileMenu bind:open={mobileOpen} on:close={() => (mobileOpen = false)} />
   
   <!-- Main content with proper spacing and width constraints -->
-  <main class="flex-grow max-w-[1040px] mx-auto px-6 lg:px-8" style="padding-top: 24px;">
-    <!-- Page title styling according to specs -->
+  <main class="flex-grow container-responsive py-6 sm:py-8 content-safe">
     <slot />
   </main>
 

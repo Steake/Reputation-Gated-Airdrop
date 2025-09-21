@@ -61,7 +61,7 @@
 
 <div bind:this={container} class="fixed inset-0 pointer-events-none overflow-hidden z-0">
   {#each elements as element (element.id)}
-    <!-- Floating geometric shapes -->
+    <!-- Floating geometric shapes with proper containment -->
     <div
       class="absolute animate-float"
       style={getElementStyle(element)}
@@ -100,16 +100,18 @@
     </div>
   {/each}
 
-  <!-- Gradient orbs -->
-  {#each Array(5) as _, i}
+  <!-- Gradient orbs with mobile-safe positioning -->
+  {#each Array(3) as _, i}
     <div
       class="absolute animate-pulse-glow"
       style="
-        left: {Math.random() * 100}%;
-        top: {Math.random() * 100}%;
-        width: {Math.random() * 200 + 100}px;
-        height: {Math.random() * 200 + 100}px;
+        left: {20 + Math.random() * 60}%;
+        top: {20 + Math.random() * 60}%;
+        width: {Math.random() * 120 + 60}px;
+        height: {Math.random() * 120 + 60}px;
         animation-delay: {i * 2}s;
+        max-width: min(200px, 50vw);
+        max-height: min(200px, 50vh);
       "
     >
       <div 
