@@ -50,6 +50,7 @@ EOF
 ### Testing
 
 - Run unit tests: `npm run test:unit` -- takes 2 seconds with Vitest
+- **NOTE**: Some unit tests may fail when .env file is present due to test design expecting missing environment variables
 - Run e2e tests: `npm run test:e2e` -- **REQUIRES Playwright browser installation first**
   - Install browsers: `npx playwright install` -- takes 5-10 minutes. **NEVER CANCEL** - Set timeout to 15+ minutes.
   - Note: Playwright downloads may fail in some environments due to network restrictions
@@ -57,9 +58,10 @@ EOF
 
 ### Code Quality
 
-- Check linting/formatting: `npm run lint` -- takes 8 seconds
-- Auto-format code: `npm run format` -- takes 9 seconds
+- Check linting/formatting: `npm run lint` -- takes 1-2 seconds
+- Auto-format code: `npm run format` -- takes 1-2 seconds
 - **ALWAYS run `npm run format` and `npm run lint` before committing** to avoid CI failures
+- **NOTE**: ESLint configuration (`eslint.config.js`) is required for linting to work
 
 ## Validation Scenarios
 
@@ -139,8 +141,15 @@ EOF
 ### Test Failures
 
 - **Unit test module resolution**: Ensure `vitest.config.ts` includes the SvelteKit plugin
+- **Unit test failures with .env present**: Some tests expect missing environment variables and may fail when .env is configured
 - **E2E test browser errors**: Run `npx playwright install` to download browsers
 - **Network-related test failures**: Some tests may fail due to network restrictions in CI environments
+
+### Linting Issues
+
+- **ESLint configuration**: Ensure `eslint.config.js` exists in the root directory
+- **Existing linting errors**: The codebase has existing TypeScript and accessibility linting errors that are unrelated to new changes
+- **Focus on new code**: Only fix linting issues in code you're modifying, ignore existing issues
 
 ### Development Server Issues
 
@@ -181,7 +190,7 @@ EOF
 - Unit tests: 2 seconds (timeout: 30+ seconds)
 - E2E tests: Variable (timeout: 10+ minutes including browser installation)
 - Playwright browser installation: 5-10 minutes (timeout: 15+ minutes)
-- Code formatting: 9 seconds
-- Linting: 8 seconds
+- Code formatting: 1-2 seconds
+- Linting: 1-2 seconds
 
 **Always wait for completion of builds and tests to ensure accuracy of validation.**
