@@ -26,38 +26,45 @@
 
 </script>
 
+<svelte:head>
+  <title>Claim Your Airdrop - Shadowgraph</title>
+  <meta name="description" content="Claim your reputation-based airdrop tokens securely." />
+</svelte:head>
+
 <div class="max-w-2xl mx-auto">
   <div class="text-center mb-10">
-    <h1 class="text-4xl font-bold tracking-tight text-gray-900">Claim Your Airdrop</h1>
-    <p class="mt-3 text-lg text-gray-600">
+    <h1 class="page-title text-[var(--fg-primary)]">Claim Your Airdrop</h1>
+    <p class="mt-3 text-lg text-[var(--fg-secondary)]">
       Follow the steps below to securely claim your tokens.
     </p>
   </div>
 
   {#if !$wallet.connected}
-    <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-lg text-center">
-      Please connect your wallet to continue.
+    <div class="card bg-[var(--accent-warn)]/10 border border-[var(--accent-warn)]/30 text-center">
+      <div class="text-[var(--accent-warn)] font-medium">
+        Please connect your wallet to continue.
+      </div>
     </div>
   {:else if $score.loading}
      <div class="text-center p-8">
-        <p>Loading your score...</p>
+        <p class="text-[var(--fg-secondary)]">Loading your score...</p>
      </div>
   {:else}
     {#if !isEligible}
-      <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
-        <h2 class="text-2xl font-bold text-center mb-2">You are not yet eligible</h2>
-        <p class="text-center text-gray-500 mb-6">
+      <div class="card">
+        <h2 class="text-24 text-[var(--fg-primary)] text-center mb-2">You are not yet eligible</h2>
+        <p class="text-center text-[var(--fg-muted)] mb-6">
           Your current score of {($score.value || 0) / 1e6} is below the required floor of {($airdrop.floor || 0) / 1e6}.
         </p>
         <div class="space-y-4">
-          <h3 class="font-semibold text-lg">How to increase your score:</h3>
+          <h3 class="text-18 text-[var(--fg-primary)] font-semibold">How to increase your score:</h3>
           <ChecklistItem text="Verify your personhood with a recognized provider." />
           <ChecklistItem text="Receive a vouch from a trusted attestor in the network." />
           <ChecklistItem text="Contribute to recognized public goods or open source projects." />
           <ChecklistItem text="Link your social and developer accounts for more attestations." />
         </div>
          <div class="mt-6 text-center">
-            <a href="/attest" class="text-brand-primary hover:underline font-semibold">
+            <a href="/attest" class="text-[var(--fg-link)] hover:underline font-semibold transition-colors">
                 Learn more about earning reputation &rarr;
             </a>
          </div>
@@ -66,5 +73,4 @@
       <ClaimCard />
     {/if}
   {/if}
-
 </div>

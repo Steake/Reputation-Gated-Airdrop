@@ -15,112 +15,109 @@
 </svelte:head>
 
 <div class="max-w-7xl mx-auto">
-  <!-- Header -->
+  <!-- Header with semantic tokens -->
   <div class="text-center mb-12">
-    <div class="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 mb-6">
+    <div class="inline-flex items-center px-4 py-2 rounded-full 
+                bg-[var(--accent-info)]/10 border border-[var(--accent-info)]/20 
+                text-[var(--accent-info)] mb-6">
       <BarChart3 class="h-4 w-4 mr-2" />
       <span class="text-sm font-medium">Data Exploration</span>
     </div>
     
-    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+    <h1 class="page-title text-[var(--fg-primary)] mb-4">
       Reputation Analytics
     </h1>
-    <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+    <p class="text-lg text-[var(--fg-secondary)] max-w-2xl mx-auto">
       Explore global reputation trends, user metrics, and trust network relationships through interactive visualizations.
     </p>
   </div>
 
-  <!-- Metrics Section -->
+  <!-- Metrics Section with semantic tokens -->
   <section class="mb-16">
     <div class="flex items-center mb-8">
-      <TrendingUp class="h-6 w-6 text-blue-600 mr-3" />
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Reputation Metrics</h2>
+      <TrendingUp class="h-6 w-6 text-[var(--accent-success)] mr-3" />
+      <h2 class="text-24 text-[var(--fg-primary)]">Reputation Metrics</h2>
     </div>
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Global Metrics with improved styling -->
-      <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-1 rounded-xl">
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 h-full">
-          <MetricsChart title="Global Distribution" type="global" />
-        </div>
+      <div class="card-elevated bg-gradient-to-br from-[var(--accent-info)]/5 to-[var(--accent-brand)]/5 
+                  border border-[var(--accent-info)]/20">
+        <MetricsChart title="Global Distribution" type="global" />
       </div>
       
       <!-- User Metrics with improved styling -->
-      <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-1 rounded-xl">
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 h-full">
-          <MetricsChart title="Personal Progress" type="user" />
-        </div>
+      <div class="card-elevated bg-gradient-to-br from-[var(--accent-success)]/5 to-[var(--accent-info)]/5 
+                  border border-[var(--accent-success)]/20">
+        <MetricsChart title="Personal Progress" type="user" />
       </div>
     </div>
   </section>
 
-  <!-- Trust Network Section -->
+  <!-- Trust Network Section with semantic tokens -->
   <section class="mb-16">
     <div class="flex items-center mb-8">
-      <Network class="h-6 w-6 text-purple-600 mr-3" />
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Trust Networks</h2>
+      <Network class="h-6 w-6 text-[var(--accent-brand)] mr-3" />
+      <h2 class="text-24 text-[var(--fg-primary)]">Trust Networks</h2>
     </div>
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Global Network with improved styling -->
-      <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-1 rounded-xl">
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 h-full">
-          <TrustNetworkVisualization scope="global" width={600} height={500} />
-        </div>
+      <div class="card-elevated bg-gradient-to-br from-[var(--accent-brand)]/5 to-[var(--accent-warn)]/5 
+                  border border-[var(--accent-brand)]/20">
+        <TrustNetworkVisualization scope="global" width={600} height={500} />
       </div>
       
       <!-- Personal Network with improved styling -->
       {#if $wallet.connected}
-        <div class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 p-1 rounded-xl">
-          <div class="bg-white dark:bg-gray-800 rounded-lg p-6 h-full">
-            <TrustNetworkVisualization scope="user" width={600} height={500} />
-          </div>
+        <div class="card-elevated bg-gradient-to-br from-[var(--accent-warn)]/5 to-[var(--accent-brand)]/5 
+                    border border-[var(--accent-warn)]/20">
+          <TrustNetworkVisualization scope="user" width={600} height={500} />
         </div>
       {:else}
-        <div class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 p-1 rounded-xl">
-          <div class="bg-white dark:bg-gray-800 rounded-lg p-6 h-full flex items-center justify-center">
-            <div class="text-center">
-              <Users class="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Connect Your Wallet</h3>
-              <p class="text-gray-600 dark:text-gray-300 mb-4">
-                View your personal trust network by connecting your wallet.
-              </p>
-              <a 
-                href="/" 
-                class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                Connect Wallet
-              </a>
-            </div>
+        <div class="card-elevated bg-gradient-to-br from-[var(--accent-warn)]/5 to-[var(--accent-brand)]/5 
+                    border border-[var(--accent-warn)]/20 flex items-center justify-center">
+          <div class="text-center">
+            <Users class="h-12 w-12 text-[var(--fg-muted)] mx-auto mb-4" />
+            <h3 class="text-18 text-[var(--fg-primary)] mb-2">Connect Your Wallet</h3>
+            <p class="text-[var(--fg-secondary)] mb-4">
+              View your personal trust network by connecting your wallet.
+            </p>
+            <a 
+              href="/" 
+              class="btn-primary inline-flex items-center"
+            >
+              Connect Wallet
+            </a>
           </div>
         </div>
       {/if}
     </div>
   </section>
 
-  <!-- Stats Overview -->
+  <!-- Stats Overview with semantic tokens -->
   <section class="mb-16">
-    <div class="bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-xl p-8">
-      <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+    <div class="card bg-gradient-to-r from-[var(--bg-surface)] to-[var(--bg-surfaceElev)]">
+      <h3 class="text-18 text-[var(--fg-primary)] mb-6 text-center">
         Network Statistics
       </h3>
       
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
         <div class="text-center">
-          <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">12,547</div>
-          <div class="text-sm text-gray-600 dark:text-gray-300 mt-1">Total Users</div>
+          <div class="text-32 text-[var(--accent-info)]">12,547</div>
+          <div class="text-14 text-[var(--fg-muted)] mt-1">Total Users</div>
         </div>
         <div class="text-center">
-          <div class="text-3xl font-bold text-green-600 dark:text-green-400">72.3%</div>
-          <div class="text-sm text-gray-600 dark:text-gray-300 mt-1">Avg Score</div>
+          <div class="text-32 text-[var(--accent-success)]">72.3%</div>
+          <div class="text-14 text-[var(--fg-muted)] mt-1">Avg Score</div>
         </div>
         <div class="text-center">
-          <div class="text-3xl font-bold text-purple-600 dark:text-purple-400">3,847</div>
-          <div class="text-sm text-gray-600 dark:text-gray-300 mt-1">Active</div>
+          <div class="text-32 text-[var(--accent-brand)]">3,847</div>
+          <div class="text-14 text-[var(--fg-muted)] mt-1">Active</div>
         </div>
         <div class="text-center">
-          <div class="text-3xl font-bold text-orange-600 dark:text-orange-400">156</div>
-          <div class="text-sm text-gray-600 dark:text-gray-300 mt-1">ZK Proofs</div>
+          <div class="text-32 text-[var(--accent-warn)]">156</div>
+          <div class="text-14 text-[var(--fg-muted)] mt-1">ZK Proofs</div>
         </div>
       </div>
     </div>

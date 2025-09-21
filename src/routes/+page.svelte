@@ -89,21 +89,29 @@
   }
 </script>
 
+<!-- Homepage with production-grade dark theme -->
+<svelte:head>
+  <title>Shadowgraph - Reputation-Based Airdrop</title>
+  <meta name="description" content="Claim your reputation-based airdrop from Shadowgraph. Connect your wallet to check your score." />
+</svelte:head>
+
 <!-- Background Effects -->
 <ParticleBackground intensity={0.8} speed={0.5} particleCount={80} />
-<FloatingElements count={15} color="#8b5cf6" size="mixed" />
+<FloatingElements count={15} color="var(--accent-brand)" size="mixed" />
 
 <div class="relative z-10">
   <div class="max-w-4xl mx-auto text-center">
-    <div class="mb-8 inline-flex items-center px-4 py-2 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200">
+    <div class="mb-8 inline-flex items-center px-4 py-2 rounded-full 
+                bg-[var(--accent-brand)]/10 border border-[var(--accent-brand)]/20 
+                text-[var(--accent-brand)]">
       <Zap class="h-4 w-4 mr-2" />
       <span class="text-sm font-medium">Powered by Zero-Knowledge Proofs</span>
     </div>
     
-    <h1 class="text-4xl font-bold tracking-tight text-[var(--text)] sm:text-6xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+    <h1 class="page-title sm:text-6xl bg-gradient-to-r from-[var(--accent-brand)] to-[var(--accent-info)] bg-clip-text text-transparent">
       Claim Your Reputation-Based Airdrop
     </h1>
-    <p class="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
+    <p class="mt-6 text-lg leading-8 text-[var(--fg-secondary)]">
       Your contributions have been recognized. Connect your wallet to check your
       score and claim your share of the Shadowgraph airdrop.
     </p>
@@ -131,33 +139,36 @@
     </div>
   </div>
 
-  <!-- Quick Stats -->
+  <!-- Quick Stats with semantic tokens -->
   <div class="mt-16 max-w-4xl mx-auto">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-      <div class="bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm rounded-xl p-6 border border-blue-200 dark:border-blue-700">
+      <div class="card bg-gradient-to-r from-[var(--accent-info)]/10 to-[var(--accent-brand)]/10 
+                  border border-[var(--accent-info)]/20">
         <div class="flex items-center">
-          <Users class="h-8 w-8 text-blue-600 mr-3" />
+          <Users class="h-8 w-8 text-[var(--accent-info)] mr-3" />
           <div>
-            <div class="text-2xl font-bold text-blue-600">12,547</div>
-            <div class="text-sm text-gray-600 dark:text-gray-300">Active Users</div>
+            <div class="text-2xl font-bold text-[var(--accent-info)]">12,547</div>
+            <div class="text-sm text-[var(--fg-muted)]">Active Users</div>
           </div>
         </div>
       </div>
-      <div class="bg-gradient-to-r from-green-500/10 to-teal-500/10 backdrop-blur-sm rounded-xl p-6 border border-green-200 dark:border-green-700">
+      <div class="card bg-gradient-to-r from-[var(--accent-success)]/10 to-[var(--accent-info)]/10 
+                  border border-[var(--accent-success)]/20">
         <div class="flex items-center">
-          <TrendingUp class="h-8 w-8 text-green-600 mr-3" />
+          <TrendingUp class="h-8 w-8 text-[var(--accent-success)] mr-3" />
           <div>
-            <div class="text-2xl font-bold text-green-600">72.3%</div>
-            <div class="text-sm text-gray-600 dark:text-gray-300">Avg Score</div>
+            <div class="text-2xl font-bold text-[var(--accent-success)]">72.3%</div>
+            <div class="text-sm text-[var(--fg-muted)]">Avg Score</div>
           </div>
         </div>
       </div>
-      <div class="bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-sm rounded-xl p-6 border border-purple-200 dark:border-purple-700">
+      <div class="card bg-gradient-to-r from-[var(--accent-brand)]/10 to-[var(--accent-warn)]/10 
+                  border border-[var(--accent-brand)]/20">
         <div class="flex items-center">
-          <Zap class="h-8 w-8 text-purple-600 mr-3" />
+          <Zap class="h-8 w-8 text-[var(--accent-brand)] mr-3" />
           <div>
-            <div class="text-2xl font-bold text-purple-600">3,847</div>
-            <div class="text-sm text-gray-600 dark:text-gray-300">ZK Proofs Generated</div>
+            <div class="text-2xl font-bold text-[var(--accent-brand)]">3,847</div>
+            <div class="text-sm text-[var(--fg-muted)]">ZK Proofs Generated</div>
           </div>
         </div>
       </div>
@@ -167,7 +178,8 @@
     <div class="text-center">
       <a
         href="/explore"
-        class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 font-medium"
+        class="btn-primary inline-flex items-center px-6 py-3 rounded-lg font-medium 
+               hover:scale-105 transform transition-all duration-200"
       >
         Explore Data & Visualizations
         <ArrowRight class="ml-2 h-5 w-5" />
