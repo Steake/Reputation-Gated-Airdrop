@@ -51,17 +51,35 @@ export { onboard, wallets, initOnboard as getOnboard };
 
 /** Wallet connect/disconnect helpers (re-exported here for convenience) */
 export async function connectWallet() {
-  const ob = get(onboard) ?? (await initOnboard());
-  if (!ob) return [];
-  return ob.connectWallet();
+  try {
+    const ob = get(onboard) ?? (await initOnboard());
+    if (!ob) {
+      console.error("Failed to initialize onboard");
+      return [];
+    }
+    
+    console.log("Attempting to connect wallet...");
+    const wallets = await ob.connectWallet();
+    console.log("Connected wallets:", wallets);
+    return wallets;
+  } catch (error) {
+    console.error("Error connecting wallet:", error);
+    throw error;
+  }
 }
 
 export async function disconnectWallet() {
-  const ob = get(onboard) ?? (await initOnboard());
-  if (!ob) return;
-  const [primaryWallet] = ob.state.get().wallets;
-  if (primaryWallet) {
-    await ob.disconnectWallet({ label: primaryWallet.label });
+  try {
+    const ob = get(onboard) ?? (await initOnboard());
+    if (!ob) return;
+    const [primaryWallet] = ob.state.get().wallets;
+    if (primaryWallet) {
+      await ob.disconnectWallet({ label: primaryWallet.label });
+      console.log("Disconnected wallet:", primaryWallet.label);
+    }
+  } catch (error) {
+    console.error("Error disconnecting wallet:", error);
+    throw error;
   }
 }
 

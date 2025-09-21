@@ -27,6 +27,7 @@ export async function initOnboard() {
   const walletConnect = walletConnectModule({
     projectId: PUBLIC_WALLETCONNECT_PROJECT_ID,
     version: 2,
+    dappUrl: "https://shadowgraph.xyz",
     handleUri: (uri) => {
       // Enhanced mobile deep linking
       const isMobile =
@@ -131,24 +132,7 @@ export async function initOnboard() {
       },
     },
     notify: {
-      desktop: {
-        enabled: true,
-        transactionHandler: (transaction) => {
-          console.log({ transaction });
-          if (transaction.eventCode === "txConfirmed") {
-            return {
-              type: "success",
-              message: "Transaction confirmed!",
-              autoDismiss: 5000,
-            };
-          }
-        },
-        position: "bottomRight",
-      },
-      mobile: {
-        enabled: true,
-        position: "topCenter",
-      },
+      enabled: false, // Disable notifications to avoid validation errors
     },
   });
 
@@ -158,12 +142,32 @@ export async function initOnboard() {
 }
 
 export async function connectWallet() {
-  const ob = get(onboard) ?? (await initOnboard());
-  if (!ob) return [];
-  return ob.connectWallet();
+  try {
+    const ob = get(onboard) ?? (await initOnboard());
+    if (!ob) {
+      console.error("Failed to initialize onboard");
+      return [];
+    }
+    
+    console.log("Attempting to connect wallet...");
+    const wallets = await ob.connectWallet();
+    console.log("Connected wallets:", wallets);
+    return wallets;
+  } catch (error) {
+    console.error("Error connecting wallet:", error);
+    throw error;
+  }
 }
 
 export async function disconnectWallet(label: string) {
-  const ob = get(onboard);
-  if (ob) await ob.disconnectWallet({ label });
+  try {
+    const ob = get(onboard);
+    if (ob) {
+      await ob.disconnectWallet({ label });
+      console.log("Disconnected wallet:", label);
+    }
+  } catch (error) {
+    console.error("Error disconnecting wallet:", error);
+    throw error;
+  }
 }

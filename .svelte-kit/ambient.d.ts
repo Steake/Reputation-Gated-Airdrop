@@ -55,7 +55,6 @@ declare module '$env/static/private' {
 	export const COPILOT_AGENT_ONLINE_EVALUATION_DISABLED: string;
 	export const PIPX_HOME: string;
 	export const npm_node_execpath: string;
-	export const BROWSER: string;
 	export const JAVA_HOME_8_X64: string;
 	export const SHLVL: string;
 	export const npm_config_noproxy: string;
@@ -91,7 +90,6 @@ declare module '$env/static/private' {
 	export const JAVA_HOME_17_X64: string;
 	export const ImageVersion: string;
 	export const SUDO_UID: string;
-	export const FORCE_COLOR: string;
 	export const BLACKBIRD_MODE: string;
 	export const LOGNAME: string;
 	export const COPILOT_AGENT_PR_COMMIT_COUNT: string;
@@ -119,7 +117,6 @@ declare module '$env/static/private' {
 	export const TERM: string;
 	export const XDG_SESSION_ID: string;
 	export const npm_config_cache: string;
-	export const DEBUG_COLORS: string;
 	export const GITHUB_REF_TYPE: string;
 	export const BOOTSTRAP_HASKELL_NONINTERACTIVE: string;
 	export const GITHUB_WORKFLOW_SHA: string;
@@ -183,7 +180,6 @@ declare module '$env/static/private' {
 	export const GITHUB_ACTOR: string;
 	export const FIREWALL_RULESET_CONTENT: string;
 	export const ANDROID_SDK_ROOT: string;
-	export const PLAYWRIGHT_TEST_BASE_URL: string;
 	export const npm_config_globalconfig: string;
 	export const npm_config_init_module: string;
 	export const GITHUB_PATH: string;
@@ -283,7 +279,6 @@ declare module '$env/dynamic/private' {
 		COPILOT_AGENT_ONLINE_EVALUATION_DISABLED: string;
 		PIPX_HOME: string;
 		npm_node_execpath: string;
-		BROWSER: string;
 		JAVA_HOME_8_X64: string;
 		SHLVL: string;
 		npm_config_noproxy: string;
@@ -319,7 +314,6 @@ declare module '$env/dynamic/private' {
 		JAVA_HOME_17_X64: string;
 		ImageVersion: string;
 		SUDO_UID: string;
-		FORCE_COLOR: string;
 		BLACKBIRD_MODE: string;
 		LOGNAME: string;
 		COPILOT_AGENT_PR_COMMIT_COUNT: string;
@@ -347,7 +341,6 @@ declare module '$env/dynamic/private' {
 		TERM: string;
 		XDG_SESSION_ID: string;
 		npm_config_cache: string;
-		DEBUG_COLORS: string;
 		GITHUB_REF_TYPE: string;
 		BOOTSTRAP_HASKELL_NONINTERACTIVE: string;
 		GITHUB_WORKFLOW_SHA: string;
@@ -411,7 +404,6 @@ declare module '$env/dynamic/private' {
 		GITHUB_ACTOR: string;
 		FIREWALL_RULESET_CONTENT: string;
 		ANDROID_SDK_ROOT: string;
-		PLAYWRIGHT_TEST_BASE_URL: string;
 		npm_config_globalconfig: string;
 		npm_config_init_module: string;
 		GITHUB_PATH: string;
