@@ -6,6 +6,8 @@
   import { airdrop } from '$lib/stores/airdrop';
   import Copy from '$lib/components/Copy.svelte';
   import ZKMLProver from '$lib/components/ZKMLProver.svelte';
+  import MetricsChart from '$lib/components/MetricsChart.svelte';
+  import TrustNetworkVisualization from '$lib/components/TrustNetworkVisualization.svelte';
 </script>
 
 <div class="max-w-4xl mx-auto space-y-8">
@@ -35,5 +37,16 @@
 
   <!-- ZKML Prover Component -->
   <ZKMLProver contractAddress="0x1234567890123456789012345678901234567890" />
+
+  <!-- Visualization Components -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <MetricsChart title="Debug Metrics - Global" type="global" />
+    <MetricsChart title="Debug Metrics - User" type="user" />
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <TrustNetworkVisualization scope="global" width={600} height={400} />
+    <TrustNetworkVisualization scope="user" width={600} height={400} />
+  </div>
   
 </div>

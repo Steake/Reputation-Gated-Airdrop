@@ -42,13 +42,19 @@
     "vitest": "^1.5.0"
   },
   "dependencies": {
+    "@types/d3": "^7.4.3",
+    "@types/three": "^0.180.0",
     "@web3-onboard/coinbase": "^2.2.6",
     "@web3-onboard/core": "^2.24.1",
     "@web3-onboard/injected-wallets": "^2.11.3",
     "@web3-onboard/walletconnect": "^2.6.2",
+    "chart.js": "^4.5.0",
+    "chartjs-adapter-date-fns": "^3.0.0",
+    "d3": "^7.9.0",
     "dotenv": "^17.2.1",
     "ethers": "^6.15.0",
     "lucide-svelte": "^0.378.0",
+    "three": "^0.180.0",
     "viem": "^2.36.0",
     "web3": "^4.16.0",
     "zod": "^3.23.8"
