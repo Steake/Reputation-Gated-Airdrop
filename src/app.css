@@ -32,18 +32,18 @@
 
 /* Dark mode overrides (applies when the `dark` class is present on <html>) */
 .dark {
-  --bg: #0b1220;
-  --card: #0f1724;
-  --glass: rgba(255, 255, 255, 0.03);
+  --bg: #0f172a;
+  --card: #1e293b;
+  --glass: rgba(255, 255, 255, 0.05);
 
-  /* Text for dark surfaces */
-  --text: #e6eef8;
-  --muted-text: #9fb0c9;
+  /* Text for dark surfaces with better contrast */
+  --text: #f1f5f9;
+  --muted-text: #cbd5e1;
 
-  /* Borders / inputs in dark mode */
-  --border: rgba(255, 255, 255, 0.06);
-  --input-bg: #08101a;
-  --glass-border: rgba(255, 255, 255, 0.06);
+  /* Borders / inputs in dark mode with better visibility */
+  --border: rgba(255, 255, 255, 0.1);
+  --input-bg: #1e293b;
+  --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 /* Base page styles */

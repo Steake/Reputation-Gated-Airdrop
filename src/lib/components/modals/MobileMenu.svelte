@@ -184,6 +184,11 @@
           class="block px-3 py-2 rounded-md text-[var(--text)] hover:bg-gray-50 dark:hover:bg-gray-800"
           >Earn Reputation</a
         >
+        <a
+          href="/explore"
+          class="block px-3 py-2 rounded-md text-[var(--text)] hover:bg-gray-50 dark:hover:bg-gray-800"
+          >Explore</a
+        >
         {#if false}
           <!-- debug route shown conditionally from parent; kept here as example -->
           <a

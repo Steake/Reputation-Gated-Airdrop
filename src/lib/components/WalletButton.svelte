@@ -29,28 +29,28 @@
 {#if $wallet.connected}
   <div class="flex items-center space-x-3">
     <!-- Compact wallet preview -->
-    <div class="flex items-center space-x-3 card bd-radius p-2">
+    <div class="flex items-center space-x-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-2">
       <div
-        class="h-9 w-9 bd-radius center-vertical bg-gradient-to-br from-[var(--brand)] to-[var(--brand-dark)] text-white font-bold"
+        class="h-8 w-8 rounded-lg flex items-center justify-center bg-gradient-to-br from-purple-600 to-blue-600 text-white font-bold text-xs"
         aria-hidden="true"
       >
         {#if $wallet.address}
           {@const short = shortenAddress($wallet.address)}
-          {short.slice(2, 8).toUpperCase()}
+          {short.slice(2, 4).toUpperCase()}
         {/if}
       </div>
 
       <div class="hidden sm:block">
-        <div class="text-sm font-medium mono">
+        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
           {#if $wallet.address}{shortenAddress($wallet.address)}{:else}—{/if}
         </div>
-        <div class="text-xs muted">Connected</div>
+        <div class="text-xs text-gray-500 dark:text-gray-400">Connected</div>
       </div>
     </div>
 
     <button
       on:click={handleDisconnect}
-      class="btn-outline inline-flex items-center gap-2 px-3 py-2 dark:border-gray-600 dark:text-gray-200"
+      class="inline-flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
       aria-label="Disconnect wallet"
     >
       <LogOut class="h-4 w-4" /> Disconnect
@@ -60,7 +60,7 @@
   <button
     on:click={handleConnect}
     disabled={connecting}
-    class="btn inline-flex items-center justify-center gap-2 px-4 py-2"
+    class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
     aria-label="Connect wallet"
   >
     {#if connecting}

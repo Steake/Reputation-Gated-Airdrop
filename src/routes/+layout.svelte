@@ -129,6 +129,7 @@
         <div class="hidden md:flex items-center space-x-4">
           <a href="/attest" class="btn-outline">Earn Reputation</a>
           <a href="/claim" class="btn">Claim</a>
+          <a href="/explore" class="btn-outline">Explore</a>
           {#if $page.data.config?.DEBUG}
             <a href="/debug" class="btn-outline">Debug</a>
           {/if}

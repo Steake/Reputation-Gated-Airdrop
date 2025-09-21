@@ -6,8 +6,6 @@
   import ScoreRing from "$lib/components/ScoreRing.svelte";
   import PayoutCurve from "$lib/components/PayoutCurve.svelte";
   import Stat from "$lib/components/Stat.svelte";
-  import MetricsChart from "$lib/components/MetricsChart.svelte";
-  import TrustNetworkVisualization from "$lib/components/TrustNetworkVisualization.svelte";
   import AnimatedButton from "$lib/components/AnimatedButton.svelte";
   import ParticleBackground from "$lib/components/ParticleBackground.svelte";
   import FloatingElements from "$lib/components/FloatingElements.svelte";
@@ -133,13 +131,7 @@
     </div>
   </div>
 
-  <!-- Global Metrics Section -->
-  <div class="mt-20 grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
-    <MetricsChart title="Global Reputation Distribution" type="global" />
-    <TrustNetworkVisualization scope="global" width={600} height={400} />
-  </div>
-
-  <!-- Featured Stats -->
+  <!-- Quick Stats -->
   <div class="mt-16 max-w-4xl mx-auto">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
       <div class="bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm rounded-xl p-6 border border-blue-200 dark:border-blue-700">
@@ -170,20 +162,25 @@
         </div>
       </div>
     </div>
+    
+    <!-- Explore link -->
+    <div class="text-center">
+      <a
+        href="/explore"
+        class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 font-medium"
+      >
+        Explore Data & Visualizations
+        <ArrowRight class="ml-2 h-5 w-5" />
+      </a>
+    </div>
   </div>
 </div>
 
 {#if $wallet.connected}
   <div
-    class="mt-16 max-w-4xl mx-auto bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
+    class="mt-16 max-w-4xl mx-auto bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
   >
-    <h2 class="text-2xl font-bold text-center mb-6">Your Airdrop Status</h2>
-    
-    <!-- User Metrics and Trust Network -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-      <MetricsChart title="Your Reputation Progress" type="user" />
-      <TrustNetworkVisualization scope="user" width={500} height={300} />
-    </div>
+    <h2 class="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">Your Airdrop Status</h2>
     
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
       <div class="flex flex-col items-center space-y-4">
@@ -193,8 +190,8 @@
           cap={$airdrop.cap || 1000000}
         />
         <div class="text-center">
-          <p class="font-mono text-xl">{($score.value || 0) / 1e6}</p>
-          <p class="text-sm text-gray-500 dark:text-gray-300">
+          <p class="font-mono text-xl text-gray-900 dark:text-white">{($score.value || 0) / 1e6}</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
             Reputation Score
           </p>
         </div>
@@ -218,8 +215,8 @@
           <Stat label="Floor Score" value={($airdrop.floor || 0) / 1e6} />
         </div>
 
-        <div class="bg-gray-50/80 dark:bg-gray-800/80 backdrop-blur-sm p-4 rounded-lg">
-          <h3 class="font-semibold mb-2">Payout Visualization</h3>
+        <div class="bg-gray-50/80 dark:bg-gray-700/50 backdrop-blur-sm p-4 rounded-lg">
+          <h3 class="font-semibold mb-2 text-gray-900 dark:text-white">Payout Visualization</h3>
           <PayoutCurve
             curve={$airdrop.curve || "LIN"}
             score={$score.value || 0}

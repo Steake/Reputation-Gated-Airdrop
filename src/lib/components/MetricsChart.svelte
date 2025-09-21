@@ -53,6 +53,9 @@
     const ctx = chartCanvas.getContext('2d');
     if (!ctx) return;
 
+    // Get current theme
+    const isDark = document.documentElement.classList.contains('dark');
+
     chart = new Chart(ctx, {
       type: 'doughnut',
       data: {
@@ -60,8 +63,7 @@
         datasets: [{
           data: reputationDistribution.map(d => d.count),
           backgroundColor: reputationDistribution.map(d => d.color),
-          borderWidth: 2,
-          borderColor: '#1f2937'
+          borderWidth: 0,
         }]
       },
       options: {
@@ -73,10 +75,18 @@
             labels: {
               padding: 20,
               usePointStyle: true,
-              color: '#6b7280'
+              color: isDark ? '#e2e8f0' : '#374151',
+              font: {
+                size: 12
+              }
             }
           },
           tooltip: {
+            backgroundColor: isDark ? '#1e293b' : '#ffffff',
+            titleColor: isDark ? '#f1f5f9' : '#111827',
+            bodyColor: isDark ? '#e2e8f0' : '#374151',
+            borderColor: isDark ? '#475569' : '#d1d5db',
+            borderWidth: 1,
             callbacks: {
               label: (context) => {
                 const label = context.label || '';
@@ -94,6 +104,9 @@
   function createUserChart() {
     const ctx = chartCanvas.getContext('2d');
     if (!ctx) return;
+
+    // Get current theme
+    const isDark = document.documentElement.classList.contains('dark');
 
     chart = new Chart(ctx, {
       type: 'line',
@@ -123,32 +136,38 @@
           tooltip: {
             mode: 'index',
             intersect: false,
-            backgroundColor: '#1f2937',
-            titleColor: '#f9fafb',
-            bodyColor: '#f9fafb',
-            borderColor: '#8b5cf6',
+            backgroundColor: isDark ? '#1e293b' : '#ffffff',
+            titleColor: isDark ? '#f1f5f9' : '#111827',
+            bodyColor: isDark ? '#e2e8f0' : '#374151',
+            borderColor: isDark ? '#475569' : '#d1d5db',
             borderWidth: 1
           }
         },
         scales: {
           x: {
             grid: {
-              color: '#374151',
+              color: isDark ? '#374151' : '#f3f4f6',
               drawBorder: false
             },
             ticks: {
-              color: '#6b7280'
+              color: isDark ? '#94a3b8' : '#6b7280',
+              font: {
+                size: 11
+              }
             }
           },
           y: {
             beginAtZero: true,
             max: 1,
             grid: {
-              color: '#374151',
+              color: isDark ? '#374151' : '#f3f4f6',
               drawBorder: false
             },
             ticks: {
-              color: '#6b7280',
+              color: isDark ? '#94a3b8' : '#6b7280',
+              font: {
+                size: 11
+              },
               callback: (value) => `${(value as number * 100).toFixed(0)}%`
             }
           }
