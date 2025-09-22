@@ -107,13 +107,15 @@ test.describe("Theme Integration", () => {
     // Test in light theme - look for Connect Wallet button
     const connectButton = page.locator("button").filter({ hasText: "Connect Wallet" }).first();
     await connectButton.click();
-    
+
     // Wait for modal to appear and check if it has wallet options
-    const modal = page.locator('[data-testid="onboard-modal"], [role="dialog"], .onboard-modal').first();
+    const modal = page
+      .locator('[data-testid="onboard-modal"], [role="dialog"], .onboard-modal')
+      .first();
     await expect(modal).toBeVisible({ timeout: 5000 });
-    
+
     // Close modal by clicking outside or finding close button
-    await page.keyboard.press('Escape');
+    await page.keyboard.press("Escape");
     await page.waitForTimeout(500);
 
     // Switch to dark theme
