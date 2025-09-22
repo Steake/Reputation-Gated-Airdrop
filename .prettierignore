@@ -1,0 +1,6 @@
+node_modules
+.svelte-kit
+dist
+build
+*.log
+package-lock.json

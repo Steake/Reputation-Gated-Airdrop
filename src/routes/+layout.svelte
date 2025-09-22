@@ -25,8 +25,14 @@
 
   function applyThemeToHtml(dark: boolean) {
     if (typeof document !== "undefined") {
-      if (dark) document.documentElement.classList.add("dark");
-      else document.documentElement.classList.remove("dark");
+      const theme = dark ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", theme);
+      // Keep dark class for Tailwind compatibility
+      if (dark) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
     }
   }
 
@@ -34,7 +40,7 @@
     isDark = !isDark;
     try {
       localStorage.setItem("theme", isDark ? "dark" : "light");
-    } catch (e) {
+    } catch {
       // ignore localStorage errors (e.g. incognito)
     }
     applyThemeToHtml(isDark);
@@ -64,7 +70,7 @@
           $page.data.config.TOKEN_ADDR as Hex,
           erc20abi,
           "decimals",
-          [],
+          []
         );
         airdrop.update((a) => ({ ...a, decimals }));
         tokenDecimals = decimals;
@@ -87,7 +93,7 @@
           window.matchMedia &&
           window.matchMedia("(prefers-color-scheme: dark)").matches;
       }
-    } catch (e) {
+    } catch {
       isDark =
         typeof window !== "undefined" &&
         window.matchMedia &&
@@ -98,16 +104,19 @@
 </script>
 
 <div class="min-h-screen flex flex-col">
-  <header class="glass sticky top-0 z-20 border-b border-gray-100">
-    <div class="site-container">
-      <div class="flex items-center justify-between py-4">
-        <a href="/" class="flex items-center gap-3">
+  <header
+    class="sticky top-0 z-20 bg-[var(--bg-subtle)] backdrop-blur-sm border-b border-[var(--border-base)]"
+    style="height: 64px;"
+  >
+    <div class="max-w-[1040px] mx-auto px-4 sm:px-6">
+      <div class="flex items-center justify-between h-16">
+        <a href="/" class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <div
-            class="bd-radius bg-brand p-2 text-white center-vertical"
+            class="rounded-lg bg-[var(--accent-brand)] p-2 text-white flex items-center justify-center"
             aria-hidden="true"
           >
             <svg
-              class="h-6 w-6"
+              class="h-5 w-5 sm:h-6 sm:w-6"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="none"
@@ -116,106 +125,77 @@
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <path
-                d="M12 2L2 7l10 5 10-5-10-5z"
-                fill="rgba(255,255,255,0.06)"
-              />
+              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="rgba(255,255,255,0.06)" />
               <path d="M2 17l10 5 10-5" stroke="white" opacity="0.85" />
             </svg>
           </div>
           <div class="leading-tight">
-            <div class="font-semibold text-lg">Shadowgraph</div>
-            <div class="text-xs muted">Reputation Airdrop</div>
+            <div class="font-semibold text-base sm:text-lg text-[var(--fg-primary)]">
+              Shadowgraph
+            </div>
+            <div class="text-xs text-[var(--fg-muted)] hidden sm:block">Reputation Airdrop</div>
           </div>
         </a>
 
-        <!-- Desktop nav -->
-        <div class="hidden md:flex items-center space-x-4">
-          <a href="/attest" class="btn-outline">Earn Reputation</a>
-          <a href="/claim" class="btn">Claim</a>
-          {#if $page.data.config?.DEBUG}
-            <a href="/debug" class="btn-outline">Debug</a>
-          {/if}
-          <div class="flex items-center space-x-2">
-            <button
-              aria-label="Toggle dark mode"
-              class="inline-flex items-center justify-center rounded-md p-2 border hover:bg-gray-50 dark:hover:bg-gray-700"
-              on:click={toggleTheme}
-              title="Toggle dark mode"
+        <!-- Desktop nav with new tab design -->
+        <nav class="hidden md:flex items-center">
+          <div class="flex items-center space-x-1 mr-6">
+            <a
+              href="/attest"
+              class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.2,0.0,0.2,1)]
+                     {$page.url.pathname === '/attest'
+                ? 'text-[var(--fg-primary)] bg-[var(--bg-surfaceElev)] border border-[var(--border-base)]'
+                : 'text-[var(--fg-muted)] hover:text-[var(--fg-secondary)]'}"
             >
-              {#if isDark}
-                <!-- Sun icon: clicking will switch to light -->
-                <svg
-                  class="h-5 w-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle cx="12" cy="12" r="4" />
-                  <path
-                    d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
-                  />
-                </svg>
-              {:else}
-                <!-- Moon icon: clicking will switch to dark -->
-                <svg
-                  class="h-5 w-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-                </svg>
-              {/if}
-            </button>
-
-            <div class="ml-2">
-              <WalletButton />
-            </div>
+              Earn Reputation
+            </a>
+            <a
+              href="/claim"
+              class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.2,0.0,0.2,1)]
+                     {$page.url.pathname === '/claim'
+                ? 'text-[var(--fg-primary)] bg-[var(--bg-surfaceElev)] border border-[var(--border-base)]'
+                : 'text-[var(--fg-muted)] hover:text-[var(--fg-secondary)]'}"
+            >
+              Claim
+            </a>
+            <a
+              href="/explore"
+              class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.2,0.0,0.2,1)]
+                     {$page.url.pathname === '/explore'
+                ? 'text-[var(--fg-primary)] bg-[var(--bg-surfaceElev)] border border-[var(--border-base)]'
+                : 'text-[var(--fg-muted)] hover:text-[var(--fg-secondary)]'}"
+            >
+              Explore
+            </a>
+            {#if $page.data.config?.DEBUG}
+              <a
+                href="/debug"
+                class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.2,0.0,0.2,1)]
+                       {$page.url.pathname === '/debug'
+                  ? 'text-[var(--fg-primary)] bg-[var(--bg-surfaceElev)] border border-[var(--border-base)]'
+                  : 'text-[var(--fg-muted)] hover:text-[var(--fg-secondary)]'}"
+              >
+                Debug
+              </a>
+            {/if}
           </div>
-        </div>
+        </nav>
 
-        <!-- Mobile: show compact actions -->
-        <div class="md:hidden flex items-center space-x-2">
-          <button
-            aria-label="Open menu"
-            class="inline-flex items-center justify-center rounded-md p-2 border hover:bg-gray-100 dark:hover:bg-gray-800"
-            on:click={() => (mobileOpen = true)}
-            title="Open menu"
-          >
-            <svg
-              class="h-6 w-6"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M3 12h18M3 6h18M3 18h18" />
-            </svg>
-          </button>
-
-          <a href="/attest" class="btn-outline px-3 py-2 text-sm">Earn</a>
-
+        <!-- Desktop controls -->
+        <div class="hidden md:flex items-center space-x-3 flex-shrink-0">
           <button
             aria-label="Toggle dark mode"
-            class="inline-flex items-center justify-center rounded-md p-2 border hover:bg-gray-50 dark:hover:bg-gray-700"
+            class="inline-flex items-center justify-center rounded-lg p-2 border border-[var(--border-base)]
+                   hover:bg-[var(--bg-surfaceElev)] transition-colors duration-200
+                   focus:outline-none focus:ring-2 focus:ring-[var(--accent-brand-subtle)] focus:ring-opacity-60 focus:ring-offset-2"
             on:click={toggleTheme}
             title="Toggle dark / light"
+            style="min-width: 44px; min-height: 44px;"
           >
             {#if isDark}
+              <!-- Sun icon: clicking will switch to light -->
               <svg
-                class="h-5 w-5"
+                class="h-5 w-5 text-[var(--fg-secondary)]"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -230,8 +210,9 @@
                 />
               </svg>
             {:else}
+              <!-- Moon icon: clicking will switch to dark -->
               <svg
-                class="h-5 w-5"
+                class="h-5 w-5 text-[var(--fg-secondary)]"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -244,7 +225,33 @@
               </svg>
             {/if}
           </button>
+          <WalletButton />
+        </div>
 
+        <!-- Mobile controls -->
+        <div class="md:hidden flex items-center space-x-2 flex-shrink-0">
+          <button
+            aria-label="Toggle mobile menu"
+            class="inline-flex items-center justify-center rounded-lg p-2 text-[var(--fg-muted)]
+                   hover:text-[var(--fg-primary)] hover:bg-[var(--bg-surfaceElev)] transition-colors duration-200
+                   focus:outline-none focus:ring-2 focus:ring-[var(--accent-brand-subtle)] focus:ring-opacity-60 focus:ring-offset-2"
+            on:click={openMobile}
+            title="Open menu"
+            style="min-width: 44px; min-height: 44px;"
+          >
+            <svg
+              class="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M3 12h18M3 6h18M3 18h18" />
+            </svg>
+          </button>
           <WalletButton />
         </div>
       </div>
@@ -252,14 +259,14 @@
   </header>
 
   <MobileMenu bind:open={mobileOpen} on:close={() => (mobileOpen = false)} />
-  <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  <!-- Main content with proper spacing and width constraints -->
+  <main class="flex-grow container-responsive py-6 sm:py-8 content-safe">
     <slot />
   </main>
 
-  <footer class="border-t border-gray-200 py-4">
-    <div
-      class="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm"
-    >
+  <footer class="border-t border-[var(--border-base)] py-4 bg-[var(--bg-subtle)]">
+    <div class="max-w-[1040px] mx-auto px-6 text-center text-[var(--fg-muted)] text-sm">
       Powered by Shadowgraph
     </div>
   </footer>

@@ -11,13 +11,7 @@
   const height = 100;
   const padding = 12;
 
-  function scale(
-    val: number,
-    inMin: number,
-    inMax: number,
-    outMin: number,
-    outMax: number,
-  ) {
+  function scale(val: number, inMin: number, inMax: number, outMin: number, outMax: number) {
     return ((val - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
   }
 
@@ -68,13 +62,7 @@
       </linearGradient>
 
       <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow
-          dx="0"
-          dy="4"
-          stdDeviation="6"
-          flood-color="#0f172a"
-          flood-opacity="0.06"
-        />
+        <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.06" />
       </filter>
     </defs>
 
@@ -121,14 +109,7 @@
         aria-hidden="true"
       />
       <!-- marker -->
-      <circle
-        cx={scoreX}
-        cy={padding}
-        r="4"
-        fill="#fff"
-        stroke="url(#g-curve)"
-        stroke-width="2"
-      />
+      <circle cx={scoreX} cy={padding} r="4" fill="#fff" stroke="url(#g-curve)" stroke-width="2" />
       <text
         x={scoreX}
         y={padding - 6}
@@ -143,13 +124,7 @@
 
     <!-- floor/cap labels -->
     <text x={padding} y={height - 2} font-size="9" fill="#6b7280"> Floor </text>
-    <text
-      x={width - padding}
-      y={height - 2}
-      font-size="9"
-      fill="#6b7280"
-      text-anchor="end"
-    >
+    <text x={width - padding} y={height - 2} font-size="9" fill="#6b7280" text-anchor="end">
       Cap
     </text>
   </svg>

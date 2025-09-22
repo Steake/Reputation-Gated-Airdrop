@@ -9,9 +9,7 @@
   >
     <AlertTriangle class="h-8 w-8" />
   </div>
-  <h1
-    class="mt-4 text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-5xl"
-  >
+  <h1 class="mt-4 text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-5xl">
     Error: {$page.status}
   </h1>
   <p class="mt-6 text-base leading-7 text-gray-600 dark:text-gray-400">
@@ -21,9 +19,8 @@
     <div
       class="mt-4 p-4 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-md text-left"
     >
-      <pre
-        class="text-red-800 dark:text-red-200 text-sm whitespace-pre-wrap">{$page
-          .error.message}</pre>
+      <pre class="text-red-800 dark:text-red-200 text-sm whitespace-pre-wrap">{$page.error
+          .message}</pre>
     </div>
   {/if}
   <div class="mt-10 flex items-center justify-center gap-x-6">

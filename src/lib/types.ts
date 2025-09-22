@@ -10,7 +10,7 @@ export const ScoreResponseSchema = z.object({
       z.object({
         label: z.string(),
         delta: z.number(),
-      }),
+      })
     )
     .optional(),
   updatedAt: z.string().datetime(),

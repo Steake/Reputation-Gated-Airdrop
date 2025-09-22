@@ -13,5 +13,8 @@
 	"/debug": [
 		"src/routes/debug/+page.server.ts",
 		"src/routes/+layout.ts"
+	],
+	"/explore": [
+		"src/routes/+layout.ts"
 	]
 }

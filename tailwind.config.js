@@ -1,4 +1,7 @@
-module.exports = {
+import formsPlugin from "@tailwindcss/forms";
+
+/** @type {import('tailwindcss').Config} */
+export default {
   // Enable JIT-style content scanning for all app files
   content: [
     "./src/**/*.{html,js,svelte,ts,jsx,tsx}",
@@ -72,5 +75,5 @@ module.exports = {
   },
 
   // Plugins (forms is already present as a dependency)
-  plugins: [require("@tailwindcss/forms")],
+  plugins: [formsPlugin],
 };

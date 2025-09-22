@@ -20,10 +20,7 @@
   }
 </script>
 
-<button
-  on:click={handleCopy}
-  class="inline-flex items-center text-gray-500 hover:text-gray-800"
->
+<button on:click={handleCopy} class="inline-flex items-center text-gray-500 hover:text-gray-800">
   <slot />
   {#if copied}
     <Check class="ml-2 h-4 w-4 text-green-500" />

@@ -7,24 +7,28 @@ import {
   custom,
   http,
   type EIP1193Provider,
+  type Chain,
+  type Hex,
+  type Abi,
 } from "viem";
-import { PUBLIC_CHAIN_ID, PUBLIC_RPC_URL } from "$env/static/public";
 
 /** Build a minimal viem Chain from env (works for Base/Arb/custom) */
-function getChain() {
-  const id = Number(PUBLIC_CHAIN_ID);
-  if (!Number.isFinite(id)) throw new Error("PUBLIC_CHAIN_ID missing/invalid");
+function getChain(): Chain {
+  const chainId = import.meta.env.VITE_CHAIN_ID || "11155111";
+  const rpcUrl = import.meta.env.VITE_RPC_URL || "https://rpc.sepolia.org";
+  const id = Number(chainId);
+  if (!Number.isFinite(id)) throw new Error("CHAIN_ID missing/invalid");
   return {
     id,
     name: `chain-${id}`,
     nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
-    rpcUrls: { default: { http: [PUBLIC_RPC_URL] } },
-  } as any;
+    rpcUrls: { default: { http: [rpcUrl] } },
+  };
 }
 
 const publicClient = createPublicClient({
   chain: getChain(),
-  transport: http(PUBLIC_RPC_URL),
+  transport: http(import.meta.env.VITE_RPC_URL || "https://rpc.sepolia.org"),
 });
 
 export function getPublicClient() {
@@ -36,7 +40,7 @@ async function getWalletClient() {
   await initOnboard();
   const w = get(wallets)[0];
   if (!w) throw new Error("No wallet connected");
-  const provider = w.provider as unknown as EIP1193Provider;
+  const provider = w.provider as EIP1193Provider;
   const account = w.accounts?.[0]?.address as `0x${string}`;
   if (!account) throw new Error("No active account");
   return createWalletClient({
@@ -51,17 +55,35 @@ export { onboard, wallets, initOnboard as getOnboard };
 
 /** Wallet connect/disconnect helpers (re-exported here for convenience) */
 export async function connectWallet() {
-  const ob = get(onboard) ?? (await initOnboard());
-  if (!ob) return [];
-  return ob.connectWallet();
+  try {
+    const ob = get(onboard) ?? (await initOnboard());
+    if (!ob) {
+      console.error("Failed to initialize onboard");
+      return [];
+    }
+
+    console.log("Attempting to connect wallet...");
+    const wallets = await ob.connectWallet();
+    console.log("Connected wallets:", wallets);
+    return wallets;
+  } catch (error) {
+    console.error("Error connecting wallet:", error);
+    throw error;
+  }
 }
 
 export async function disconnectWallet() {
-  const ob = get(onboard) ?? (await initOnboard());
-  if (!ob) return;
-  const [primaryWallet] = ob.state.get().wallets;
-  if (primaryWallet) {
-    await ob.disconnectWallet({ label: primaryWallet.label });
+  try {
+    const ob = get(onboard) ?? (await initOnboard());
+    if (!ob) return;
+    const [primaryWallet] = ob.state.get().wallets;
+    if (primaryWallet) {
+      await ob.disconnectWallet({ label: primaryWallet.label });
+      console.log("Disconnected wallet:", primaryWallet.label);
+    }
+  } catch (error) {
+    console.error("Error disconnecting wallet:", error);
+    throw error;
   }
 }
 
@@ -70,18 +92,18 @@ export async function disconnectWallet() {
  * Convenience wrapper so callers can use:
  *   readContract(address, abi, functionName, args)
  */
-export async function readContract<T = any>(
-  address: any,
-  abi: any,
+export async function readContract<T = unknown>(
+  address: Hex,
+  abi: Abi,
   functionName: string,
-  args?: any[],
+  args?: unknown[]
 ): Promise<T> {
-  return publicClient.readContract<T>({
+  return publicClient.readContract({
     address,
     abi,
     functionName,
     args,
-  } as any) as Promise<T>;
+  }) as Promise<T>;
 }
 
 /** Write contract (client only)
@@ -91,18 +113,17 @@ export async function readContract<T = any>(
  * Signature: writeContract(address, abi, functionName, args, account?)
  */
 export async function writeContract(
-  address: any,
-  abi: any,
+  address: Hex,
+  abi: Abi,
   functionName: string,
-  args: any[],
-  account?: `0x${string}`,
+  args: unknown[],
+  account?: `0x${string}`
 ): Promise<string> {
   const wc = await getWalletClient();
   if (!wc) throw new Error("Wallet not connected");
 
   // Determine account for simulation: prefer provided account, fallback to onboard wallet
-  const acct =
-    account ?? (get(wallets)[0]?.accounts?.[0]?.address as `0x${string}`);
+  const acct = account ?? (get(wallets)[0]?.accounts?.[0]?.address as `0x${string}`);
   if (!acct) throw new Error("No account provided for transaction simulation");
 
   const { request } = await publicClient.simulateContract({
@@ -111,8 +132,8 @@ export async function writeContract(
     functionName,
     args,
     account: acct,
-  } as any);
+  });
 
-  const hash = await wc.writeContract(request as any);
+  const hash = await wc.writeContract(request);
   return hash as string;
 }

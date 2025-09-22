@@ -27,7 +27,7 @@ export {};
 
 declare module "$app/types" {
 	export interface AppTypes {
-		RouteId(): "/" | "/attest" | "/claim" | "/debug";
+		RouteId(): "/" | "/attest" | "/claim" | "/debug" | "/explore";
 		RouteParams(): {
 			
 		};
@@ -35,9 +35,10 @@ declare module "$app/types" {
 			"/": Record<string, never>;
 			"/attest": Record<string, never>;
 			"/claim": Record<string, never>;
-			"/debug": Record<string, never>
+			"/debug": Record<string, never>;
+			"/explore": Record<string, never>
 		};
-		Pathname(): "/" | "/attest" | "/attest/" | "/claim" | "/claim/" | "/debug" | "/debug/";
+		Pathname(): "/" | "/attest" | "/attest/" | "/claim" | "/claim/" | "/debug" | "/debug/" | "/explore" | "/explore/";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): string & {};
 	}

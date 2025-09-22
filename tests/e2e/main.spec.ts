@@ -21,16 +21,12 @@ test("shows claim page after connecting wallet", async ({ page }) => {
   await expect(page).toHaveURL("/claim");
 
   // Check for the "please connect" message
-  await expect(
-    page.getByText("Please connect your wallet to continue."),
-  ).toBeVisible();
+  await expect(page.getByText("Please connect your wallet to continue.")).toBeVisible();
 });
 
 test("attest page loads correctly", async ({ page }) => {
   await page.goto("/attest");
-  await expect(
-    page.getByRole("heading", { name: "Earn Reputation" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Earn Reputation" })).toBeVisible();
   await expect(page.getByText("Verify Personhood")).toBeVisible();
 });
 

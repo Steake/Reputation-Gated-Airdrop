@@ -17,7 +17,7 @@ const isMockMode = !API_BASE;
 class ApiError extends Error {
   constructor(
     message: string,
-    public status?: number,
+    public status?: number
   ) {
     super(message);
     this.name = "ApiError";
@@ -28,14 +28,11 @@ class ApiError extends Error {
 async function fetchWithZod<T>(
   schema: z.Schema<T>,
   url: string,
-  options?: RequestInit,
+  options?: RequestInit
 ): Promise<T> {
   const response = await fetch(url, options);
   if (!response.ok) {
-    throw new ApiError(
-      `API request failed: ${response.statusText}`,
-      response.status,
-    );
+    throw new ApiError(`API request failed: ${response.statusText}`, response.status);
   }
   const data = await response.json();
   const parsed = schema.safeParse(data);
@@ -82,7 +79,7 @@ function mockClaimArtifact(address: string, campaign: string): ClaimArtifact {
   };
 }
 
-function mockProofMeta(address: string): ProofMeta {
+function mockProofMeta(_address: string): ProofMeta {
   return {
     score1e6: 750000,
     calldata: "0x" + "f".repeat(128),
@@ -96,10 +93,7 @@ export async function getScore(address: string): Promise<ScoreResponse> {
   return fetchWithZod(ScoreResponseSchema, `${API_BASE}/scores/${address}`);
 }
 
-export async function getClaimArtifact(
-  address: string,
-  campaign: string,
-): Promise<ClaimArtifact> {
+export async function getClaimArtifact(address: string, campaign: string): Promise<ClaimArtifact> {
   if (isMockMode) return mockClaimArtifact(address, campaign);
   return fetchWithZod(ClaimArtifactSchema, `${API_BASE}/claim-artifact`, {
     method: "POST",

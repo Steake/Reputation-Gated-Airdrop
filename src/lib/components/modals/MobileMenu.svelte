@@ -18,7 +18,7 @@
       else document.documentElement.classList.remove("dark");
       localStorage.setItem("theme", d ? "dark" : "light");
       isDark = d;
-    } catch (e) {
+    } catch {
       // ignore
     }
   }
@@ -69,20 +69,21 @@
 {#if open}
   <!-- Overlay -->
   <div class="fixed inset-0 z-40" aria-hidden="true">
-    <div
-      class="absolute inset-0 bg-black/40 dark:bg-black/60"
+    <button
+      type="button"
+      class="absolute inset-0 bg-black/40 dark:bg-black/60 w-full h-full border-0 p-0 cursor-pointer"
       on:click={close}
       transition:fade
-      aria-hidden="true"
+      aria-label="Close menu"
     />
     <!-- Slide-over panel -->
-    <aside
+    <div
       bind:this={panel}
       class="absolute right-0 top-0 h-full w-full max-w-sm bg-white dark:bg-[var(--card)] shadow-lg border-l border-gray-100 dark:border-gray-700 focus:outline-none"
       role="dialog"
       aria-modal="true"
       aria-label="Mobile menu"
-      tabindex="0"
+      tabindex="-1"
       on:keydown={onKeydown}
       transition:fly={{ x: 300, duration: 260 }}
     >
@@ -90,16 +91,12 @@
         class="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700"
       >
         <div class="flex items-center space-x-3">
-          <div
-            class="h-8 w-8 rounded-md center-vertical bg-[var(--brand)] text-white font-bold"
-          >
+          <div class="h-8 w-8 rounded-md center-vertical bg-[var(--brand)] text-white font-bold">
             SG
           </div>
           <div>
             <div class="font-semibold text-[var(--text)]">Shadowgraph</div>
-            <div class="text-xs text-[var(--muted-text)]">
-              Reputation Airdrop
-            </div>
+            <div class="text-xs text-[var(--muted-text)]">Reputation Airdrop</div>
           </div>
         </div>
 
@@ -184,6 +181,11 @@
           class="block px-3 py-2 rounded-md text-[var(--text)] hover:bg-gray-50 dark:hover:bg-gray-800"
           >Earn Reputation</a
         >
+        <a
+          href="/explore"
+          class="block px-3 py-2 rounded-md text-[var(--text)] hover:bg-gray-50 dark:hover:bg-gray-800"
+          >Explore</a
+        >
         {#if false}
           <!-- debug route shown conditionally from parent; kept here as example -->
           <a
@@ -202,7 +204,7 @@
           <p>Need help? Visit our docs or open an issue.</p>
         </div>
       </div>
-    </aside>
+    </div>
   </div>
 {/if}
 
