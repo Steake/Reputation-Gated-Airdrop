@@ -22,35 +22,42 @@ test.describe("Mobile Responsive Design", () => {
 
       test("should not have horizontal scroll issues", async ({ page }) => {
         // Wait for page to fully load
-        await page.waitForLoadState('networkidle');
-        
+        await page.waitForLoadState("networkidle");
+
         // Check for horizontal overflow with tolerance for minor differences
         const bodyScrollWidth = await page.evaluate(() => document.body.scrollWidth);
         const bodyClientWidth = await page.evaluate(() => document.body.clientWidth);
         const windowInnerWidth = await page.evaluate(() => window.innerWidth);
-        
-        console.log(`${viewport.name}: scrollWidth=${bodyScrollWidth}, clientWidth=${bodyClientWidth}, innerWidth=${windowInnerWidth}`);
-        
+
+        console.log(
+          `${viewport.name}: scrollWidth=${bodyScrollWidth}, clientWidth=${bodyClientWidth}, innerWidth=${windowInnerWidth}`
+        );
+
         // Allow larger tolerance for minor layout quirks in CI environments
         const tolerance = 20;
         const hasExcessiveOverflow = bodyScrollWidth > bodyClientWidth + tolerance;
-        
+
         // Log warning but don't fail test for minor overflows
         if (hasExcessiveOverflow) {
-          console.warn(`Horizontal overflow detected on ${viewport.name}: ${bodyScrollWidth - bodyClientWidth}px excess`);
+          console.warn(
+            `Horizontal overflow detected on ${viewport.name}: ${bodyScrollWidth - bodyClientWidth}px excess`
+          );
         }
-        
+
         // Only fail for significant overflow (more than 50px)
         expect(bodyScrollWidth).toBeLessThanOrEqual(bodyClientWidth + 50);
       });
 
       test("wallet connect button should fit within viewport", async ({ page }) => {
         // Wait for content to load
-        await page.waitForLoadState('networkidle');
-        
+        await page.waitForLoadState("networkidle");
+
         // Find wallet connect button with flexible selectors
-        const walletButton = page.locator('button').filter({ hasText: /connect/i }).first();
-        
+        const walletButton = page
+          .locator("button")
+          .filter({ hasText: /connect/i })
+          .first();
+
         // Check if button exists, if not, just log and continue
         const buttonExists = await walletButton.isVisible().catch(() => false);
         if (!buttonExists) {
@@ -63,9 +70,11 @@ test.describe("Mobile Responsive Design", () => {
         if (buttonBox) {
           const rightEdge = buttonBox.x + buttonBox.width;
           const bottomEdge = buttonBox.y + buttonBox.height;
-          
-          console.log(`${viewport.name}: Button bounds - right: ${rightEdge}, bottom: ${bottomEdge}, viewport: ${viewport.width}x${viewport.height}`);
-          
+
+          console.log(
+            `${viewport.name}: Button bounds - right: ${rightEdge}, bottom: ${bottomEdge}, viewport: ${viewport.width}x${viewport.height}`
+          );
+
           // Allow more tolerance for button positioning
           expect(rightEdge).toBeLessThanOrEqual(viewport.width + 20);
           expect(bottomEdge).toBeLessThanOrEqual(viewport.height + 20);
@@ -95,10 +104,9 @@ test.describe("Mobile Responsive Design", () => {
             await expect(claimLink).toBeVisible();
           } catch (error) {
             // If mobile menu toggle not found, check if regular nav is still working
-            const navLinks = page.locator('nav a');
+            const navLinks = page.locator("nav a");
             await expect(navLinks.first()).toBeVisible();
           }
-        }
         } else {
           // Desktop navigation should be visible
           const desktopNav = page.getByRole("navigation", {
