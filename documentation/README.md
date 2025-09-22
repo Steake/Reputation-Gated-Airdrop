@@ -55,14 +55,14 @@ This directory contains comprehensive documentation for the client-side prover i
 - Aggregate proof implementation
 - Performance optimization strategies
 
-#### [ZKML On-Chain Prover Specification](./zkml-on-chain-prover-specification.md)
+#### [ZKML On-Chain Verifier Specification](./zkml-on-chain-verifier-specification.md)
 **Purpose**: Smart contract specification for on-chain proof verification  
 **Key Content**:
-- Smart contract architecture and functions
+- Smart contract architecture and functions for verifying client-generated ZK proofs
 - EBSL circuit design for zero-knowledge proofs
 - Integration architecture and data flow
 - Security considerations and gas optimization
-- Comprehensive ABI specification
+- Comprehensive ABI specification for proof verification
 
 ## Implementation Phases
 
@@ -111,7 +111,7 @@ This directory contains comprehensive documentation for the client-side prover i
 
 1. **Threat Model**: Review security considerations in [Global Web of Trust Architecture](./global-web-of-trust-architecture.md)
 2. **Cryptographic Properties**: Study ZK circuit designs in [EBSL Algorithm Integration Strategy](./ebsl-algorithm-integration-strategy.md)
-3. **Smart Contract Security**: Analyze [ZKML On-Chain Prover Specification](./zkml-on-chain-prover-specification.md)
+3. **Smart Contract Security**: Analyze [ZKML On-Chain Verifier Specification](./zkml-on-chain-verifier-specification.md)
 4. **Privacy Analysis**: Review privacy-preserving mechanisms in proof type specifications
 
 ## Dependencies and Prerequisites
