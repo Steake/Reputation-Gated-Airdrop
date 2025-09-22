@@ -23,9 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 .env
-.env.local
-.env.development
-.env.production
+.env.*
+!.env.example
 
 # Test results
 test-results/
@@ -33,3 +32,14 @@ test-results/
 # SvelteKit build artifacts
 .svelte-kit/output/
 .svelte-kit/generated/client-optimized/
+
+# Smart contract artifacts
+artifacts/
+cache/
+typechain-types/
+coverage/
+coverage.json
+gasReporterOutput.json
+
+# Deployment logs
+logs/

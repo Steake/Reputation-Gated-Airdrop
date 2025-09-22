@@ -9,6 +9,10 @@
     "test": "npm run test:unit",
     "test:unit": "vitest",
     "test:e2e": "playwright test",
+    "test:contracts": "npx hardhat test --config hardhat.config.cjs",
+    "compile:contracts": "npx hardhat compile --config hardhat.config.cjs",
+    "deploy:contracts": "./scripts/deploy/deploy-contracts.sh",
+    "deploy:sepolia": "./scripts/deploy/deploy-contracts.sh sepolia",
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
     "prepare": "husky install"

@@ -71,7 +71,7 @@ describe("ReputationAirdropScaled", function () {
       const midScore = (floorScore + capScore) / 2;
       const expectedPayout = (minPayout + maxPayout) / 2n;
       const actualPayout = await airdrop.quotePayout(midScore);
-      
+
       // Allow for small rounding differences
       expect(actualPayout).to.be.closeTo(expectedPayout, ethers.parseUnits("1", 18));
     });
@@ -98,16 +98,7 @@ describe("ReputationAirdropScaled", function () {
       const initialBalance = await token.balanceOf(user1.address);
 
       await expect(
-        airdrop.connect(user1).claim(
-          circuitId,
-          modelDigest,
-          inputDigest,
-          score,
-          deadline,
-          v,
-          r,
-          s
-        )
+        airdrop.connect(user1).claim(circuitId, modelDigest, inputDigest, score, deadline, v, r, s)
       ).to.emit(airdrop, "Claimed");
 
       const finalBalance = await token.balanceOf(user1.address);
@@ -132,16 +123,7 @@ describe("ReputationAirdropScaled", function () {
       const { v, r, s } = ethers.Signature.from(signature);
 
       await expect(
-        airdrop.connect(user1).claim(
-          circuitId,
-          modelDigest,
-          inputDigest,
-          score,
-          deadline,
-          v,
-          r,
-          s
-        )
+        airdrop.connect(user1).claim(circuitId, modelDigest, inputDigest, score, deadline, v, r, s)
       ).to.be.revertedWith("Invalid signature");
     });
 
@@ -161,16 +143,7 @@ describe("ReputationAirdropScaled", function () {
       const { v, r, s } = ethers.Signature.from(signature);
 
       await expect(
-        airdrop.connect(user1).claim(
-          circuitId,
-          modelDigest,
-          inputDigest,
-          score,
-          deadline,
-          v,
-          r,
-          s
-        )
+        airdrop.connect(user1).claim(circuitId, modelDigest, inputDigest, score, deadline, v, r, s)
       ).to.be.revertedWith("Signature expired");
     });
 
@@ -190,29 +163,13 @@ describe("ReputationAirdropScaled", function () {
       const { v, r, s } = ethers.Signature.from(signature);
 
       // First claim should succeed
-      await airdrop.connect(user1).claim(
-        circuitId,
-        modelDigest,
-        inputDigest,
-        score,
-        deadline,
-        v,
-        r,
-        s
-      );
+      await airdrop
+        .connect(user1)
+        .claim(circuitId, modelDigest, inputDigest, score, deadline, v, r, s);
 
       // Second claim should fail
       await expect(
-        airdrop.connect(user1).claim(
-          circuitId,
-          modelDigest,
-          inputDigest,
-          score,
-          deadline,
-          v,
-          r,
-          s
-        )
+        airdrop.connect(user1).claim(circuitId, modelDigest, inputDigest, score, deadline, v, r, s)
       ).to.be.revertedWith("Already claimed");
     });
   });

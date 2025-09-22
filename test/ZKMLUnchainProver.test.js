@@ -40,7 +40,7 @@ describe("ZKMLUnchainProver", function () {
     it("Should return correct circuit parameters", async function () {
       const params = await zkmlProver.getCircuitParameters();
       expect(params[0]).to.equal(16); // MAX_OPINIONS
-      expect(params[1]).to.equal(4);  // OPINION_SIZE
+      expect(params[1]).to.equal(4); // OPINION_SIZE
       expect(params[2]).to.equal(600000); // MIN_REPUTATION_THRESHOLD
       expect(params[3]).to.equal(1000000); // MAX_REPUTATION_SCORE
     });
@@ -51,9 +51,8 @@ describe("ZKMLUnchainProver", function () {
       const proof = [1, 2, 3, 4, 5];
       const publicInputs = [750000]; // Valid reputation score
 
-      await expect(
-        zkmlProver.connect(user1).verifyReputationProof(proof, publicInputs)
-      ).to.emit(zkmlProver, "ReputationVerified")
+      await expect(zkmlProver.connect(user1).verifyReputationProof(proof, publicInputs))
+        .to.emit(zkmlProver, "ReputationVerified")
         .withArgs(user1.address, 750000, anyValue, anyValue);
 
       // Check stored reputation
@@ -128,9 +127,7 @@ describe("ZKMLUnchainProver", function () {
     });
 
     it("Should prevent non-owner from pausing", async function () {
-      await expect(
-        zkmlProver.connect(user1).pause()
-      ).to.be.revertedWith("Not authorized");
+      await expect(zkmlProver.connect(user1).pause()).to.be.revertedWith("Not authorized");
     });
 
     it("Should allow owner to transfer ownership", async function () {

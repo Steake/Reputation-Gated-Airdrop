@@ -9,7 +9,11 @@
       { "name": "_capScore", "type": "uint256", "internalType": "uint256" },
       { "name": "_minPayout", "type": "uint256", "internalType": "uint256" },
       { "name": "_maxPayout", "type": "uint256", "internalType": "uint256" },
-      { "name": "_curve", "type": "uint8", "internalType": "enum ReputationAirdropZKScaled.PayoutCurve" },
+      {
+        "name": "_curve",
+        "type": "uint8",
+        "internalType": "enum ReputationAirdropZKScaled.PayoutCurve"
+      },
       { "name": "_maxReputationAge", "type": "uint256", "internalType": "uint256" }
     ]
   },

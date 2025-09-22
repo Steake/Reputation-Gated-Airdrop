@@ -37,6 +37,8 @@ declare module '$env/static/private' {
 	export const VITE_CURVE: string;
 	export const VITE_WALLETCONNECT_PROJECT_ID: string;
 	export const VITE_AIRDROP_ECDSA_ADDR: string;
+	export const VITE_AIRDROP_ZK_ADDR: string;
+	export const VITE_VERIFIER_ADDR: string;
 	export const VITE_DEBUG: string;
 	export const SUDO_GID: string;
 	export const GITHUB_STATE: string;
@@ -216,13 +218,7 @@ declare module '$env/static/private' {
 	export const COPILOT_AGENT_TIMEOUT_MIN: string;
 	export const INIT_CWD: string;
 	export const EDITOR: string;
-	export const TEST: string;
-	export const VITEST: string;
 	export const NODE_ENV: string;
-	export const PROD: string;
-	export const DEV: string;
-	export const BASE_URL: string;
-	export const MODE: string;
 }
 
 /**
@@ -267,6 +263,8 @@ declare module '$env/dynamic/private' {
 		VITE_CURVE: string;
 		VITE_WALLETCONNECT_PROJECT_ID: string;
 		VITE_AIRDROP_ECDSA_ADDR: string;
+		VITE_AIRDROP_ZK_ADDR: string;
+		VITE_VERIFIER_ADDR: string;
 		VITE_DEBUG: string;
 		SUDO_GID: string;
 		GITHUB_STATE: string;
@@ -446,13 +444,7 @@ declare module '$env/dynamic/private' {
 		COPILOT_AGENT_TIMEOUT_MIN: string;
 		INIT_CWD: string;
 		EDITOR: string;
-		TEST: string;
-		VITEST: string;
 		NODE_ENV: string;
-		PROD: string;
-		DEV: string;
-		BASE_URL: string;
-		MODE: string;
 		[key: `PUBLIC_${string}`]: undefined;
 		[key: `${string}`]: string | undefined;
 	}
