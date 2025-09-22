@@ -57,7 +57,7 @@ export async function connectWallet() {
       console.error("Failed to initialize onboard");
       return [];
     }
-    
+
     console.log("Attempting to connect wallet...");
     const wallets = await ob.connectWallet();
     console.log("Connected wallets:", wallets);
