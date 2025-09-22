@@ -1,25 +1,83 @@
 [
   {
+    "type": "constructor",
     "inputs": [
-      { "type": "string", "name": "circuitId" },
-      { "type": "bytes32", "name": "modelDigest" },
-      { "type": "bytes32", "name": "inputDigest" },
-      { "type": "uint256", "name": "score" },
-      { "type": "uint256", "name": "deadline" },
-      { "type": "uint8", "name": "v" },
-      { "type": "bytes32", "name": "r" },
-      { "type": "bytes32", "name": "s" }
-    ],
-    "name": "claim",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+      { "name": "_token", "type": "address", "internalType": "contract IERC20" },
+      { "name": "_signer", "type": "address", "internalType": "address" },
+      { "name": "_campaign", "type": "bytes32", "internalType": "bytes32" },
+      { "name": "_floorScore", "type": "uint256", "internalType": "uint256" },
+      { "name": "_capScore", "type": "uint256", "internalType": "uint256" },
+      { "name": "_minPayout", "type": "uint256", "internalType": "uint256" },
+      { "name": "_maxPayout", "type": "uint256", "internalType": "uint256" },
+      { "name": "_curve", "type": "uint8", "internalType": "enum ReputationAirdropScaled.PayoutCurve" }
+    ]
   },
   {
-    "inputs": [{ "type": "uint256", "name": "score" }],
+    "type": "function",
+    "name": "claim",
+    "inputs": [
+      { "name": "circuitId", "type": "string", "internalType": "string" },
+      { "name": "modelDigest", "type": "bytes32", "internalType": "bytes32" },
+      { "name": "inputDigest", "type": "bytes32", "internalType": "bytes32" },
+      { "name": "score", "type": "uint256", "internalType": "uint256" },
+      { "name": "deadline", "type": "uint256", "internalType": "uint256" },
+      { "name": "v", "type": "uint8", "internalType": "uint8" },
+      { "name": "r", "type": "bytes32", "internalType": "bytes32" },
+      { "name": "s", "type": "bytes32", "internalType": "bytes32" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "quotePayout",
-    "outputs": [{ "type": "uint256", "name": "payout" }],
-    "stateMutability": "view",
-    "type": "function"
+    "inputs": [{ "name": "score", "type": "uint256", "internalType": "uint256" }],
+    "outputs": [{ "name": "payout", "type": "uint256", "internalType": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "claimed",
+    "inputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "pause",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "unpause",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "getPayoutParameters",
+    "inputs": [],
+    "outputs": [
+      { "name": "_floorScore", "type": "uint256", "internalType": "uint256" },
+      { "name": "_capScore", "type": "uint256", "internalType": "uint256" },
+      { "name": "_minPayout", "type": "uint256", "internalType": "uint256" },
+      { "name": "_maxPayout", "type": "uint256", "internalType": "uint256" },
+      { "name": "_curve", "type": "uint8", "internalType": "enum ReputationAirdropScaled.PayoutCurve" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "event",
+    "name": "Claimed",
+    "inputs": [
+      { "name": "user", "type": "address", "indexed": true, "internalType": "address" },
+      { "name": "score", "type": "uint256", "indexed": false, "internalType": "uint256" },
+      { "name": "payout", "type": "uint256", "indexed": false, "internalType": "uint256" },
+      { "name": "circuitId", "type": "string", "indexed": false, "internalType": "string" }
+    ],
+    "anonymous": false
   }
 ]
