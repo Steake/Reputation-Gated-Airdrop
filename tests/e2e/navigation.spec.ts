@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 test.describe("Navigation and Routing", () => {
   test("should navigate to all main pages", async ({ page }) => {
     await page.goto("/");
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState("networkidle");
 
     // Test navigation to Earn Reputation page with more flexible link matching
     const earnLink = page.getByRole("link", { name: /earn/i });
