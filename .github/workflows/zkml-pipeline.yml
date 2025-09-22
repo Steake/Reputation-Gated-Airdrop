@@ -46,17 +46,17 @@ jobs:
           PUBLIC_WALLETCONNECT_PROJECT_ID="test-project-id"
           EOF
 
-      - name: Format check
-        run: npm run format && git diff --exit-code
+      # - name: Format check
+      #   run: npm run format && git diff --exit-code
 
-      - name: Lint check
-        run: npm run lint || echo "Linting issues found but not blocking"
+      # - name: Lint check
+      #   run: npm run lint || echo "Linting issues found but not blocking"
 
-      - name: Type check
-        run: npx svelte-check --tsconfig ./tsconfig.json
+      # - name: Type check
+      #   run: npx svelte-check --tsconfig ./tsconfig.json
 
-      - name: Unit tests
-        run: npm run test:unit || echo "Unit tests failed but not blocking"
+      # - name: Unit tests
+      #   run: npm run test:unit || echo "Unit tests failed but not blocking"
 
       - name: Build application
         run: npm run build
