@@ -53,7 +53,7 @@ export async function getEthersSigner(): Promise<ethers.Signer> {
   }
 
   const connectedWallets = get(wallets);
-  if (connectedWallets.length === 0) {
+  if (!Array.isArray(connectedWallets) || connectedWallets.length === 0) {
     throw new Error("No wallet connected");
   }
 

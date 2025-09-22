@@ -101,7 +101,7 @@
   {/each}
 
   <!-- Gradient orbs with mobile-safe positioning -->
-  {#each Array(3) as _, i}
+  {#each Array(3) as _orb, i}
     <div
       class="absolute animate-pulse-glow"
       style="

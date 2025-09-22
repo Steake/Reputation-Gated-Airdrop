@@ -82,7 +82,7 @@ function mockClaimArtifact(address: string, campaign: string): ClaimArtifact {
   };
 }
 
-function mockProofMeta(address: string): ProofMeta {
+function mockProofMeta(_address: string): ProofMeta {
   return {
     score1e6: 750000,
     calldata: "0x" + "f".repeat(128),

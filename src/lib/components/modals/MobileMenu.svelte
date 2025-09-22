@@ -69,11 +69,12 @@
 {#if open}
   <!-- Overlay -->
   <div class="fixed inset-0 z-40" aria-hidden="true">
-    <div
-      class="absolute inset-0 bg-black/40 dark:bg-black/60"
+    <button
+      type="button"
+      class="absolute inset-0 bg-black/40 dark:bg-black/60 w-full h-full border-0 p-0 cursor-pointer"
       on:click={close}
       transition:fade
-      aria-hidden="true"
+      aria-label="Close menu"
     />
     <!-- Slide-over panel -->
     <div

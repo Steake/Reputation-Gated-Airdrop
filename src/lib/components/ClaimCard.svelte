@@ -9,7 +9,7 @@
   import { shortenAddress, formatTokenAmount } from "$lib/utils";
   import Spinner from "./Spinner.svelte";
   import { CheckCircle, AlertCircle } from "lucide-svelte";
-  import type { ClaimArtifact, PayoutQuote } from "$lib/types";
+  import type { PayoutQuote } from "$lib/types";
   import type { Hex } from "viem";
 
   import reputationAirdropScaled from "$lib/abi/reputationAirdropScaled.abi.json";
@@ -126,10 +126,11 @@
 
       state = "confirmed";
       toasts.success("Claim successful!");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Claim failed:", error);
+      const errorObj = error as { shortMessage?: string; message?: string };
       errorMessage =
-        error.shortMessage || error.message || "An unknown error occurred.";
+        errorObj.shortMessage || errorObj.message || "An unknown error occurred.";
       toasts.error(errorMessage);
       state = "error";
     }

@@ -2,7 +2,6 @@
   import { onMount } from 'svelte';
   import { Chart, registerables } from 'chart.js';
   import { score } from '$lib/stores/score';
-  import { airdrop } from '$lib/stores/airdrop';
 
   Chart.register(...registerables);
 

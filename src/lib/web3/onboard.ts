@@ -4,7 +4,6 @@ import Onboard, { type OnboardAPI, type WalletState } from "@web3-onboard/core";
 import injectedModule from "@web3-onboard/injected-wallets";
 import walletConnectModule from "@web3-onboard/walletconnect";
 import coinbaseModule from "@web3-onboard/coinbase";
-import { PUBLIC_WALLETCONNECT_PROJECT_ID } from "$env/static/public";
 
 export const onboard = writable<OnboardAPI | null>(null);
 export const wallets = writable<WalletState[]>([]);
@@ -25,7 +24,7 @@ export async function initOnboard() {
   });
 
   const walletConnect = walletConnectModule({
-    projectId: PUBLIC_WALLETCONNECT_PROJECT_ID,
+    projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || "test-project-id",
     version: 2,
     dappUrl: "https://shadowgraph.xyz",
     handleUri: (uri) => {

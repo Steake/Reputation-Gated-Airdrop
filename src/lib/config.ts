@@ -40,22 +40,27 @@ export type Config = z.infer<typeof configSchema>;
 
 export function parseConfig(): Config | { error: z.ZodError } {
   try {
+    // Check if we're in browser or server environment
+    const env = typeof window !== "undefined" ? import.meta.env : process.env;
+
     const config = configSchema.parse({
-      CHAIN_ID: import.meta.env.VITE_CHAIN_ID,
-      RPC_URL: import.meta.env.VITE_RPC_URL,
-      AIRDROP_ECDSA_ADDR: import.meta.env.VITE_AIRDROP_ECDSA_ADDR,
-      AIRDROP_ZK_ADDR: import.meta.env.VITE_AIRDROP_ZK_ADDR,
-      VERIFIER_ADDR: import.meta.env.VITE_VERIFIER_ADDR,
-      TOKEN_ADDR: import.meta.env.VITE_TOKEN_ADDR,
-      CAMPAIGN: import.meta.env.VITE_CAMPAIGN,
-      FLOOR_SCORE: import.meta.env.VITE_FLOOR_SCORE,
-      CAP_SCORE: import.meta.env.VITE_CAP_SCORE,
-      MIN_PAYOUT: import.meta.env.VITE_MIN_PAYOUT,
-      MAX_PAYOUT: import.meta.env.VITE_MAX_PAYOUT,
-      CURVE: import.meta.env.VITE_CURVE,
-      API_BASE: import.meta.env.VITE_API_BASE,
-      DEBUG: import.meta.env.VITE_DEBUG,
-      WALLETCONNECT_PROJECT_ID: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID,
+      CHAIN_ID: env.VITE_CHAIN_ID || env.PUBLIC_CHAIN_ID,
+      RPC_URL: env.VITE_RPC_URL || env.PUBLIC_RPC_URL,
+      AIRDROP_ECDSA_ADDR: env.VITE_AIRDROP_ECDSA_ADDR,
+      AIRDROP_ZK_ADDR: env.VITE_AIRDROP_ZK_ADDR,
+      VERIFIER_ADDR: env.VITE_VERIFIER_ADDR,
+      TOKEN_ADDR: env.VITE_TOKEN_ADDR || env.PUBLIC_TOKEN_ADDR,
+      CAMPAIGN: env.VITE_CAMPAIGN || env.PUBLIC_CAMPAIGN,
+      FLOOR_SCORE: env.VITE_FLOOR_SCORE,
+      CAP_SCORE: env.VITE_CAP_SCORE,
+      MIN_PAYOUT: env.VITE_MIN_PAYOUT,
+      MAX_PAYOUT: env.VITE_MAX_PAYOUT,
+      CURVE: env.VITE_CURVE,
+      API_BASE: env.VITE_API_BASE,
+      DEBUG: env.VITE_DEBUG,
+      WALLETCONNECT_PROJECT_ID:
+        env.VITE_WALLETCONNECT_PROJECT_ID ||
+        env.PUBLIC_WALLETCONNECT_PROJECT_ID,
     });
     return config;
   } catch (error) {
