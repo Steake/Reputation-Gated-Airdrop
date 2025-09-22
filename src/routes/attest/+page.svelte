@@ -37,13 +37,10 @@
 
 <div class="max-w-3xl mx-auto">
   <div class="text-center mb-12">
-    <h1 class="text-4xl font-bold tracking-tight text-gray-900">
-      Earn Reputation
-    </h1>
+    <h1 class="text-4xl font-bold tracking-tight text-gray-900">Earn Reputation</h1>
     <p class="mt-4 text-lg text-gray-600">
-      Your reputation score is a composite of various on-chain and off-chain
-      activities. Increase your score by collecting attestations that prove your
-      contributions and identity.
+      Your reputation score is a composite of various on-chain and off-chain activities. Increase
+      your score by collecting attestations that prove your contributions and identity.
     </p>
   </div>
 

@@ -22,19 +22,13 @@ test.describe("Mobile Responsive Design", () => {
 
       test("should not have horizontal scroll issues", async ({ page }) => {
         // Check for horizontal overflow
-        const bodyScrollWidth = await page.evaluate(
-          () => document.body.scrollWidth,
-        );
-        const bodyClientWidth = await page.evaluate(
-          () => document.body.clientWidth,
-        );
+        const bodyScrollWidth = await page.evaluate(() => document.body.scrollWidth);
+        const bodyClientWidth = await page.evaluate(() => document.body.clientWidth);
 
         expect(bodyScrollWidth).toBeLessThanOrEqual(bodyClientWidth + 1); // Allow 1px tolerance
       });
 
-      test("wallet connect button should fit within viewport", async ({
-        page,
-      }) => {
+      test("wallet connect button should fit within viewport", async ({ page }) => {
         // Find wallet connect button
         const walletButton = page.getByRole("button", { name: /connect/i });
         await expect(walletButton).toBeVisible();
@@ -43,12 +37,8 @@ test.describe("Mobile Responsive Design", () => {
         const buttonBox = await walletButton.boundingBox();
         expect(buttonBox).toBeTruthy();
         if (buttonBox) {
-          expect(buttonBox.x + buttonBox.width).toBeLessThanOrEqual(
-            viewport.width,
-          );
-          expect(buttonBox.y + buttonBox.height).toBeLessThanOrEqual(
-            viewport.height,
-          );
+          expect(buttonBox.x + buttonBox.width).toBeLessThanOrEqual(viewport.width);
+          expect(buttonBox.y + buttonBox.height).toBeLessThanOrEqual(viewport.height);
         }
       });
 
@@ -81,9 +71,7 @@ test.describe("Mobile Responsive Design", () => {
         }
       });
 
-      test("page content should be readable and properly sized", async ({
-        page,
-      }) => {
+      test("page content should be readable and properly sized", async ({ page }) => {
         // Check main heading is visible and properly sized
         const heading = page.getByRole("heading", { level: 1 });
         await expect(heading).toBeVisible();
@@ -117,9 +105,7 @@ test.describe("Mobile Responsive Design", () => {
       await page.setViewportSize({ width: 375, height: 667 }); // iPhone SE
     });
 
-    test("should navigate between pages without layout issues", async ({
-      page,
-    }) => {
+    test("should navigate between pages without layout issues", async ({ page }) => {
       await page.goto("/");
 
       // Navigate to claim page
@@ -132,16 +118,10 @@ test.describe("Mobile Responsive Design", () => {
       await claimLink.click();
 
       // Check claim page loads without horizontal scroll
-      await expect(
-        page.getByRole("heading", { name: /claim your airdrop/i }),
-      ).toBeVisible();
+      await expect(page.getByRole("heading", { name: /claim your airdrop/i })).toBeVisible();
 
-      const bodyScrollWidth = await page.evaluate(
-        () => document.body.scrollWidth,
-      );
-      const bodyClientWidth = await page.evaluate(
-        () => document.body.clientWidth,
-      );
+      const bodyScrollWidth = await page.evaluate(() => document.body.scrollWidth);
+      const bodyClientWidth = await page.evaluate(() => document.body.clientWidth);
       expect(bodyScrollWidth).toBeLessThanOrEqual(bodyClientWidth + 1);
 
       // Navigate to earn reputation page
@@ -154,16 +134,10 @@ test.describe("Mobile Responsive Design", () => {
       await earnLink.click();
 
       // Check earn page loads properly
-      await expect(
-        page.getByRole("heading", { name: /earn reputation/i }),
-      ).toBeVisible();
+      await expect(page.getByRole("heading", { name: /earn reputation/i })).toBeVisible();
 
-      const bodyScrollWidth2 = await page.evaluate(
-        () => document.body.scrollWidth,
-      );
-      const bodyClientWidth2 = await page.evaluate(
-        () => document.body.clientWidth,
-      );
+      const bodyScrollWidth2 = await page.evaluate(() => document.body.scrollWidth);
+      const bodyClientWidth2 = await page.evaluate(() => document.body.clientWidth);
       expect(bodyScrollWidth2).toBeLessThanOrEqual(bodyClientWidth2 + 1);
     });
 
@@ -189,9 +163,7 @@ test.describe("Mobile Responsive Design", () => {
 
       // Tab through focusable elements
       await page.keyboard.press("Tab");
-      await expect(
-        page.getByRole("link", { name: /shadowgraph/i }),
-      ).toBeFocused();
+      await expect(page.getByRole("link", { name: /shadowgraph/i })).toBeFocused();
 
       await page.keyboard.press("Tab");
       const mobileMenuButton = page.getByRole("button", {
@@ -245,24 +217,18 @@ test.describe("Mobile Responsive Design", () => {
       expect(loadTime).toBeLessThan(5000); // Should load in under 5 seconds
     });
 
-    test("should handle theme toggle without layout shift", async ({
-      page,
-    }) => {
+    test("should handle theme toggle without layout shift", async ({ page }) => {
       await page.goto("/");
 
       // Get initial layout
-      const initialScrollHeight = await page.evaluate(
-        () => document.body.scrollHeight,
-      );
+      const initialScrollHeight = await page.evaluate(() => document.body.scrollHeight);
 
       // Toggle theme
       const themeButton = page.getByRole("button", { name: /toggle.*theme/i });
       await themeButton.click();
 
       // Check layout stability
-      const newScrollHeight = await page.evaluate(
-        () => document.body.scrollHeight,
-      );
+      const newScrollHeight = await page.evaluate(() => document.body.scrollHeight);
       const layoutShift = Math.abs(newScrollHeight - initialScrollHeight);
       expect(layoutShift).toBeLessThan(10); // Allow small tolerance
     });

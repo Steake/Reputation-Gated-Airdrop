@@ -49,9 +49,7 @@
     quoteLoading = true;
     const { config } = $page.data;
     const contractAddress = config.AIRDROP_ZK_ADDR || config.AIRDROP_ECDSA_ADDR;
-    const abi = config.AIRDROP_ZK_ADDR
-      ? reputationAirdropZKScaled
-      : reputationAirdropScaled;
+    const abi = config.AIRDROP_ZK_ADDR ? reputationAirdropZKScaled : reputationAirdropScaled;
 
     if (!contractAddress || !$airdrop.decimals) {
       quoteLoading = false;
@@ -59,12 +57,9 @@
     }
 
     try {
-      const payout = await readContract<bigint>(
-        contractAddress as Hex,
-        abi,
-        "quotePayout",
-        [BigInt($score.value)],
-      );
+      const payout = await readContract<bigint>(contractAddress as Hex, abi, "quotePayout", [
+        BigInt($score.value),
+      ]);
       quote = {
         payout,
         min: $airdrop.minPayout!,
@@ -92,7 +87,10 @@
 <!-- Homepage with production-grade dark theme -->
 <svelte:head>
   <title>Shadowgraph - Reputation-Based Airdrop</title>
-  <meta name="description" content="Claim your reputation-based airdrop from Shadowgraph. Connect your wallet to check your score." />
+  <meta
+    name="description"
+    content="Claim your reputation-based airdrop from Shadowgraph. Connect your wallet to check your score."
+  />
 </svelte:head>
 
 <!-- Background Effects -->
@@ -101,28 +99,27 @@
 
 <div class="relative z-10">
   <div class="max-w-4xl mx-auto text-center">
-    <div class="mb-8 inline-flex items-center px-4 py-2 rounded-full 
-                bg-[var(--accent-brand)]/10 border border-[var(--accent-brand)]/20 
-                text-[var(--accent-brand)]">
+    <div
+      class="mb-8 inline-flex items-center px-4 py-2 rounded-full
+                bg-[var(--accent-brand)]/10 border border-[var(--accent-brand)]/20
+                text-[var(--accent-brand)]"
+    >
       <Zap class="h-4 w-4 mr-2" />
       <span class="text-sm font-medium">Powered by Zero-Knowledge Proofs</span>
     </div>
-    
-    <h1 class="page-title sm:text-6xl bg-gradient-to-r from-[var(--accent-brand)] to-[var(--accent-info)] bg-clip-text text-transparent">
+
+    <h1
+      class="page-title sm:text-6xl bg-gradient-to-r from-[var(--accent-brand)] to-[var(--accent-info)] bg-clip-text text-transparent"
+    >
       Claim Your Reputation-Based Airdrop
     </h1>
     <p class="mt-6 text-lg leading-8 text-[var(--fg-secondary)]">
-      Your contributions have been recognized. Connect your wallet to check your
-      score and claim your share of the Shadowgraph airdrop.
+      Your contributions have been recognized. Connect your wallet to check your score and claim
+      your share of the Shadowgraph airdrop.
     </p>
     <div class="mt-10 flex items-center justify-center gap-x-6">
       {#if !$wallet.connected}
-        <AnimatedButton
-          variant="glow"
-          size="lg"
-          color="primary"
-          on:click={connectWallet}
-        >
+        <AnimatedButton variant="glow" size="lg" color="primary" on:click={connectWallet}>
           Connect Wallet
         </AnimatedButton>
       {:else}
@@ -130,7 +127,7 @@
           variant="shimmer"
           size="lg"
           color="primary"
-          on:click={() => window.location.href = '/claim'}
+          on:click={() => (window.location.href = "/claim")}
         >
           Proceed to Claim
           <ArrowRight class="ml-2 h-5 w-5" />
@@ -142,8 +139,10 @@
   <!-- Quick Stats with semantic tokens -->
   <div class="mt-16 max-w-4xl mx-auto">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-      <div class="card bg-gradient-to-r from-[var(--accent-info)]/10 to-[var(--accent-brand)]/10 
-                  border border-[var(--accent-info)]/20">
+      <div
+        class="card bg-gradient-to-r from-[var(--accent-info)]/10 to-[var(--accent-brand)]/10
+                  border border-[var(--accent-info)]/20"
+      >
         <div class="flex items-center">
           <Users class="h-8 w-8 text-[var(--accent-info)] mr-3" />
           <div>
@@ -152,8 +151,10 @@
           </div>
         </div>
       </div>
-      <div class="card bg-gradient-to-r from-[var(--accent-success)]/10 to-[var(--accent-info)]/10 
-                  border border-[var(--accent-success)]/20">
+      <div
+        class="card bg-gradient-to-r from-[var(--accent-success)]/10 to-[var(--accent-info)]/10
+                  border border-[var(--accent-success)]/20"
+      >
         <div class="flex items-center">
           <TrendingUp class="h-8 w-8 text-[var(--accent-success)] mr-3" />
           <div>
@@ -162,8 +163,10 @@
           </div>
         </div>
       </div>
-      <div class="card bg-gradient-to-r from-[var(--accent-brand)]/10 to-[var(--accent-warn)]/10 
-                  border border-[var(--accent-brand)]/20">
+      <div
+        class="card bg-gradient-to-r from-[var(--accent-brand)]/10 to-[var(--accent-warn)]/10
+                  border border-[var(--accent-brand)]/20"
+      >
         <div class="flex items-center">
           <Zap class="h-8 w-8 text-[var(--accent-brand)] mr-3" />
           <div>
@@ -173,12 +176,12 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Explore link -->
     <div class="text-center">
       <a
         href="/explore"
-        class="btn-primary inline-flex items-center px-6 py-3 rounded-lg font-medium 
+        class="btn-primary inline-flex items-center px-6 py-3 rounded-lg font-medium
                hover:scale-105 transform transition-all duration-200"
       >
         Explore Data & Visualizations
@@ -192,8 +195,10 @@
   <div
     class="mt-16 max-w-4xl mx-auto bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
   >
-    <h2 class="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">Your Airdrop Status</h2>
-    
+    <h2 class="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">
+      Your Airdrop Status
+    </h2>
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
       <div class="flex flex-col items-center space-y-4">
         <ScoreRing
@@ -203,17 +208,12 @@
         />
         <div class="text-center">
           <p class="font-mono text-xl text-gray-900 dark:text-white">{($score.value || 0) / 1e6}</p>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            Reputation Score
-          </p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Reputation Score</p>
         </div>
       </div>
       <div class="md:col-span-2 space-y-6">
         <div class="grid grid-cols-2 gap-4">
-          <Stat
-            label="Connected Wallet"
-            value={shortenAddress($wallet.address)}
-          />
+          <Stat label="Connected Wallet" value={shortenAddress($wallet.address)} />
           <Stat label="Campaign Curve" value={$airdrop.curve || "N/A"} />
           <Stat label="Claimable Payout" isLoading={quoteLoading}>
             {#if quote && $airdrop.decimals}
@@ -242,7 +242,7 @@
             variant="gradient"
             color="secondary"
             size="sm"
-            on:click={() => window.location.href = '/attest'}
+            on:click={() => (window.location.href = "/attest")}
             class="flex-1"
           >
             View Attestations
@@ -251,7 +251,7 @@
             variant="glow"
             color="primary"
             size="sm"
-            on:click={() => window.location.href = '/claim'}
+            on:click={() => (window.location.href = "/claim")}
             class="flex-1"
           >
             Claim Airdrop

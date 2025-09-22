@@ -10,7 +10,7 @@ export function load() {
       .join("\n");
     throw error(
       500,
-      `Application configuration is invalid. Please check your .env file.\n\nDetails:\n${errorMessages}`,
+      `Application configuration is invalid. Please check your .env file.\n\nDetails:\n${errorMessages}`
     );
   }
 

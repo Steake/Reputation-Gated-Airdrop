@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount } from "svelte";
 
   export let count = 20;
-  export let color = '#8b5cf6';
-  export let size = 'mixed'; // 'small', 'medium', 'large', 'mixed'
+  export let color = "#8b5cf6";
+  export let size = "mixed"; // 'small', 'medium', 'large', 'mixed'
 
   let container: HTMLDivElement;
   let elements: Array<{
@@ -18,7 +18,7 @@
 
   onMount(() => {
     generateElements();
-    
+
     return () => {
       // Cleanup if needed
     };
@@ -32,21 +32,25 @@
       size: getSizeValue(),
       speed: Math.random() * 20 + 10, // 10-30s animation duration
       opacity: Math.random() * 0.6 + 0.2, // 0.2-0.8 opacity
-      delay: Math.random() * 10 // 0-10s delay
+      delay: Math.random() * 10, // 0-10s delay
     }));
   }
 
   function getSizeValue() {
     switch (size) {
-      case 'small': return Math.random() * 20 + 10; // 10-30px
-      case 'medium': return Math.random() * 40 + 30; // 30-70px
-      case 'large': return Math.random() * 60 + 50; // 50-110px
-      case 'mixed':
-      default: return Math.random() * 80 + 10; // 10-90px
+      case "small":
+        return Math.random() * 20 + 10; // 10-30px
+      case "medium":
+        return Math.random() * 40 + 30; // 30-70px
+      case "large":
+        return Math.random() * 60 + 50; // 50-110px
+      case "mixed":
+      default:
+        return Math.random() * 80 + 10; // 10-90px
     }
   }
 
-  function getElementStyle(element: typeof elements[0]) {
+  function getElementStyle(element: (typeof elements)[0]) {
     return `
       left: ${element.x}%;
       top: ${element.y}%;
@@ -62,19 +66,16 @@
 <div bind:this={container} class="fixed inset-0 pointer-events-none overflow-hidden z-0">
   {#each elements as element (element.id)}
     <!-- Floating geometric shapes with proper containment -->
-    <div
-      class="absolute animate-float"
-      style={getElementStyle(element)}
-    >
+    <div class="absolute animate-float" style={getElementStyle(element)}>
       {#if element.id % 4 === 0}
         <!-- Circle -->
-        <div 
+        <div
           class="w-full h-full rounded-full opacity-30"
           style="background: linear-gradient(135deg, {color}66, {color}33);"
         ></div>
       {:else if element.id % 4 === 1}
         <!-- Triangle -->
-        <div 
+        <div
           class="w-full h-full opacity-30"
           style="
             background: linear-gradient(135deg, {color}66, {color}33);
@@ -83,13 +84,13 @@
         ></div>
       {:else if element.id % 4 === 2}
         <!-- Square -->
-        <div 
+        <div
           class="w-full h-full opacity-30 transform rotate-45"
           style="background: linear-gradient(135deg, {color}66, {color}33);"
         ></div>
       {:else}
         <!-- Hexagon -->
-        <div 
+        <div
           class="w-full h-full opacity-30"
           style="
             background: linear-gradient(135deg, {color}66, {color}33);
@@ -114,7 +115,7 @@
         max-height: min(200px, 50vh);
       "
     >
-      <div 
+      <div
         class="w-full h-full rounded-full blur-xl opacity-20"
         style="background: radial-gradient(circle, {color}88 0%, transparent 70%);"
       ></div>
@@ -124,7 +125,8 @@
 
 <style>
   @keyframes float {
-    0%, 100% {
+    0%,
+    100% {
       transform: translateY(0px) rotate(0deg);
     }
     25% {
@@ -139,7 +141,8 @@
   }
 
   @keyframes pulse-glow {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 0.1;
       transform: scale(1);
     }

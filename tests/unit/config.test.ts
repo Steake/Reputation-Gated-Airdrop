@@ -16,8 +16,7 @@ describe("config parser", () => {
     VITE_RPC_URL: "http://localhost:8545",
     VITE_AIRDROP_ECDSA_ADDR: "0x0000000000000000000000000000000000000001",
     VITE_TOKEN_ADDR: "0x0000000000000000000000000000000000000002",
-    VITE_CAMPAIGN:
-      "0x0000000000000000000000000000000000000000000000000000000000000003",
+    VITE_CAMPAIGN: "0x0000000000000000000000000000000000000000000000000000000000000003",
     VITE_FLOOR_SCORE: "100000",
     VITE_CAP_SCORE: "1000000",
     VITE_MIN_PAYOUT: "100",
@@ -37,10 +36,7 @@ describe("config parser", () => {
     vi.stubEnv("VITE_MIN_PAYOUT", validEnv.VITE_MIN_PAYOUT);
     vi.stubEnv("VITE_MAX_PAYOUT", validEnv.VITE_MAX_PAYOUT);
     vi.stubEnv("VITE_CURVE", validEnv.VITE_CURVE);
-    vi.stubEnv(
-      "VITE_WALLETCONNECT_PROJECT_ID",
-      validEnv.VITE_WALLETCONNECT_PROJECT_ID,
-    );
+    vi.stubEnv("VITE_WALLETCONNECT_PROJECT_ID", validEnv.VITE_WALLETCONNECT_PROJECT_ID);
 
     const { parseConfig } = await import("$lib/config");
     const config = parseConfig();
@@ -75,10 +71,7 @@ describe("config parser", () => {
     vi.stubEnv("VITE_MIN_PAYOUT", validEnv.VITE_MIN_PAYOUT);
     vi.stubEnv("VITE_MAX_PAYOUT", validEnv.VITE_MAX_PAYOUT);
     vi.stubEnv("VITE_CURVE", validEnv.VITE_CURVE);
-    vi.stubEnv(
-      "VITE_WALLETCONNECT_PROJECT_ID",
-      validEnv.VITE_WALLETCONNECT_PROJECT_ID,
-    );
+    vi.stubEnv("VITE_WALLETCONNECT_PROJECT_ID", validEnv.VITE_WALLETCONNECT_PROJECT_ID);
 
     const { parseConfig } = await import("$lib/config");
     const config = parseConfig();

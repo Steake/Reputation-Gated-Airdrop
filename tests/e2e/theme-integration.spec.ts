@@ -101,9 +101,7 @@ test.describe("Theme Integration", () => {
     expect(Math.abs(newWidth - initialWidth)).toBeLessThan(5);
   });
 
-  test("should work with wallet connection modal in both themes", async ({
-    page,
-  }) => {
+  test("should work with wallet connection modal in both themes", async ({ page }) => {
     await page.goto("/");
 
     // Test in light theme

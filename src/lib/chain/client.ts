@@ -96,7 +96,7 @@ export async function readContract<T = unknown>(
   address: Hex,
   abi: Abi,
   functionName: string,
-  args?: unknown[],
+  args?: unknown[]
 ): Promise<T> {
   return publicClient.readContract({
     address,
@@ -117,14 +117,13 @@ export async function writeContract(
   abi: Abi,
   functionName: string,
   args: unknown[],
-  account?: `0x${string}`,
+  account?: `0x${string}`
 ): Promise<string> {
   const wc = await getWalletClient();
   if (!wc) throw new Error("Wallet not connected");
 
   // Determine account for simulation: prefer provided account, fallback to onboard wallet
-  const acct =
-    account ?? (get(wallets)[0]?.accounts?.[0]?.address as `0x${string}`);
+  const acct = account ?? (get(wallets)[0]?.accounts?.[0]?.address as `0x${string}`);
   if (!acct) throw new Error("No account provided for transaction simulation");
 
   const { request } = await publicClient.simulateContract({

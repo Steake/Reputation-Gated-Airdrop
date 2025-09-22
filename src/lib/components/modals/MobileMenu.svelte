@@ -91,16 +91,12 @@
         class="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700"
       >
         <div class="flex items-center space-x-3">
-          <div
-            class="h-8 w-8 rounded-md center-vertical bg-[var(--brand)] text-white font-bold"
-          >
+          <div class="h-8 w-8 rounded-md center-vertical bg-[var(--brand)] text-white font-bold">
             SG
           </div>
           <div>
             <div class="font-semibold text-[var(--text)]">Shadowgraph</div>
-            <div class="text-xs text-[var(--muted-text)]">
-              Reputation Airdrop
-            </div>
+            <div class="text-xs text-[var(--muted-text)]">Reputation Airdrop</div>
           </div>
         </div>
 

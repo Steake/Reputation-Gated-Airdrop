@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import * as THREE from 'three';
+  import { onMount } from "svelte";
+  import * as THREE from "three";
 
   export let intensity = 1.0;
   export let speed = 1.0;
@@ -54,14 +54,14 @@
       sizes[i] = Math.random() * 3 + 1;
     }
 
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+    geometry.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
 
     // Shader material for custom particle rendering
     const material = new THREE.ShaderMaterial({
       uniforms: {
-        time: { value: 0 }
+        time: { value: 0 },
       },
       vertexShader: `
         attribute float size;
@@ -88,7 +88,7 @@
       `,
       transparent: true,
       vertexColors: true,
-      blending: THREE.AdditiveBlending
+      blending: THREE.AdditiveBlending,
     });
 
     particles = new THREE.Points(geometry, material);
@@ -97,7 +97,7 @@
     camera.position.z = 30;
 
     // Handle window resize
-    window.addEventListener('resize', onWindowResize);
+    window.addEventListener("resize", onWindowResize);
   }
 
   function onWindowResize() {
@@ -110,7 +110,7 @@
     animationId = requestAnimationFrame(animate);
 
     const time = Date.now() * 0.001 * speed;
-    
+
     // Update shader uniforms
     if (particles.material instanceof THREE.ShaderMaterial) {
       particles.material.uniforms.time.value = time;
@@ -132,8 +132,5 @@
   }
 </script>
 
-<canvas
-  bind:this={canvas}
-  class="fixed inset-0 pointer-events-none z-0"
-  style="opacity: 0.6;"
+<canvas bind:this={canvas} class="fixed inset-0 pointer-events-none z-0" style="opacity: 0.6;"
 ></canvas>

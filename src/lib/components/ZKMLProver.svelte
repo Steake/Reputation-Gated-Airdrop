@@ -8,7 +8,7 @@
   import { toasts } from "$lib/stores/ui";
 
   export let contractAddress: string;
-  
+
   let reputationScore: number | null = null;
   let lastVerified: Date | null = null;
 
@@ -19,20 +19,21 @@
     }
 
     zkProofActions.setGenerating();
-    
+
     try {
       // This would typically call your backend service to generate the ZK proof
       // For now, we'll simulate the process
-      await new Promise(resolve => setTimeout(resolve, 3000)); // Simulate proof generation time
-      
+      await new Promise((resolve) => setTimeout(resolve, 3000)); // Simulate proof generation time
+
       // Mock proof data - in production, this would come from your EZKL backend
       const mockProof = Array.from({ length: 8 }, () => Math.floor(Math.random() * 1000000));
       const mockPublicInputs = [750000]; // Mock reputation score of 0.75
-      const mockHash = "0x" + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
-      
+      const mockHash =
+        "0x" +
+        Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
+
       zkProofActions.setGenerated(mockProof, mockPublicInputs, mockHash);
       toasts.success("ZK proof generated successfully!");
-      
     } catch (error: any) {
       zkProofActions.setError(error.message || "Failed to generate proof");
       toasts.error("Proof generation failed");
@@ -56,14 +57,13 @@
       );
 
       // Wait for transaction confirmation
-      await new Promise(resolve => setTimeout(resolve, 5000)); // Mock transaction time
-      
+      await new Promise((resolve) => setTimeout(resolve, 5000)); // Mock transaction time
+
       zkProofActions.setVerified();
       toasts.success("Reputation verified on-chain!");
-      
+
       // Refresh reputation data
       await fetchVerifiedReputation();
-      
     } catch (error: any) {
       zkProofActions.setError(error.message || "Failed to verify proof on-chain");
       toasts.error("On-chain verification failed");
@@ -72,7 +72,7 @@
 
   async function fetchVerifiedReputation() {
     if (!$wallet.address) return;
-    
+
     try {
       const [reputation, timestamp] = await readContractEthers<[bigint, bigint]>(
         contractAddress,
@@ -80,10 +80,9 @@
         "getVerifiedReputation",
         [$wallet.address]
       );
-      
+
       reputationScore = Number(reputation) / 1e6; // Convert from 1e6 scale
       lastVerified = timestamp > 0 ? new Date(Number(timestamp) * 1000) : null;
-      
     } catch (error) {
       console.error("Failed to fetch verified reputation:", error);
     }
@@ -95,7 +94,9 @@
   }
 </script>
 
-<div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+<div
+  class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
+>
   <div class="flex items-center justify-between mb-4">
     <h3 class="text-xl font-bold flex items-center gap-2">
       <Zap class="h-5 w-5 text-purple-500" />
@@ -166,7 +167,9 @@
 
       <!-- Success State -->
       {#if $zkProofStore.verified}
-        <div class="p-4 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg">
+        <div
+          class="p-4 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg"
+        >
           <div class="flex items-center gap-2 text-green-800 dark:text-green-200">
             <CheckCircle class="h-5 w-5" />
             <span class="font-semibold">Reputation Verified On-Chain!</span>
@@ -179,7 +182,9 @@
 
       <!-- Error State -->
       {#if $zkProofStore.error}
-        <div class="p-4 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg">
+        <div
+          class="p-4 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg"
+        >
           <div class="flex items-center gap-2 text-red-800 dark:text-red-200">
             <AlertCircle class="h-5 w-5" />
             <span class="font-semibold">Error</span>

@@ -29,7 +29,9 @@
 {#if $wallet.connected}
   <div class="flex items-center space-x-2 sm:space-x-3">
     <!-- Compact wallet preview -->
-    <div class="flex items-center space-x-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-1.5 sm:p-2 max-w-[120px] sm:max-w-none">
+    <div
+      class="flex items-center space-x-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-1.5 sm:p-2 max-w-[120px] sm:max-w-none"
+    >
       <div
         class="h-6 w-6 sm:h-8 sm:w-8 rounded-lg flex items-center justify-center bg-gradient-to-br from-purple-600 to-blue-600 text-white font-bold text-xs flex-shrink-0"
         aria-hidden="true"
@@ -74,18 +76,9 @@
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
       >
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="3"
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"
         ></circle>
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
         ></path>
       </svg>
       <span class="text-xs sm:text-sm">Connecting...</span>

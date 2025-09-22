@@ -14,26 +14,16 @@ test.describe("ZKML Unchain Prover Frontend", () => {
     await page.goto("http://localhost:5173");
 
     // Ensure the application loads correctly
-    await expect(page.locator("h1")).toContainText(
-      "Claim Your Reputation-Based Airdrop",
-    );
+    await expect(page.locator("h1")).toContainText("Claim Your Reputation-Based Airdrop");
   });
 
-  test("should display the homepage with wallet connection", async ({
-    page,
-  }) => {
+  test("should display the homepage with wallet connection", async ({ page }) => {
     // Verify homepage elements
-    await expect(page.locator("h1")).toContainText(
-      "Claim Your Reputation-Based Airdrop",
-    );
-    await expect(
-      page.locator("text=Your contributions have been recognized"),
-    ).toBeVisible();
+    await expect(page.locator("h1")).toContainText("Claim Your Reputation-Based Airdrop");
+    await expect(page.locator("text=Your contributions have been recognized")).toBeVisible();
 
     // Verify wallet connection button is present
-    await expect(
-      page.locator('button:has-text("Connect Wallet")'),
-    ).toBeVisible();
+    await expect(page.locator('button:has-text("Connect Wallet")')).toBeVisible();
 
     // Verify navigation menu
     await expect(page.locator('a:has-text("Earn Reputation")')).toBeVisible();
@@ -47,9 +37,7 @@ test.describe("ZKML Unchain Prover Frontend", () => {
     });
   });
 
-  test("should navigate to claim page and show wallet requirement", async ({
-    page,
-  }) => {
+  test("should navigate to claim page and show wallet requirement", async ({ page }) => {
     // Navigate to claim page
     await page.click('a:has-text("Claim")');
 
@@ -58,9 +46,7 @@ test.describe("ZKML Unchain Prover Frontend", () => {
     await expect(page.locator("text=Follow the steps below")).toBeVisible();
 
     // Verify wallet connection requirement message
-    await expect(
-      page.locator("text=Please connect your wallet to continue"),
-    ).toBeVisible();
+    await expect(page.locator("text=Please connect your wallet to continue")).toBeVisible();
 
     // Take screenshot
     await page.screenshot({
@@ -75,24 +61,14 @@ test.describe("ZKML Unchain Prover Frontend", () => {
 
     // Verify page content
     await expect(page.locator("h1")).toContainText("Earn Reputation");
-    await expect(
-      page.locator("text=Your reputation score is a composite"),
-    ).toBeVisible();
+    await expect(page.locator("text=Your reputation score is a composite")).toBeVisible();
 
     // Verify all reputation earning methods are displayed
-    await expect(
-      page.locator('h2:has-text("Verify Personhood")'),
-    ).toBeVisible();
-    await expect(
-      page.locator('h2:has-text("Link Developer Accounts")'),
-    ).toBeVisible();
+    await expect(page.locator('h2:has-text("Verify Personhood")')).toBeVisible();
+    await expect(page.locator('h2:has-text("Link Developer Accounts")')).toBeVisible();
     await expect(page.locator('h2:has-text("Get Vouched For")')).toBeVisible();
-    await expect(
-      page.locator('h2:has-text("Participate in Governance")'),
-    ).toBeVisible();
-    await expect(
-      page.locator('h2:has-text("Collect On-chain Credentials")'),
-    ).toBeVisible();
+    await expect(page.locator('h2:has-text("Participate in Governance")')).toBeVisible();
+    await expect(page.locator('h2:has-text("Collect On-chain Credentials")')).toBeVisible();
 
     // Take screenshot
     await page.screenshot({
@@ -101,9 +77,7 @@ test.describe("ZKML Unchain Prover Frontend", () => {
     });
   });
 
-  test("should show debug information and ZKML prover component", async ({
-    page,
-  }) => {
+  test("should show debug information and ZKML prover component", async ({ page }) => {
     // Navigate to debug page
     await page.click('a:has-text("Debug")');
 
@@ -111,20 +85,14 @@ test.describe("ZKML Unchain Prover Frontend", () => {
     await expect(page.locator("h1")).toContainText("Debug Information");
 
     // Verify configuration sections
-    await expect(
-      page.locator('h2:has-text("Application Config")'),
-    ).toBeVisible();
+    await expect(page.locator('h2:has-text("Application Config")')).toBeVisible();
     await expect(page.locator('h2:has-text("Wallet Store")')).toBeVisible();
     await expect(page.locator('h2:has-text("Score Store")')).toBeVisible();
     await expect(page.locator('h2:has-text("Airdrop Store")')).toBeVisible();
 
     // Verify ZKML Prover component
-    await expect(
-      page.locator('h3:has-text("ZKML Reputation Verifier")'),
-    ).toBeVisible();
-    await expect(
-      page.locator("text=No verified reputation on-chain"),
-    ).toBeVisible();
+    await expect(page.locator('h3:has-text("ZKML Reputation Verifier")')).toBeVisible();
+    await expect(page.locator("text=No verified reputation on-chain")).toBeVisible();
 
     // Take screenshot
     await page.screenshot({
@@ -201,17 +169,11 @@ test.describe("ZKML Unchain Prover Frontend", () => {
     await page.goto("http://localhost:5173/debug");
 
     // Verify ZKML component is present
-    await expect(
-      page.locator('h3:has-text("ZKML Reputation Verifier")'),
-    ).toBeVisible();
+    await expect(page.locator('h3:has-text("ZKML Reputation Verifier")')).toBeVisible();
 
     // Verify initial state
-    await expect(
-      page.locator("text=No verified reputation on-chain"),
-    ).toBeVisible();
-    await expect(
-      page.locator('button:has-text("Generate ZK Proof")'),
-    ).toBeVisible();
+    await expect(page.locator("text=No verified reputation on-chain")).toBeVisible();
+    await expect(page.locator('button:has-text("Generate ZK Proof")')).toBeVisible();
 
     // Take screenshot of initial state
     await page.screenshot({
@@ -225,9 +187,7 @@ test.describe("ZKML Unchain Prover Frontend", () => {
 
   test("should validate complete navigation flow", async ({ page }) => {
     // Start at homepage
-    await expect(page.locator("h1")).toContainText(
-      "Claim Your Reputation-Based Airdrop",
-    );
+    await expect(page.locator("h1")).toContainText("Claim Your Reputation-Based Airdrop");
     await page.screenshot({
       path: "test-results/flow-1-homepage.png",
       fullPage: true,
@@ -252,9 +212,7 @@ test.describe("ZKML Unchain Prover Frontend", () => {
     // Navigate to debug page
     await page.click('a:has-text("Debug")');
     await expect(page.locator("h1")).toContainText("Debug Information");
-    await expect(
-      page.locator('h3:has-text("ZKML Reputation Verifier")'),
-    ).toBeVisible();
+    await expect(page.locator('h3:has-text("ZKML Reputation Verifier")')).toBeVisible();
     await page.screenshot({
       path: "test-results/flow-4-debug-zkml.png",
       fullPage: true,
@@ -262,9 +220,7 @@ test.describe("ZKML Unchain Prover Frontend", () => {
 
     // Return to homepage
     await page.click('a[href="/"]');
-    await expect(page.locator("h1")).toContainText(
-      "Claim Your Reputation-Based Airdrop",
-    );
+    await expect(page.locator("h1")).toContainText("Claim Your Reputation-Based Airdrop");
     await page.screenshot({
       path: "test-results/flow-5-back-to-homepage.png",
       fullPage: true,
@@ -276,9 +232,7 @@ test.describe("ZKML Unchain Prover Frontend", () => {
     await page.goto("http://localhost:5173/debug");
 
     // Verify error handling in ZKML component (without wallet connection)
-    await expect(
-      page.locator('button:has-text("Generate ZK Proof")'),
-    ).toBeDisabled();
+    await expect(page.locator('button:has-text("Generate ZK Proof")')).toBeDisabled();
 
     // Take screenshot of disabled state
     await page.screenshot({

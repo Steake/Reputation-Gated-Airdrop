@@ -7,37 +7,27 @@ test.describe("Navigation and Routing", () => {
     // Test navigation to Earn Reputation page
     await page.getByRole("link", { name: "Earn Reputation" }).click();
     await expect(page).toHaveURL("/attest");
-    await expect(
-      page.getByRole("heading", { name: "Earn Reputation" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Earn Reputation" })).toBeVisible();
 
     // Test navigation to Claim page
     await page.getByRole("link", { name: "Claim" }).click();
     await expect(page).toHaveURL("/claim");
-    await expect(
-      page.getByRole("heading", { name: "Claim Your Airdrop" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Claim Your Airdrop" })).toBeVisible();
 
     // Test navigation to Explore page
     await page.getByRole("link", { name: "Explore" }).click();
     await expect(page).toHaveURL("/explore");
-    await expect(
-      page.getByRole("heading", { name: "Reputation Analytics" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Reputation Analytics" })).toBeVisible();
 
     // Test navigation to Debug page
     await page.getByRole("link", { name: "Debug" }).click();
     await expect(page).toHaveURL("/debug");
-    await expect(
-      page.getByRole("heading", { name: "Debug Information" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Debug Information" })).toBeVisible();
 
     // Test navigation back to home
     await page.getByRole("link", { name: "Shadowgraph" }).click();
     await expect(page).toHaveURL("/");
-    await expect(
-      page.getByRole("heading", { name: /Claim Your Reputation/i }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Claim Your Reputation/i })).toBeVisible();
   });
 
   test("should show active navigation state", async ({ page }) => {
@@ -66,17 +56,13 @@ test.describe("Navigation and Routing", () => {
     // Navigate using mobile menu
     await mobileMenu.getByRole("link", { name: "Earn Reputation" }).click();
     await expect(page).toHaveURL("/attest");
-    await expect(
-      page.getByRole("heading", { name: "Earn Reputation" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Earn Reputation" })).toBeVisible();
 
     // Mobile menu should close after navigation
     await expect(mobileMenu).not.toBeVisible();
   });
 
-  test("should maintain navigation state across theme changes", async ({
-    page,
-  }) => {
+  test("should maintain navigation state across theme changes", async ({ page }) => {
     await page.goto("/claim");
 
     // Toggle theme
@@ -85,9 +71,7 @@ test.describe("Navigation and Routing", () => {
     // Navigation should still work
     await page.getByRole("link", { name: "Explore" }).click();
     await expect(page).toHaveURL("/explore");
-    await expect(
-      page.getByRole("heading", { name: "Reputation Analytics" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Reputation Analytics" })).toBeVisible();
 
     // Theme should persist
     const html = page.locator("html");
@@ -108,9 +92,7 @@ test.describe("Navigation and Routing", () => {
       await expect(page.getByRole("heading", { name: heading })).toBeVisible();
 
       // Navigation should be functional
-      await expect(
-        page.getByRole("link", { name: "Shadowgraph" }),
-      ).toBeVisible();
+      await expect(page.getByRole("link", { name: "Shadowgraph" })).toBeVisible();
     }
   });
 
@@ -131,9 +113,7 @@ test.describe("Navigation and Routing", () => {
     expect(isErrorPage || isHomePage).toBeTruthy();
   });
 
-  test("should preserve navigation functionality with wallet connected", async ({
-    page,
-  }) => {
+  test("should preserve navigation functionality with wallet connected", async ({ page }) => {
     await page.goto("/");
 
     // Attempt wallet connection (will fail in test but should not break navigation)
@@ -143,8 +123,6 @@ test.describe("Navigation and Routing", () => {
     // Navigation should still work
     await page.getByRole("link", { name: "Claim" }).click();
     await expect(page).toHaveURL("/claim");
-    await expect(
-      page.getByRole("heading", { name: "Claim Your Airdrop" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Claim Your Airdrop" })).toBeVisible();
   });
 });

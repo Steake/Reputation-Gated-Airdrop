@@ -1,9 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Wallet Connection", () => {
-  test("should display wallet connection modal on desktop", async ({
-    page,
-  }) => {
+  test("should display wallet connection modal on desktop", async ({ page }) => {
     await page.goto("/");
 
     // Click connect wallet button
@@ -15,15 +13,9 @@ test.describe("Wallet Connection", () => {
 
     // Verify wallet options are present
     await expect(page.getByRole("button", { name: "MetaMask" })).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "Coinbase Wallet" }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "Trust Wallet" }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "WalletConnect" }),
-    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Coinbase Wallet" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Trust Wallet" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "WalletConnect" })).toBeVisible();
   });
 
   test("should display wallet connection modal on mobile", async ({ page }) => {
@@ -39,15 +31,9 @@ test.describe("Wallet Connection", () => {
 
     // Verify wallet options are present
     await expect(page.getByRole("button", { name: "MetaMask" })).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "Coinbase Wallet" }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "Trust Wallet" }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "WalletConnect" }),
-    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Coinbase Wallet" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Trust Wallet" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "WalletConnect" })).toBeVisible();
   });
 
   test("should close modal when clicking close button", async ({ page }) => {

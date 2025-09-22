@@ -15,13 +15,7 @@
   import reputationAirdropScaled from "$lib/abi/reputationAirdropScaled.abi.json";
   import reputationAirdropZKScaled from "$lib/abi/reputationAirdropZKScaled.abi.json";
 
-  type State =
-    | "idle"
-    | "fetching"
-    | "awaiting_wallet"
-    | "sending"
-    | "confirmed"
-    | "error";
+  type State = "idle" | "fetching" | "awaiting_wallet" | "sending" | "confirmed" | "error";
 
   let state: State = "idle";
   let errorMessage = "";
@@ -34,19 +28,14 @@
   const claimContractAddress = (
     useZkPath ? config.AIRDROP_ZK_ADDR : config.AIRDROP_ECDSA_ADDR
   ) as Hex;
-  const claimAbi = useZkPath
-    ? reputationAirdropZKScaled
-    : reputationAirdropScaled;
+  const claimAbi = useZkPath ? reputationAirdropZKScaled : reputationAirdropScaled;
 
   async function fetchQuote() {
     if (typeof $score.value !== "number" || !$airdrop.decimals) return;
     try {
-      const payout = await readContract<bigint>(
-        claimContractAddress,
-        claimAbi,
-        "quotePayout",
-        [BigInt($score.value)],
-      );
+      const payout = await readContract<bigint>(claimContractAddress, claimAbi, "quotePayout", [
+        BigInt($score.value),
+      ]);
       quote = {
         payout,
         min: $airdrop.minPayout!,
@@ -69,9 +58,7 @@
       if (useZkPath) {
         const proofMeta = await getProofMeta($wallet.address);
         if (proofMeta.score1e6 !== $score.value) {
-          throw new Error(
-            "Score mismatch between frontend and backend proof generation.",
-          );
+          throw new Error("Score mismatch between frontend and backend proof generation.");
         }
         state = "awaiting_wallet";
         hash = await writeContract(
@@ -79,14 +66,11 @@
           claimAbi,
           "claim",
           [proofMeta.calldata as `0x${string}`, BigInt(proofMeta.score1e6)],
-          $wallet.address,
+          $wallet.address
         );
       } else {
         // ECDSA Path
-        const artifact = await getClaimArtifact(
-          $wallet.address,
-          config.CAMPAIGN as string,
-        );
+        const artifact = await getClaimArtifact($wallet.address, config.CAMPAIGN as string);
 
         // Local validation
         if (artifact.addr.toLowerCase() !== $wallet.address.toLowerCase())
@@ -111,7 +95,7 @@
             artifact.sig.r as Hex,
             artifact.sig.s as Hex,
           ],
-          $wallet.address,
+          $wallet.address
         );
       }
 
@@ -119,9 +103,7 @@
       state = "sending";
       toasts.info(`Transaction sent: ${shortenAddress(hash)}`);
 
-      const publicClient = (
-        await import("$lib/chain/client")
-      ).getPublicClient();
+      const publicClient = (await import("$lib/chain/client")).getPublicClient();
       await publicClient.waitForTransactionReceipt({ hash });
 
       state = "confirmed";
@@ -129,8 +111,7 @@
     } catch (error: unknown) {
       console.error("Claim failed:", error);
       const errorObj = error as { shortMessage?: string; message?: string };
-      errorMessage =
-        errorObj.shortMessage || errorObj.message || "An unknown error occurred.";
+      errorMessage = errorObj.shortMessage || errorObj.message || "An unknown error occurred.";
       toasts.error(errorMessage);
       state = "error";
     }
@@ -147,9 +128,7 @@
     </p>
   </div>
 
-  <div
-    class="my-6 bg-gray-50 p-4 rounded-lg border border-gray-200 text-center"
-  >
+  <div class="my-6 bg-gray-50 p-4 rounded-lg border border-gray-200 text-center">
     <p class="text-sm text-gray-500">Estimated Payout</p>
     {#if quote}
       <p class="text-3xl font-bold text-brand">
@@ -177,9 +156,7 @@
     <div class="text-center space-y-2 p-4">
       <Spinner />
       <p class="font-semibold">Awaiting wallet confirmation</p>
-      <p class="text-sm text-gray-500">
-        Please approve the transaction in your wallet.
-      </p>
+      <p class="text-sm text-gray-500">Please approve the transaction in your wallet.</p>
     </div>
   {:else if state === "sending"}
     <div class="text-center space-y-2 p-4">
@@ -201,10 +178,7 @@
       <p class="text-xl font-bold">Claim Successful!</p>
       {#if quote}
         <p>
-          You have successfully claimed {formatTokenAmount(
-            quote.payout,
-            quote.decimals,
-          )} tokens.
+          You have successfully claimed {formatTokenAmount(quote.payout, quote.decimals)} tokens.
         </p>
       {:else}
         <p>You have successfully claimed tokens.</p>
@@ -213,14 +187,11 @@
         href={"https://sepolia.etherscan.io/tx/" + txHash}
         target="_blank"
         rel="noopener noreferrer"
-        class="text-sm text-green-800 hover:underline font-semibold"
-        >View Transaction</a
+        class="text-sm text-green-800 hover:underline font-semibold">View Transaction</a
       >
     </div>
   {:else if state === "error"}
-    <div
-      class="text-center space-y-4 p-4 text-red-700 bg-red-50 rounded-lg border border-red-200"
-    >
+    <div class="text-center space-y-4 p-4 text-red-700 bg-red-50 rounded-lg border border-red-200">
       <AlertCircle class="h-12 w-12 mx-auto" />
       <p class="text-xl font-bold">Claim Failed</p>
       <p class="text-sm">{errorMessage}</p>

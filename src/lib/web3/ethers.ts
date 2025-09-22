@@ -19,10 +19,7 @@ export async function initEthersProvider(): Promise<ethers.Provider> {
   if (!browser) {
     // Server-side: use JsonRpcProvider
     if (!provider) {
-      provider = new ethers.JsonRpcProvider(
-        PUBLIC_RPC_URL,
-        parseInt(PUBLIC_CHAIN_ID),
-      );
+      provider = new ethers.JsonRpcProvider(PUBLIC_RPC_URL, parseInt(PUBLIC_CHAIN_ID));
     }
     return provider;
   }
@@ -36,10 +33,7 @@ export async function initEthersProvider(): Promise<ethers.Provider> {
 
   // Fallback to RPC provider
   if (!provider) {
-    provider = new ethers.JsonRpcProvider(
-      PUBLIC_RPC_URL,
-      parseInt(PUBLIC_CHAIN_ID),
-    );
+    provider = new ethers.JsonRpcProvider(PUBLIC_RPC_URL, parseInt(PUBLIC_CHAIN_ID));
   }
   return provider;
 }
@@ -74,7 +68,7 @@ export async function readContractEthers<T = any>(
   contractAddress: string,
   abi: any[],
   functionName: string,
-  args: any[] = [],
+  args: any[] = []
 ): Promise<T> {
   const ethersProvider = await initEthersProvider();
   const contract = new ethers.Contract(contractAddress, abi, ethersProvider);
@@ -96,7 +90,7 @@ export async function writeContractEthers(
   abi: any[],
   functionName: string,
   args: any[] = [],
-  options: { value?: bigint; gasLimit?: bigint } = {},
+  options: { value?: bigint; gasLimit?: bigint } = {}
 ): Promise<string> {
   if (!browser) {
     throw new Error("Contract writes only available in browser");
@@ -122,7 +116,7 @@ export async function writeContractEthers(
  * Get transaction receipt using ethers.js
  */
 export async function getTransactionReceipt(
-  txHash: string,
+  txHash: string
 ): Promise<ethers.TransactionReceipt | null> {
   const ethersProvider = await initEthersProvider();
   return await ethersProvider.getTransactionReceipt(txHash);
@@ -133,7 +127,7 @@ export async function getTransactionReceipt(
  */
 export async function waitForTransaction(
   txHash: string,
-  confirmations: number = 1,
+  confirmations: number = 1
 ): Promise<ethers.TransactionReceipt | null> {
   const ethersProvider = await initEthersProvider();
   return await ethersProvider.waitForTransaction(txHash, confirmations);

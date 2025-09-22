@@ -70,7 +70,7 @@
           $page.data.config.TOKEN_ADDR as Hex,
           erc20abi,
           "decimals",
-          [],
+          []
         );
         airdrop.update((a) => ({ ...a, decimals }));
         tokenDecimals = decimals;
@@ -104,7 +104,10 @@
 </script>
 
 <div class="min-h-screen flex flex-col">
-  <header class="sticky top-0 z-20 bg-[var(--bg-subtle)] backdrop-blur-sm border-b border-[var(--border-base)]" style="height: 64px;">
+  <header
+    class="sticky top-0 z-20 bg-[var(--bg-subtle)] backdrop-blur-sm border-b border-[var(--border-base)]"
+    style="height: 64px;"
+  >
     <div class="max-w-[1040px] mx-auto px-4 sm:px-6">
       <div class="flex items-center justify-between h-16">
         <a href="/" class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
@@ -122,15 +125,14 @@
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <path
-                d="M12 2L2 7l10 5 10-5-10-5z"
-                fill="rgba(255,255,255,0.06)"
-              />
+              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="rgba(255,255,255,0.06)" />
               <path d="M2 17l10 5 10-5" stroke="white" opacity="0.85" />
             </svg>
           </div>
           <div class="leading-tight">
-            <div class="font-semibold text-base sm:text-lg text-[var(--fg-primary)]">Shadowgraph</div>
+            <div class="font-semibold text-base sm:text-lg text-[var(--fg-primary)]">
+              Shadowgraph
+            </div>
             <div class="text-xs text-[var(--fg-muted)] hidden sm:block">Reputation Airdrop</div>
           </div>
         </a>
@@ -138,32 +140,40 @@
         <!-- Desktop nav with new tab design -->
         <nav class="hidden md:flex items-center">
           <div class="flex items-center space-x-1 mr-6">
-            <a 
-              href="/attest" 
+            <a
+              href="/attest"
               class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.2,0.0,0.2,1)]
-                     {$page.url.pathname === '/attest' ? 'text-[var(--fg-primary)] bg-[var(--bg-surfaceElev)] border border-[var(--border-base)]' : 'text-[var(--fg-muted)] hover:text-[var(--fg-secondary)]'}"
+                     {$page.url.pathname === '/attest'
+                ? 'text-[var(--fg-primary)] bg-[var(--bg-surfaceElev)] border border-[var(--border-base)]'
+                : 'text-[var(--fg-muted)] hover:text-[var(--fg-secondary)]'}"
             >
               Earn Reputation
             </a>
-            <a 
-              href="/claim" 
+            <a
+              href="/claim"
               class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.2,0.0,0.2,1)]
-                     {$page.url.pathname === '/claim' ? 'text-[var(--fg-primary)] bg-[var(--bg-surfaceElev)] border border-[var(--border-base)]' : 'text-[var(--fg-muted)] hover:text-[var(--fg-secondary)]'}"
+                     {$page.url.pathname === '/claim'
+                ? 'text-[var(--fg-primary)] bg-[var(--bg-surfaceElev)] border border-[var(--border-base)]'
+                : 'text-[var(--fg-muted)] hover:text-[var(--fg-secondary)]'}"
             >
               Claim
             </a>
-            <a 
-              href="/explore" 
+            <a
+              href="/explore"
               class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.2,0.0,0.2,1)]
-                     {$page.url.pathname === '/explore' ? 'text-[var(--fg-primary)] bg-[var(--bg-surfaceElev)] border border-[var(--border-base)]' : 'text-[var(--fg-muted)] hover:text-[var(--fg-secondary)]'}"
+                     {$page.url.pathname === '/explore'
+                ? 'text-[var(--fg-primary)] bg-[var(--bg-surfaceElev)] border border-[var(--border-base)]'
+                : 'text-[var(--fg-muted)] hover:text-[var(--fg-secondary)]'}"
             >
               Explore
             </a>
             {#if $page.data.config?.DEBUG}
-              <a 
-                href="/debug" 
+              <a
+                href="/debug"
                 class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.2,0.0,0.2,1)]
-                       {$page.url.pathname === '/debug' ? 'text-[var(--fg-primary)] bg-[var(--bg-surfaceElev)] border border-[var(--border-base)]' : 'text-[var(--fg-muted)] hover:text-[var(--fg-secondary)]'}"
+                       {$page.url.pathname === '/debug'
+                  ? 'text-[var(--fg-primary)] bg-[var(--bg-surfaceElev)] border border-[var(--border-base)]'
+                  : 'text-[var(--fg-muted)] hover:text-[var(--fg-secondary)]'}"
               >
                 Debug
               </a>
@@ -175,7 +185,7 @@
         <div class="hidden md:flex items-center space-x-3 flex-shrink-0">
           <button
             aria-label="Toggle dark mode"
-            class="inline-flex items-center justify-center rounded-lg p-2 border border-[var(--border-base)] 
+            class="inline-flex items-center justify-center rounded-lg p-2 border border-[var(--border-base)]
                    hover:bg-[var(--bg-surfaceElev)] transition-colors duration-200
                    focus:outline-none focus:ring-2 focus:ring-[var(--accent-brand-subtle)] focus:ring-opacity-60 focus:ring-offset-2"
             on:click={toggleTheme}
@@ -222,7 +232,7 @@
         <div class="md:hidden flex items-center space-x-2 flex-shrink-0">
           <button
             aria-label="Toggle mobile menu"
-            class="inline-flex items-center justify-center rounded-lg p-2 text-[var(--fg-muted)] 
+            class="inline-flex items-center justify-center rounded-lg p-2 text-[var(--fg-muted)]
                    hover:text-[var(--fg-primary)] hover:bg-[var(--bg-surfaceElev)] transition-colors duration-200
                    focus:outline-none focus:ring-2 focus:ring-[var(--accent-brand-subtle)] focus:ring-opacity-60 focus:ring-offset-2"
             on:click={openMobile}
@@ -249,7 +259,7 @@
   </header>
 
   <MobileMenu bind:open={mobileOpen} on:close={() => (mobileOpen = false)} />
-  
+
   <!-- Main content with proper spacing and width constraints -->
   <main class="flex-grow container-responsive py-6 sm:py-8 content-safe">
     <slot />

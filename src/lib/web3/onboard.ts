@@ -24,16 +24,14 @@ export async function initOnboard() {
   });
 
   const walletConnect = walletConnectModule({
-    projectId:
-      import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || "test-project-id",
+    projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || "test-project-id",
     version: 2,
     dappUrl: "https://shadowgraph.xyz",
     handleUri: (uri) => {
       // Enhanced mobile deep linking
-      const isMobile =
-        /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent,
-        );
+      const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
       if (isMobile) {
         // Try popular mobile wallet deep links
         const walletDeepLinks = [
@@ -107,8 +105,7 @@ export async function initOnboard() {
       name: "Shadowgraph Reputation Airdrop",
       icon: "https://shadowgraph.xyz/icon.png",
       logo: "https://shadowgraph.xyz/logo.png",
-      description:
-        "Connect your wallet to verify your reputation and claim your airdrop",
+      description: "Connect your wallet to verify your reputation and claim your airdrop",
       recommendedInjectedWallets: [
         { name: "MetaMask", url: "https://metamask.io" },
         { name: "Coinbase Wallet", url: "https://wallet.coinbase.com/" },

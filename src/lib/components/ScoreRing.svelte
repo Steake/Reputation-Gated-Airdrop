@@ -23,20 +23,9 @@
 </script>
 
 <div class="score-ring relative" role="img" aria-label="Score progress">
-  <svg
-    class="h-full w-full"
-    viewBox="0 0 100 100"
-    preserveAspectRatio="xMidYMid meet"
-  >
+  <svg class="h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
     <!-- Background track -->
-    <circle
-      cx={50}
-      cy={50}
-      r={radius}
-      fill="transparent"
-      stroke={trackColor}
-      stroke-width="8"
-    />
+    <circle cx={50} cy={50} r={radius} fill="transparent" stroke={trackColor} stroke-width="8" />
     <!-- Progress stroke -->
     <circle
       cx={50}
@@ -53,9 +42,7 @@
   </svg>
 
   <div class="absolute inset-0 flex items-center justify-center flex-col">
-    <span class="text-xl font-semibold mono" style="color: var(--text)"
-      >{percent}%</span
-    >
+    <span class="text-xl font-semibold mono" style="color: var(--text)">{percent}%</span>
     <span class="text-xs muted mt-1">Score: {scoreShort}</span>
   </div>
 </div>

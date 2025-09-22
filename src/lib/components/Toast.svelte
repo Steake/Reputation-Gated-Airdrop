@@ -35,11 +35,7 @@
   <div class="p-4">
     <div class="flex items-start">
       <div class="flex-shrink-0">
-        <svelte:component
-          this={icons[toast.type]}
-          class="h-6 w-6"
-          style="color: {toastColor}"
-        />
+        <svelte:component this={icons[toast.type]} class="h-6 w-6" style="color: {toastColor}" />
       </div>
       <div class="ml-3 w-0 flex-1 pt-0.5">
         <p class="text-sm font-medium text-[var(--text)]">{toast.message}</p>

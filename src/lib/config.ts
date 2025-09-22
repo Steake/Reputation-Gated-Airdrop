@@ -59,8 +59,7 @@ export function parseConfig(): Config | { error: z.ZodError } {
       API_BASE: env.VITE_API_BASE,
       DEBUG: env.VITE_DEBUG,
       WALLETCONNECT_PROJECT_ID:
-        env.VITE_WALLETCONNECT_PROJECT_ID ||
-        env.PUBLIC_WALLETCONNECT_PROJECT_ID,
+        env.VITE_WALLETCONNECT_PROJECT_ID || env.PUBLIC_WALLETCONNECT_PROJECT_ID,
     });
     return config;
   } catch (error) {
