@@ -32,50 +32,51 @@ This document defines the specific types of zero-knowledge proofs required for t
 - `network_paths[]`: Trust paths and weights from network traversal
 - `computation_salt`: Random salt for proof uniqueness
 
-**ZK Circuit Logic**:
-```rust
-// Simplified circuit pseudocode
-circuit ReputationProof {
-    // Public inputs
-    signal input reputation_score;
-    signal input threshold;  
-    signal input merkle_root;
-    signal input user_address;
-    
-    // Private witness
-    signal private input attestations[MAX_ATTESTATIONS];
-    signal private input opinions[MAX_ATTESTATIONS][4]; // [b,d,u,a]
-    signal private input network_weights[MAX_ATTESTATIONS];
-    signal private input salt;
-    
-    // Constraints
-    component ebsl_fusion = EBSLFusion(MAX_ATTESTATIONS);
-    component merkle_verifier = MerkleVerifier(TREE_DEPTH);
-    component reputation_calculator = ReputationCalculator();
-    
-    // 1. Verify attestations are in merkle tree
-    for (var i = 0; i < MAX_ATTESTATIONS; i++) {
-        merkle_verifier.verify(attestations[i], merkle_root);
-    }
-    
-    // 2. Compute EBSL fusion result
-    ebsl_fusion.opinions <== opinions;
-    ebsl_fusion.weights <== network_weights;
-    var fused_opinion = ebsl_fusion.result;
-    
-    // 3. Convert opinion to reputation score
-    reputation_calculator.opinion <== fused_opinion;
-    var computed_score = reputation_calculator.score;
-    
-    // 4. Verify computed score matches public input
-    computed_score === reputation_score;
-    
-    // 5. Verify score meets threshold
-    component threshold_check = GreaterEqThan(32);
-    threshold_check.in[0] <== reputation_score;
-    threshold_check.in[1] <== threshold;
-    threshold_check.out === 1;
-}
+**EZKL Circuit Implementation** (Following Notebook Approach):
+```python
+# Using PyTorch model as demonstrated in notebook
+class LocalReputationProver:
+    def __init__(self):
+        # Load pre-compiled EZKL circuit from notebook pipeline
+        self.ebsl_model = EBSLFusionModule(max_opinions=16)  # From notebook
+        self.circuit_artifacts = self.load_precompiled_circuit()
+        
+    async def generate_local_proof(self, 
+                                 user_attestations: List[TrustAttestation],
+                                 threshold: float) -> ZKProof:
+        """
+        Generate ZK proof locally using EZKL pipeline from notebook
+        """
+        
+        # 1. Prepare input data (matching notebook format)
+        opinions_tensor, mask_tensor = self.prepare_onnx_input(user_attestations)
+        
+        # 2. Compute reputation locally first (for validation)
+        local_reputation = self.compute_local_reputation(user_attestations)
+        
+        # 3. Generate witness for EZKL (notebook approach)
+        witness = {
+            "opinions": opinions_tensor.tolist(),
+            "mask": mask_tensor.tolist()
+        }
+        
+        # 4. Generate ZK proof using EZKL (notebook pipeline)
+        proof = await ezkl.prove(
+            witness=witness,
+            circuit_path=self.circuit_artifacts.circuit,
+            pk_path=self.circuit_artifacts.proving_key
+        )
+        
+        # 5. Verify threshold locally before returning
+        if local_reputation >= threshold:
+            return ZKProof(
+                proof=proof.proof,
+                public_inputs=[local_reputation, threshold],
+                verification_key=self.circuit_artifacts.verifying_key,
+                method="EZKL-ONNX-PyTorch"  # Match notebook approach
+            )
+        else:
+            raise InsufficientReputationError(f"Score {local_reputation} below threshold {threshold}")
 ```
 
 **Metadata Published**:

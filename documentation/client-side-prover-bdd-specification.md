@@ -4,6 +4,29 @@
 
 This document provides detailed Behavior-Driven Development (BDD) specifications for the client-side prover infrastructure. The client-side prover enables users to generate zero-knowledge proofs of their reputation scores computed using the Evidence-Based Subjective Logic (EBSL) algorithm, supporting both public and private claim mechanisms.
 
+## Core Principle: Local-First Computation
+
+**Privacy-First Design**: Users MUST be able to compute their reputation scores locally without sharing sensitive information with third parties. The client-side prover implements:
+
+1. **Local EBSL Computation**: Complete reputation calculation runs in the browser/client
+2. **Private Attestation Processing**: Trust network data is processed locally 
+3. **Optional Backend Services**: Web services are provided for convenience but never required
+4. **Zero Data Leakage**: No sensitive trust information leaves the user's device during computation
+
+### Local Computation Requirements
+
+**As a** privacy-conscious user  
+**I want to** compute my reputation score entirely on my own device  
+**So that** my trust network data never leaves my control
+
+#### Scenario: Fully local reputation computation
+**Given** I have my attestation data stored locally or retrieved via public APIs  
+**When** I compute my reputation score  
+**Then** all EBSL calculations should run in my browser/client  
+**And** no sensitive opinion data should be transmitted to third parties  
+**And** the computation should be verifiable and reproducible  
+**And** I should be able to generate proofs without backend dependencies
+
 ## Core Features and Scenarios
 
 ### Feature: Zero-Knowledge Proof Generation

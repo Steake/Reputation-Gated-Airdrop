@@ -16,37 +16,42 @@ This document provides a comprehensive technical roadmap for implementing the cl
 
 ## Phase 1: Foundation and Core Infrastructure (Weeks 1-4)
 
-### Task 1.1: EBSL Algorithm Client Integration
+### Task 1.1: Local EBSL Algorithm Integration  
 **Task ID**: `TASK-001`  
 **Priority**: Critical  
 **Effort**: 8 story points  
 **Dependencies**: None  
 **Assignee**: ZK Specialist
 
+**Core Requirement**: Implement LOCAL computation capabilities - users MUST be able to compute reputation scores without sharing data with third parties.
+
 **BDD Scenarios**:
 ```gherkin
-Feature: EBSL Algorithm Integration
-  Scenario: Compute reputation from trust attestations
-    Given I have a list of trust attestations with opinion values
-    When I apply the EBSL fusion algorithm
-    Then I should get a valid reputation score between 0 and 1
-    And the computation should be deterministic
-    And mathematical properties should be preserved
+Feature: Local EBSL Algorithm Integration
+  Scenario: Compute reputation locally without backend
+    Given I have my trust attestations available locally
+    When I compute my reputation score in the browser
+    Then all EBSL calculations should run on my device
+    And no sensitive opinion data should be transmitted
+    And the computation should match server-side results
+    And I should be able to verify the computation independently
 
-  Scenario: Handle edge cases in EBSL computation
+  Scenario: Handle edge cases in local EBSL computation
     Given I have attestations with extreme opinion values
-    When I apply EBSL fusion with overflow protection
+    When I apply local EBSL fusion with overflow protection
     Then I should get numerically stable results
     And no NaN or infinite values should be produced
+    And results should be identical to reference implementation
 ```
 
 **Acceptance Criteria**:
-- [ ] Implement classical EBSL algorithm in TypeScript
-- [ ] Create ZK-optimized version for circuit compilation
-- [ ] Handle numerical stability and edge cases
+- [ ] Implement LOCAL classical EBSL algorithm in TypeScript (browser-compatible)
+- [ ] Create ZK-optimized version following notebook's PyTorch approach
+- [ ] Handle numerical stability and edge cases locally
 - [ ] Add property-based testing with 1000+ random test cases
 - [ ] Validate against reference implementation in notebook
-- [ ] Performance benchmark: <100ms for 50 opinions
+- [ ] Performance benchmark: <100ms for 50 opinions on client
+- [ ] **CRITICAL**: Zero data transmission to third parties during computation
 
 **Technical Tasks**:
 - [ ] Port EBSL fusion logic from Python to TypeScript
@@ -108,46 +113,48 @@ Feature: Trust Network State Reader
 
 ---
 
-### Task 1.3: ZK Circuit Foundation
+### Task 1.3: EZKL Circuit Foundation (Following Notebook)
 **Task ID**: `TASK-003`  
 **Priority**: Critical  
 **Effort**: 12 story points  
 **Dependencies**: TASK-001  
 **Assignee**: ZK Specialist
 
+**Important**: Use the proven PyTorch → ONNX → EZKL pipeline from `Notebooks/ebsl_full_script.py`, NOT Circom circuits.
+
 **BDD Scenarios**:
 ```gherkin
-Feature: ZK Circuit Implementation
-  Scenario: Generate proof for reputation threshold
-    Given I have computed a reputation score of 0.75
-    And the minimum threshold is 0.6
-    When I generate a ZK proof of threshold compliance
+Feature: EZKL Circuit Implementation (Notebook-Based)
+  Scenario: Generate proof using notebook's EZKL pipeline
+    Given I have the PyTorch EBSL model from the notebook
+    And I have attestation data formatted for ONNX input
+    When I generate a ZK proof using the notebook's EZKL pipeline
     Then the proof should be valid and verifiable
-    And not reveal my exact reputation score
-    And prevent replay attacks
+    And match the notebook's proven implementation
+    And run entirely locally without backend dependencies
 
-  Scenario: Handle varying circuit sizes
-    Given users with different numbers of attestations
-    When I select optimal circuit size for each user
-    Then I should minimize proving time and memory usage
-    And maintain security guarantees
+  Scenario: Handle varying attestation counts with notebook approach
+    Given users with different numbers of attestations (5, 15, 50)
+    When I use the notebook's circuit sizing approach
+    Then I should select optimal circuit parameters
+    And maintain security guarantees from notebook validation
 ```
 
 **Acceptance Criteria**:
-- [ ] Implement basic reputation threshold circuit in Circom
-- [ ] Create EZKL compilation and proving pipeline
-- [ ] Support multiple circuit sizes (10, 50, 200, 1000 opinions)
-- [ ] Add circuit optimization and constraint minimization
-- [ ] Implement proof generation service
-- [ ] Performance: <60s proof generation for 50 opinions
+- [ ] Use existing PyTorch EBSL model from notebook (NOT Circom)
+- [ ] Follow notebook's EZKL compilation pipeline exactly
+- [ ] Support multiple circuit sizes as demonstrated in notebook
+- [ ] Implement local proof generation using EZKL WASM bindings
+- [ ] Validate against notebook's test cases and benchmarks
+- [ ] Performance: <60s proof generation for 50 opinions (notebook baseline)
 
 **Technical Tasks**:
-- [ ] Write Circom circuit for EBSL fusion
-- [ ] Set up EZKL compilation pipeline
-- [ ] Create proving key generation and management
-- [ ] Implement witness preparation logic
-- [ ] Add circuit size optimization
-- [ ] Create comprehensive circuit tests
+- [ ] Use existing PyTorch EBSL model from `Notebooks/ebsl_full_script.py`
+- [ ] Set up local EZKL compilation pipeline following notebook
+- [ ] Create client-side proving key management
+- [ ] Implement witness preparation logic matching notebook format
+- [ ] Add circuit size optimization based on notebook findings
+- [ ] Create comprehensive EZKL integration tests
 
 ---
 

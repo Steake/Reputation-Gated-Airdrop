@@ -1,4 +1,4 @@
-# ZKML Unchain Prover Smart Contract Specification
+# ZKML On-Chain Prover Smart Contract Specification
 
 ## Overview
 
@@ -6,7 +6,7 @@ This specification defines a smart contract for integrating Zero-Knowledge Machi
 
 ## Background
 
-The ZKML Unchain Prover enables users to prove their reputation scores were computed correctly without revealing the underlying trust network topology or individual attestations. This is achieved through:
+The ZKML On-Chain Prover enables users to prove their reputation scores were computed correctly without revealing the underlying trust network topology or individual attestations. This is achieved through:
 
 1. **EBSL Algorithm**: A PyTorch-based trust fusion algorithm that combines multiple subjective logic opinions
 2. **EZKL Integration**: Converts the PyTorch model to a zero-knowledge circuit
@@ -41,7 +41,7 @@ Key optimizations for ZK circuits:
 
 ## Smart Contract Specification
 
-### Contract: `ZKMLUnchainProver`
+### Contract: `ZKMLOnChainProver`
 
 #### State Variables
 

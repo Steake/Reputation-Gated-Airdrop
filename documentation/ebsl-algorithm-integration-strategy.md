@@ -130,9 +130,85 @@ class TrustNetworkProcessor {
 }
 ```
 
-### 2. ZK-Compatible Implementation
+## EZKL ZKML Integration Strategy (Following Existing Notebook)
 
-#### 2.1 Fixed-Point Arithmetic
+**Important**: This implementation follows the proven PyTorch → ONNX → EZKL pipeline as demonstrated in `Notebooks/ebsl_full_script.py` and `EBSL_Pipeline_Complete.ipynb`, NOT Circom circuits.
+
+### 1. PyTorch Model Architecture (Based on Notebook)
+
+The notebook already provides a complete EZKL integration. We build upon this foundation:
+
+```python
+# From notebook: EBSLFusionModule already implemented
+class EBSLFusionModule(nn.Module):
+    """
+    PyTorch module for EBSL fusion compatible with EZKL compilation
+    Already implemented and tested in the notebook
+    """
+    
+    def __init__(self, max_opinions: int = 16, precision_bits: int = 32):
+        super().__init__()
+        self.max_opinions = max_opinions
+        self.scale_factor = 2 ** (precision_bits - 8)
+        self.epsilon = torch.tensor(1.0 / self.scale_factor)
+        self.one = torch.tensor(1.0)
+        
+    def forward(self, opinions_tensor: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+        # Implementation already proven in notebook
+        # Uses overflow-safe operations for ZK compatibility
+        return fused_opinion
+```
+
+### 2. Local Client Integration Strategy
+
+**Approach**: Leverage the notebook's proven EZKL pipeline for client-side use:
+
+```typescript
+class LocalEZKLProver {
+  /**
+   * Generate ZK proof using the notebook's proven EZKL pipeline
+   * Runs entirely locally in the client without backend dependencies
+   */
+  async generateLocalProof(
+    userAttestations: TrustAttestation[]
+  ): Promise<LocalZKProof> {
+    
+    // 1. Use local EBSL computation (already implemented)
+    const reputation = this.localEBSL.computeReputation(userAddress, userAttestations);
+    
+    // 2. Prepare data in ONNX format (matching notebook)
+    const onnxInput = this.prepareONNXInput(userAttestations);
+    
+    // 3. Use pre-compiled EZKL circuit (from notebook pipeline)
+    const proof = await this.ezkl.generateProof(onnxInput, this.precompiledCircuit);
+    
+    return {
+      reputation: reputation.score,
+      proof: proof,
+      generated_locally: true,
+      computation_method: 'EZKL-ONNX-PyTorch'
+    };
+  }
+  
+  private prepareONNXInput(attestations: TrustAttestation[]): ONNXInput {
+    // Format data exactly as expected by notebook's PyTorch model
+    const maxOpinions = 16;
+    const opinions = Array(maxOpinions).fill([0, 0, 1, 0.5]);
+    const mask = Array(maxOpinions).fill(false);
+    
+    attestations.slice(0, maxOpinions).forEach((att, i) => {
+      opinions[i] = [
+        att.opinion.belief,
+        att.opinion.disbelief, 
+        att.opinion.uncertainty,
+        att.opinion.base_rate
+      ];
+      mask[i] = true;
+    });
+    
+    return { opinions, mask };
+  }
+}
 
 **Precision Management**
 ```typescript
@@ -317,79 +393,76 @@ class ReputationCalculator(nn.Module):
         return reputation.unsqueeze(-1)
 ```
 
-**EZKL Compilation Pipeline**
+**EZKL Compilation Pipeline (From Notebook)**
 ```python
 class EZKLPipeline:
     """
-    Complete pipeline for converting EBSL model to ZK circuit
+    Client-side EZKL pipeline based on proven notebook implementation
+    Enables local proof generation without backend dependencies
     """
     
     def __init__(self, max_opinions: int = 16):
         self.max_opinions = max_opinions
-        self.model = None
-        self.compiled_circuit = None
+        # Use the proven model architecture from notebook
+        self.model = EBSLFusionModule(max_opinions)
         
-    async def compile_ebsl_circuit(self, output_dir: str) -> str:
+    async def setupLocalCircuit(self, output_dir: str) -> LocalCircuitArtifacts:
         """
-        Compile EBSL model to EZKL circuit
+        Set up EZKL circuit for local client use
+        Following the exact pipeline from ebsl_full_script.py
         """
         
-        # 1. Create and export PyTorch model
-        model = EBSLFusionModule(self.max_opinions)
+        # 1. Export PyTorch model to ONNX (notebook approach)
+        model = self.model
         model.eval()
         
-        # Create dummy input for tracing
         dummy_opinions = torch.randn(1, self.max_opinions, 4)
         dummy_mask = torch.ones(1, self.max_opinions, dtype=torch.bool)
         
-        # Export to ONNX
         onnx_path = f"{output_dir}/ebsl_model.onnx"
         torch.onnx.export(
             model,
             (dummy_opinions, dummy_mask),
             onnx_path,
             export_params=True,
-            opset_version=11,
+            opset_version=11,  # Match notebook settings
             do_constant_folding=True,
             input_names=['opinions', 'mask'],
-            output_names=['fused_opinion'],
-            dynamic_axes={
-                'opinions': {0: 'batch_size'},
-                'mask': {0: 'batch_size'},
-                'fused_opinion': {0: 'batch_size'}
-            }
+            output_names=['fused_opinion']
         )
         
-        # 2. Generate EZKL settings
+        # 2. Generate EZKL settings (notebook configuration)
         settings_path = f"{output_dir}/settings.json"
         await ezkl.gen_settings(onnx_path, settings_path, py_run_args={
-            "input_scales": [32, 32],  # Scale for fixed-point arithmetic
-            "param_scales": [32],
+            "input_scales": [32, 32],
+            "param_scales": [32], 
             "scale_rebase_multiplier": 32,
             "lookup_safety_margin": 2,
-            "num_inner_cols": 8,
-            "variables": ["batch_size"]
+            "num_inner_cols": 8
         })
         
-        # 3. Calibrate circuit
-        calibration_data = self.generate_calibration_data()
-        await ezkl.calibrate_settings(
-            calibration_data,
-            onnx_path,
-            settings_path,
-            target="accuracy"
-        )
+        # 3. Use notebook's calibration approach
+        calibration_data = self.generateCalibrationData() # From notebook
+        await ezkl.calibrate_settings(calibration_data, onnx_path, settings_path)
         
-        # 4. Compile circuit
+        # 4. Compile circuit for local use
         circuit_path = f"{output_dir}/circuit.ezkl"
         await ezkl.compile_circuit(onnx_path, settings_path, circuit_path)
         
-        # 5. Generate proving and verifying keys
+        # 5. Generate proving/verifying keys
         pk_path = f"{output_dir}/proving_key.pk"
         vk_path = f"{output_dir}/verifying_key.vk"
         await ezkl.setup(circuit_path, pk_path, vk_path)
         
-        return circuit_path
+        return LocalCircuitArtifacts({
+            circuit: circuit_path,
+            proving_key: pk_path,
+            verifying_key: vk_path,
+            onnx_model: onnx_path,
+            settings: settings_path
+        });
+    }
+```
     
     def generate_calibration_data(self) -> str:
         """
