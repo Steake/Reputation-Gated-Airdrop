@@ -24,7 +24,8 @@ export async function initOnboard() {
   });
 
   const walletConnect = walletConnectModule({
-    projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || "test-project-id",
+    projectId:
+      import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || "test-project-id",
     version: 2,
     dappUrl: "https://shadowgraph.xyz",
     handleUri: (uri) => {
