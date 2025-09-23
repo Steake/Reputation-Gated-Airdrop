@@ -4,14 +4,14 @@ pragma solidity ^0.8.0;
 import "./interfaces/IVerifier.sol";
 
 /**
- * @title ZKMLUnchainProver
+ * @title ZKMLOnChainVerifier
  * @dev Smart contract for verifying ZKML proofs of reputation calculations
  * 
  * This contract enables users to prove their reputation scores were computed
  * correctly using the Evidence-Based Subjective Logic (EBSL) algorithm
  * without revealing the underlying trust network topology.
  */
-contract ZKMLUnchainProver {
+contract ZKMLOnChainVerifier {
     // Verifier contract for ZKML proofs
     IVerifier public immutable verifier;
 

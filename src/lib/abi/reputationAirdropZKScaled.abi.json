@@ -3,7 +3,7 @@
     "type": "constructor",
     "inputs": [
       { "name": "_token", "type": "address", "internalType": "contract IERC20" },
-      { "name": "_zkProver", "type": "address", "internalType": "contract ZKMLUnchainProver" },
+      { "name": "_zkVerifier", "type": "address", "internalType": "contract ZKMLOnChainVerifier" },
       { "name": "_campaign", "type": "bytes32", "internalType": "bytes32" },
       { "name": "_floorScore", "type": "uint256", "internalType": "uint256" },
       { "name": "_capScore", "type": "uint256", "internalType": "uint256" },
@@ -57,7 +57,7 @@
     "name": "getZKParameters",
     "inputs": [],
     "outputs": [
-      { "name": "_zkProver", "type": "address", "internalType": "address" },
+      { "name": "_zkVerifier", "type": "address", "internalType": "address" },
       { "name": "_maxReputationAge", "type": "uint256", "internalType": "uint256" },
       { "name": "_campaign", "type": "bytes32", "internalType": "bytes32" }
     ],

@@ -8,7 +8,7 @@ The system consists of three main contract types that work together to enable se
 
 ### Core Contracts
 
-#### 1. ZKMLUnchainProver.sol
+#### 1. ZKMLOnChainVerifier.sol
 
 The main ZKML verification contract that validates zero-knowledge proofs of reputation calculations.
 
@@ -46,11 +46,11 @@ ECDSA-based airdrop contract with configurable payout curves.
 
 #### 3. ReputationAirdropZKScaled.sol
 
-ZK-proof-based airdrop contract that integrates with ZKMLUnchainProver.
+ZK-proof-based airdrop contract that integrates with ZKMLOnChainVerifier.
 
 **Features:**
 
-- Integration with ZKMLUnchainProver for reputation verification
+- Integration with ZKMLOnChainVerifier for reputation verification
 - Reputation age validation (configurable window)
 - Same payout curve flexibility as ECDSA version
 - Eligibility checking before claiming
@@ -131,7 +131,7 @@ npx hardhat run scripts/deploy/02-deploy-zkml-prover.js --network sepolia
 npx hardhat test --config hardhat.config.cjs
 
 # Run specific test files
-npx hardhat test test/ZKMLUnchainProver.test.js --config hardhat.config.cjs
+npx hardhat test test/ZKMLOnChainVerifier.test.js --config hardhat.config.cjs
 npx hardhat test test/ReputationAirdropScaled.test.js --config hardhat.config.cjs
 ```
 
@@ -155,9 +155,9 @@ The test suite covers:
 
 ### Replay Protection
 
-- **ZKMLUnchainProver**: Proof hash tracking prevents reuse
+- **ZKMLOnChainVerifier**: Proof hash tracking prevents reuse
 - **ECDSA Airdrop**: Digest-based protection with user/model/input hashes
-- **ZK Airdrop**: Relies on ZKMLUnchainProver's protection
+- **ZK Airdrop**: Relies on ZKMLOnChainVerifier's protection
 
 ### Input Validation
 

@@ -1,4 +1,4 @@
-// Deploy ZKMLUnchainProver contract
+// Deploy ZKMLOnChainVerifier contract
 const { ethers } = require("hardhat");
 
 async function main() {
@@ -7,15 +7,15 @@ async function main() {
     throw new Error("VERIFIER_ADDRESS environment variable not set");
   }
 
-  console.log("Deploying ZKMLUnchainProver...");
+  console.log("Deploying ZKMLOnChainVerifier...");
   console.log("Using verifier address:", verifierAddress);
 
-  const ZKMLUnchainProver = await ethers.getContractFactory("ZKMLUnchainProver");
-  const zkmlProver = await ZKMLUnchainProver.deploy(verifierAddress);
-  await zkmlProver.waitForDeployment();
+  const ZKMLOnChainVerifier = await ethers.getContractFactory("ZKMLOnChainVerifier");
+  const zkmlVerifier = await ZKMLOnChainVerifier.deploy(verifierAddress);
+  await zkmlVerifier.waitForDeployment();
 
-  const address = await zkmlProver.getAddress();
-  console.log("ZKMLUnchainProver deployed to:", address);
+  const address = await zkmlVerifier.getAddress();
+  console.log("ZKMLOnChainVerifier deployed to:", address);
 
   return address;
 }

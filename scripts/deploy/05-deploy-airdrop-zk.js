@@ -14,7 +14,7 @@ async function main() {
 
   console.log("Deploying ReputationAirdropZKScaled...");
   console.log("Using token address:", tokenAddress);
-  console.log("Using ZKML prover address:", zkmlAddress);
+  console.log("Using ZKML verifier address:", zkmlAddress);
 
   // Contract parameters
   const campaign = ethers.keccak256(ethers.toUtf8Bytes("shadowgraph-zk-airdrop-v1"));

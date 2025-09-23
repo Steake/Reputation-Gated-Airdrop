@@ -35,8 +35,8 @@ if [ -z "$VERIFIER_ADDRESS" ]; then
     exit 1
 fi
 
-echo "2. Deploying ZKMLUnchainProver..." | tee -a "$LOG_FILE"
-ZKML_ADDRESS=$(VERIFIER_ADDRESS="$VERIFIER_ADDRESS" npx hardhat run scripts/deploy/02-deploy-zkml-prover.js --config "$CONFIG_FILE" --network "$NETWORK" 2>&1 | tee -a "$LOG_FILE" | grep "ZKMLUnchainProver deployed to:" | cut -d' ' -f4)
+echo "2. Deploying ZKMLOnChainVerifier..." | tee -a "$LOG_FILE"
+ZKML_ADDRESS=$(VERIFIER_ADDRESS="$VERIFIER_ADDRESS" npx hardhat run scripts/deploy/02-deploy-zkml-verifier.js --config "$CONFIG_FILE" --network "$NETWORK" 2>&1 | tee -a "$LOG_FILE" | grep "ZKMLOnChainVerifier deployed to:" | cut -d' ' -f4)
 
 echo "3. Deploying MockERC20..." | tee -a "$LOG_FILE"
 TOKEN_ADDRESS=$(npx hardhat run scripts/deploy/03-deploy-token.js --config "$CONFIG_FILE" --network "$NETWORK" 2>&1 | tee -a "$LOG_FILE" | grep "MockERC20 deployed to:" | cut -d' ' -f4)
@@ -51,13 +51,13 @@ echo "✅ All contracts deployed successfully!" | tee -a "$LOG_FILE"
 echo "" | tee -a "$LOG_FILE"
 echo "📋 Contract Addresses:" | tee -a "$LOG_FILE"
 echo "  MockVerifier: $VERIFIER_ADDRESS" | tee -a "$LOG_FILE"
-echo "  ZKMLUnchainProver: $ZKML_ADDRESS" | tee -a "$LOG_FILE"
+echo "  ZKMLOnChainVerifier: $ZKML_ADDRESS" | tee -a "$LOG_FILE"
 echo "  MockERC20: $TOKEN_ADDRESS" | tee -a "$LOG_FILE"
 echo "  ReputationAirdropScaled: $AIRDROP_ECDSA_ADDRESS" | tee -a "$LOG_FILE"
 echo "  ReputationAirdropZKScaled: $AIRDROP_ZK_ADDRESS" | tee -a "$LOG_FILE"
 echo "" | tee -a "$LOG_FILE"
 echo "📝 Update your .env file with these addresses:" | tee -a "$LOG_FILE"
-echo "VITE_ZKML_PROVER_ADDR=\"$ZKML_ADDRESS\"" | tee -a "$LOG_FILE"
+echo "VITE_ZKML_VERIFIER_ADDR=\"$ZKML_ADDRESS\"" | tee -a "$LOG_FILE"
 echo "VITE_AIRDROP_ECDSA_ADDR=\"$AIRDROP_ECDSA_ADDRESS\"" | tee -a "$LOG_FILE"
 echo "VITE_AIRDROP_ZK_ADDR=\"$AIRDROP_ZK_ADDRESS\"" | tee -a "$LOG_FILE"
 echo "VITE_TOKEN_ADDR=\"$TOKEN_ADDRESS\"" | tee -a "$LOG_FILE"

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./ZKMLUnchainProver.sol";
+import "./ZKMLOnChainVerifier.sol";
 
 /**
  * @title ReputationAirdropZKScaled
@@ -9,7 +9,7 @@ import "./ZKMLUnchainProver.sol";
  * 
  * This contract allows users to claim airdrop tokens based on their reputation
  * scores using zero-knowledge proofs for verification. It integrates with the
- * ZKMLUnchainProver contract to verify reputation proofs.
+ * ZKMLOnChainVerifier contract to verify reputation proofs.
  */
 contract ReputationAirdropZKScaled {
     // Token interface
@@ -23,7 +23,7 @@ contract ReputationAirdropZKScaled {
 
     // Contract configuration
     IERC20 public immutable token;
-    ZKMLUnchainProver public immutable zkProver;
+    ZKMLOnChainVerifier public immutable zkVerifier;
     bytes32 public immutable campaign;
     
     // Payout parameters
@@ -67,7 +67,7 @@ contract ReputationAirdropZKScaled {
     /**
      * @dev Constructor
      * @param _token ERC20 token address for payouts
-     * @param _zkProver ZKMLUnchainProver contract address
+     * @param _zkVerifier ZKMLOnChainVerifier contract address
      * @param _campaign Campaign identifier
      * @param _floorScore Minimum score for eligibility
      * @param _capScore Score for maximum payout
@@ -78,7 +78,7 @@ contract ReputationAirdropZKScaled {
      */
     constructor(
         IERC20 _token,
-        ZKMLUnchainProver _zkProver,
+        ZKMLOnChainVerifier _zkVerifier,
         bytes32 _campaign,
         uint256 _floorScore,
         uint256 _capScore,
@@ -88,13 +88,13 @@ contract ReputationAirdropZKScaled {
         uint256 _maxReputationAge
     ) {
         require(address(_token) != address(0), "Invalid token address");
-        require(address(_zkProver) != address(0), "Invalid ZK prover address");
+        require(address(_zkVerifier) != address(0), "Invalid ZK verifier address");
         require(_capScore > _floorScore, "Invalid score range");
         require(_maxPayout > _minPayout, "Invalid payout range");
         require(_maxReputationAge > 0, "Invalid reputation age");
 
         token = _token;
-        zkProver = _zkProver;
+        zkVerifier = _zkVerifier;
         campaign = _campaign;
         floorScore = _floorScore;
         capScore = _capScore;
@@ -120,12 +120,12 @@ contract ReputationAirdropZKScaled {
 
         // Check if user has a valid, recent reputation proof
         require(
-            zkProver.isReputationValid(msg.sender, maxReputationAge),
+            zkVerifier.isReputationValid(msg.sender, maxReputationAge),
             "No valid reputation proof"
         );
 
-        // Get the verified reputation from the ZK prover
-        (uint256 verifiedScore, ) = zkProver.getVerifiedReputation(msg.sender);
+        // Get the verified reputation from the ZK verifier
+        (uint256 verifiedScore, ) = zkVerifier.getVerifiedReputation(msg.sender);
         require(verifiedScore == score, "Score mismatch with verified reputation");
 
         // Mark as claimed
@@ -208,11 +208,11 @@ contract ReputationAirdropZKScaled {
             return (false, 0, 0);
         }
 
-        if (!zkProver.isReputationValid(user, maxReputationAge)) {
+        if (!zkVerifier.isReputationValid(user, maxReputationAge)) {
             return (false, 0, 0);
         }
 
-        (uint256 verifiedScore, ) = zkProver.getVerifiedReputation(user);
+        (uint256 verifiedScore, ) = zkVerifier.getVerifiedReputation(user);
         
         if (verifiedScore < floorScore) {
             return (false, verifiedScore, 0);
@@ -288,17 +288,17 @@ contract ReputationAirdropZKScaled {
 
     /**
      * @dev Get ZK-specific parameters
-     * @return _zkProver ZK prover contract address
+     * @return _zkVerifier ZK verifier contract address
      * @return _maxReputationAge Maximum reputation age
      * @return _campaign Campaign identifier
      */
     function getZKParameters()
         external view returns (
-            address _zkProver,
+            address _zkVerifier,
             uint256 _maxReputationAge,
             bytes32 _campaign
         )
     {
-        return (address(zkProver), maxReputationAge, campaign);
+        return (address(zkVerifier), maxReputationAge, campaign);
     }
 }
