@@ -1,6 +1,7 @@
 <script lang="ts">
   import "../app.css";
   import WalletButton from "$lib/components/WalletButton.svelte";
+  import WalletMockController from "$lib/components/WalletMockController.svelte";
   import MobileMenu from "$lib/components/modals/MobileMenu.svelte";
   import { toasts } from "$lib/stores/ui";
   import Toast from "$lib/components/Toast.svelte";
@@ -271,6 +272,9 @@
     </div>
   </footer>
 </div>
+
+<!-- Wallet Mock Controller (only in development/demo mode) -->
+<WalletMockController />
 
 <!-- Toast Container -->
 <div
