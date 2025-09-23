@@ -17,7 +17,7 @@ export type MockWalletState = {
 
 // Default mock state
 const defaultMockState: MockWalletState = {
-  enabled: false,
+  enabled: true, // Start with mock mode enabled for testing
   connectionState: "disconnected",
   walletType: null,
   address: null,
@@ -29,6 +29,29 @@ const defaultMockState: MockWalletState = {
   simulateSlowConnection: false,
   autoFailConnection: false,
 };
+
+// Global access for testing
+if (typeof window !== 'undefined') {
+  (window as any).mockWalletTesting = {
+    setHighRepUser: () => walletMockActions.presets.highReputationUser(),
+    setMediumRepUser: () => walletMockActions.presets.mediumReputationUser(),
+    setThresholdUser: () => walletMockActions.presets.thresholdUser(),
+    setIneligibleUser: () => walletMockActions.presets.ineligibleUser(),
+    setConnectionError: () => walletMockActions.presets.connectionError(),
+    setDisconnected: () => walletMockActions.presets.disconnected(),
+    getCurrentState: () => {
+      const state = get(walletMock);
+      return {
+        enabled: state.enabled,
+        connectionState: state.connectionState,
+        walletType: state.walletType,
+        address: state.address,
+        userReputationTier: state.userReputationTier,
+        error: state.error
+      };
+    }
+  };
+}
 
 export const walletMock = writable<MockWalletState>(defaultMockState);
 
