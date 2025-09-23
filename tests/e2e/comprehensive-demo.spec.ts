@@ -369,7 +369,7 @@ test.describe("Complete User Journey Demos", () => {
       await page.setViewportSize({ width: 1280, height: 720 });
       
       // Check dark/light mode toggle
-      const themeToggle = page.locator('button:has([data-icon="moon"]'), page.locator('button:has([data-icon="sun"])'));
+      const themeToggle = page.locator('button[aria-label="Toggle dark mode"], button:has-text("Toggle")').first();
       if (await themeToggle.isVisible()) {
         await themeToggle.click();
         console.log("Demo note: Dark/light mode toggle for user preference");

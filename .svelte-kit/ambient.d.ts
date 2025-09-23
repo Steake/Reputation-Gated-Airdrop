@@ -26,6 +26,18 @@
  * ```
  */
 declare module '$env/static/private' {
+	export const VITE_CHAIN_ID: string;
+	export const VITE_RPC_URL: string;
+	export const VITE_TOKEN_ADDR: string;
+	export const VITE_CAMPAIGN: string;
+	export const VITE_FLOOR_SCORE: string;
+	export const VITE_CAP_SCORE: string;
+	export const VITE_MIN_PAYOUT: string;
+	export const VITE_MAX_PAYOUT: string;
+	export const VITE_CURVE: string;
+	export const VITE_WALLETCONNECT_PROJECT_ID: string;
+	export const VITE_AIRDROP_ECDSA_ADDR: string;
+	export const VITE_DEBUG: string;
 	export const GITHUB_STATE: string;
 	export const COPILOT_AGENT_ACTION: string;
 	export const COPILOT_AGENT_START_TIME_SEC: string;
@@ -38,6 +50,7 @@ declare module '$env/static/private' {
 	export const COPILOT_AGENT_ONLINE_EVALUATION_DISABLED: string;
 	export const PIPX_HOME: string;
 	export const npm_node_execpath: string;
+	export const BROWSER: string;
 	export const JAVA_HOME_8_X64: string;
 	export const SHLVL: string;
 	export const npm_config_noproxy: string;
@@ -69,6 +82,7 @@ declare module '$env/static/private' {
 	export const DOTNET_SKIP_FIRST_TIME_EXPERIENCE: string;
 	export const JAVA_HOME_17_X64: string;
 	export const ImageVersion: string;
+	export const FORCE_COLOR: string;
 	export const BLACKBIRD_MODE: string;
 	export const LOGNAME: string;
 	export const COPILOT_AGENT_PR_COMMIT_COUNT: string;
@@ -94,6 +108,7 @@ declare module '$env/static/private' {
 	export const GITHUB_RUN_ID: string;
 	export const TERM: string;
 	export const npm_config_cache: string;
+	export const DEBUG_COLORS: string;
 	export const GITHUB_REF_TYPE: string;
 	export const BOOTSTRAP_HASKELL_NONINTERACTIVE: string;
 	export const GITHUB_WORKFLOW_SHA: string;
@@ -151,6 +166,7 @@ declare module '$env/static/private' {
 	export const COPILOT_AGENT_SOURCE_ENVIRONMENT: string;
 	export const GITHUB_ACTOR: string;
 	export const ANDROID_SDK_ROOT: string;
+	export const PLAYWRIGHT_TEST_BASE_URL: string;
 	export const npm_config_globalconfig: string;
 	export const npm_config_init_module: string;
 	export const GITHUB_PATH: string;
@@ -199,7 +215,11 @@ declare module '$env/static/private' {
  * ```
  */
 declare module '$env/static/public' {
-	
+	export const PUBLIC_CHAIN_ID: string;
+	export const PUBLIC_RPC_URL: string;
+	export const PUBLIC_TOKEN_ADDR: string;
+	export const PUBLIC_CAMPAIGN: string;
+	export const PUBLIC_WALLETCONNECT_PROJECT_ID: string;
 }
 
 /**
@@ -216,6 +236,18 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
+		VITE_CHAIN_ID: string;
+		VITE_RPC_URL: string;
+		VITE_TOKEN_ADDR: string;
+		VITE_CAMPAIGN: string;
+		VITE_FLOOR_SCORE: string;
+		VITE_CAP_SCORE: string;
+		VITE_MIN_PAYOUT: string;
+		VITE_MAX_PAYOUT: string;
+		VITE_CURVE: string;
+		VITE_WALLETCONNECT_PROJECT_ID: string;
+		VITE_AIRDROP_ECDSA_ADDR: string;
+		VITE_DEBUG: string;
 		GITHUB_STATE: string;
 		COPILOT_AGENT_ACTION: string;
 		COPILOT_AGENT_START_TIME_SEC: string;
@@ -228,6 +260,7 @@ declare module '$env/dynamic/private' {
 		COPILOT_AGENT_ONLINE_EVALUATION_DISABLED: string;
 		PIPX_HOME: string;
 		npm_node_execpath: string;
+		BROWSER: string;
 		JAVA_HOME_8_X64: string;
 		SHLVL: string;
 		npm_config_noproxy: string;
@@ -259,6 +292,7 @@ declare module '$env/dynamic/private' {
 		DOTNET_SKIP_FIRST_TIME_EXPERIENCE: string;
 		JAVA_HOME_17_X64: string;
 		ImageVersion: string;
+		FORCE_COLOR: string;
 		BLACKBIRD_MODE: string;
 		LOGNAME: string;
 		COPILOT_AGENT_PR_COMMIT_COUNT: string;
@@ -284,6 +318,7 @@ declare module '$env/dynamic/private' {
 		GITHUB_RUN_ID: string;
 		TERM: string;
 		npm_config_cache: string;
+		DEBUG_COLORS: string;
 		GITHUB_REF_TYPE: string;
 		BOOTSTRAP_HASKELL_NONINTERACTIVE: string;
 		GITHUB_WORKFLOW_SHA: string;
@@ -341,6 +376,7 @@ declare module '$env/dynamic/private' {
 		COPILOT_AGENT_SOURCE_ENVIRONMENT: string;
 		GITHUB_ACTOR: string;
 		ANDROID_SDK_ROOT: string;
+		PLAYWRIGHT_TEST_BASE_URL: string;
 		npm_config_globalconfig: string;
 		npm_config_init_module: string;
 		GITHUB_PATH: string;
@@ -394,6 +430,11 @@ declare module '$env/dynamic/private' {
  */
 declare module '$env/dynamic/public' {
 	export const env: {
+		PUBLIC_CHAIN_ID: string;
+		PUBLIC_RPC_URL: string;
+		PUBLIC_TOKEN_ADDR: string;
+		PUBLIC_CAMPAIGN: string;
+		PUBLIC_WALLETCONNECT_PROJECT_ID: string;
 		[key: `PUBLIC_${string}`]: string | undefined;
 	}
 }
