@@ -43,3 +43,4 @@ gasReporterOutput.json
 
 # Deployment logs
 logs/
+.svelte-kit/
