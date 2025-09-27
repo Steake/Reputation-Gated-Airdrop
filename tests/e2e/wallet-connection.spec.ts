@@ -3,18 +3,21 @@ import { test, expect } from "@playwright/test";
 test.describe("Wallet Connection", () => {
   test("should display wallet connection modal on desktop", async ({ page }) => {
     await page.goto("/");
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState("networkidle");
 
     // Click connect wallet button with more resilient selector
-    const connectButton = page.locator('button').filter({ hasText: /connect/i }).first();
-    
+    const connectButton = page
+      .locator("button")
+      .filter({ hasText: /connect/i })
+      .first();
+
     // Check if button exists before trying to click
     const buttonExists = await connectButton.isVisible().catch(() => false);
     if (!buttonExists) {
-      console.log('Connect wallet button not found');
+      console.log("Connect wallet button not found");
       return;
     }
-    
+
     await connectButton.click();
 
     // Give modal time to appear and be more flexible about what we expect
@@ -23,32 +26,39 @@ test.describe("Wallet Connection", () => {
     // Check if any modal-like content appears (more flexible)
     const modalSelectors = [
       '[role="dialog"]',
-      '.modal',
+      ".modal",
       '[data-testid="wallet-modal"]',
-      'text=metamask',
-      'text=coinbase',
-      'text=trust'
+      "text=metamask",
+      "text=coinbase",
+      "text=trust",
     ];
-    
+
     let modalFound = false;
     for (const selector of modalSelectors) {
-      const exists = await page.locator(selector).first().isVisible().catch(() => false);
+      const exists = await page
+        .locator(selector)
+        .first()
+        .isVisible()
+        .catch(() => false);
       if (exists) {
         modalFound = true;
         break;
       }
     }
-    
-    console.log('Modal or wallet-related content found:', modalFound);
+
+    console.log("Modal or wallet-related content found:", modalFound);
   });
 
   test("should display wallet connection modal on mobile", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto("/");
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState("networkidle");
 
     // Find and click connect wallet button with more flexible selectors
-    const connectButton = page.locator('button').filter({ hasText: /connect wallet/i }).first();
+    const connectButton = page
+      .locator("button")
+      .filter({ hasText: /connect wallet/i })
+      .first();
     await expect(connectButton).toBeVisible({ timeout: 10000 });
     await connectButton.click();
 
@@ -57,29 +67,38 @@ test.describe("Wallet Connection", () => {
 
     // Check if any wallet-related content appears (flexible)
     await page.waitForTimeout(1000);
-    const hasWalletContent = await page.locator('text=wallet, text=connect, text=MetaMask').first().isVisible().catch(() => false);
-    console.log('Mobile wallet modal content found:', hasWalletContent);
+    const hasWalletContent = await page
+      .locator("text=wallet, text=connect, text=MetaMask")
+      .first()
+      .isVisible()
+      .catch(() => false);
+    console.log("Mobile wallet modal content found:", hasWalletContent);
   });
 
   test("should close modal when clicking close button", async ({ page }) => {
     await page.goto("/");
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState("networkidle");
 
     // Open modal with more flexible selectors
-    const connectButton = page.locator('button').filter({ hasText: /connect wallet/i }).first();
+    const connectButton = page
+      .locator("button")
+      .filter({ hasText: /connect wallet/i })
+      .first();
     await expect(connectButton).toBeVisible({ timeout: 10000 });
     await connectButton.click();
 
     // Wait for modal and look for close functionality
     await page.waitForTimeout(1000);
-    
+
     // Try to find close button or click outside modal
-    const closeButton = page.locator('button[aria-label*="close"], button[title*="close"], button:has-text("×")').first();
+    const closeButton = page
+      .locator('button[aria-label*="close"], button[title*="close"], button:has-text("×")')
+      .first();
     if (await closeButton.isVisible()) {
       await closeButton.click();
     } else {
       // Alternative: press Escape key
-      await page.keyboard.press('Escape');
+      await page.keyboard.press("Escape");
     }
   });
 

@@ -1,9 +1,16 @@
-import {
-  PUBLIC_CHAIN_ID,
-  PUBLIC_RPC_URL,
-  PUBLIC_TOKEN_ADDR,
-  PUBLIC_CAMPAIGN,
-} from "$env/static/public";
+// Helper function to get environment variables with fallbacks
+function getEnvVar(key: string, fallback: string): string {
+  if (typeof window !== 'undefined') {
+    // Browser environment
+    try {
+      return (import.meta.env as any)[`PUBLIC_${key}`] || (import.meta.env as any)[`VITE_${key}`] || fallback;
+    } catch {
+      return fallback;
+    }
+  }
+  // Server environment
+  return process.env[`PUBLIC_${key}`] || process.env[`VITE_${key}`] || fallback;
+}
 
 export type ChainInfo = {
   chainId: number;
@@ -13,14 +20,15 @@ export type ChainInfo = {
 };
 
 export function getChainInfo(): ChainInfo {
-  const chainIdNum = Number(PUBLIC_CHAIN_ID);
+  const chainIdStr = getEnvVar("CHAIN_ID", "11155111");
+  const chainIdNum = Number(chainIdStr);
   if (!Number.isFinite(chainIdNum)) {
-    throw new Error("PUBLIC_CHAIN_ID missing or invalid");
+    throw new Error("CHAIN_ID missing or invalid");
   }
   return {
     chainId: chainIdNum,
-    rpcUrl: PUBLIC_RPC_URL,
-    tokenAddress: PUBLIC_TOKEN_ADDR as `0x${string}`,
-    campaign: PUBLIC_CAMPAIGN as `0x${string}`,
+    rpcUrl: getEnvVar("RPC_URL", "https://rpc.sepolia.org"),
+    tokenAddress: getEnvVar("TOKEN_ADDR", "0x1234567890123456789012345678901234567890") as `0x${string}`,
+    campaign: getEnvVar("CAMPAIGN", "0x1234567890123456789012345678901234567890123456789012345678901234") as `0x${string}`,
   };
 }

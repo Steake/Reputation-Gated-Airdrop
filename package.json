@@ -9,11 +9,16 @@
     "test": "npm run test:unit",
     "test:unit": "vitest",
     "test:e2e": "playwright test",
+    "test:contracts": "npx hardhat test --config hardhat.config.cjs",
+    "compile:contracts": "npx hardhat compile --config hardhat.config.cjs",
+    "deploy:contracts": "./scripts/deploy/deploy-contracts.sh",
+    "deploy:sepolia": "./scripts/deploy/deploy-contracts.sh sepolia",
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
-    "prepare": "husky install"
+    "prepare": "command -v husky >/dev/null 2>&1 && husky install || echo 'Husky not available, skipping git hooks setup'"
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
     "@playwright/test": "^1.44.0",
     "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/kit": "^2.0.0",
@@ -26,6 +31,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-svelte": "^2.36.0",
     "globals": "^15.0.0",
+    "hardhat": "^2.26.0",
     "husky": "^8.0.0",
     "jsdom": "^24.0.0",
     "lint-staged": "^15.2.2",

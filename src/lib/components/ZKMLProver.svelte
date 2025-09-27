@@ -2,7 +2,7 @@
   import { wallet } from "$lib/stores/wallet";
   import { zkProofStore, zkProofActions } from "$lib/stores/zkproof";
   import { readContractEthers, writeContractEthers } from "$lib/web3/ethers";
-  import zkmlUnchainProverAbi from "$lib/abi/zkmlUnchainProver.abi.json";
+  import zkmlOnChainVerifierAbi from "$lib/abi/zkmlOnChainVerifier.abi.json";
   import Spinner from "./Spinner.svelte";
   import { CheckCircle, AlertCircle, Zap } from "lucide-svelte";
   import { toasts } from "$lib/stores/ui";
@@ -51,7 +51,7 @@
     try {
       const txHash = await writeContractEthers(
         contractAddress,
-        zkmlUnchainProverAbi,
+        zkmlOnChainVerifierAbi,
         "verifyReputationProof",
         [$zkProofStore.proofData.proof, $zkProofStore.proofData.publicInputs]
       );
@@ -76,7 +76,7 @@
     try {
       const [reputation, timestamp] = await readContractEthers<[bigint, bigint]>(
         contractAddress,
-        zkmlUnchainProverAbi,
+        zkmlOnChainVerifierAbi,
         "getVerifiedReputation",
         [$wallet.address]
       );

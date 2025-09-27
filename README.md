@@ -20,6 +20,22 @@ This is a SvelteKit dApp client for participating in a Shadowgraph reputation-sc
 - **Icons**: `lucide-svelte`
 - **Testing**: Vitest (unit), Playwright (e2e)
 
+## Documentation & Demos 📚
+
+### Complete User Guides
+- **[User Guide](./USER_GUIDE.md)** - Comprehensive end-to-end user documentation
+- **[Demo Scripts](./DEMO_SCRIPTS.md)** - Ready-to-use presentation scripts (2min, 5min, 10min)
+- **[Web of Trust Guide](./WEB_OF_TRUST_GUIDE.md)** - Interactive network visualization guide
+
+### Technical Documentation
+- **[Smart Contract Documentation](./contracts/README.md)** - Complete contract infrastructure guide
+- **[Architecture Documentation](./documentation/)** - ZKML and EBSL algorithm specifications
+
+### Live Demos & Testing
+- **Comprehensive E2E Tests**: `npm run test:e2e` - Full user journey validation
+- **Interactive Demos**: Access `/debug` page for advanced testing features
+- **Mock System**: Full functionality available without backend dependencies
+
 ---
 
 ## Getting Started

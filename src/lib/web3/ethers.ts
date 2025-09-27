@@ -2,7 +2,19 @@ import { ethers } from "ethers";
 import { browser } from "$app/environment";
 import { get } from "svelte/store";
 import { wallets } from "$lib/web3/onboard";
-import { PUBLIC_RPC_URL, PUBLIC_CHAIN_ID } from "$env/static/public";
+
+// Helper function to get environment variables with fallbacks
+function getEnvVar(key: string, fallback: string): string {
+  if (browser) {
+    try {
+      return (import.meta.env as any)[`PUBLIC_${key}`] || (import.meta.env as any)[`VITE_${key}`] || fallback;
+    } catch {
+      return fallback;
+    }
+  }
+  // For server-side, use process.env with fallbacks
+  return process.env[`PUBLIC_${key}`] || process.env[`VITE_${key}`] || fallback;
+}
 
 /**
  * Ethers.js integration for Web3 functionality
@@ -19,7 +31,7 @@ export async function initEthersProvider(): Promise<ethers.Provider> {
   if (!browser) {
     // Server-side: use JsonRpcProvider
     if (!provider) {
-      provider = new ethers.JsonRpcProvider(PUBLIC_RPC_URL, parseInt(PUBLIC_CHAIN_ID));
+      provider = new ethers.JsonRpcProvider(getEnvVar("RPC_URL", "https://rpc.sepolia.org"), parseInt(getEnvVar("CHAIN_ID", "11155111")));
     }
     return provider;
   }
@@ -33,7 +45,7 @@ export async function initEthersProvider(): Promise<ethers.Provider> {
 
   // Fallback to RPC provider
   if (!provider) {
-    provider = new ethers.JsonRpcProvider(PUBLIC_RPC_URL, parseInt(PUBLIC_CHAIN_ID));
+    provider = new ethers.JsonRpcProvider(getEnvVar("RPC_URL", "https://rpc.sepolia.org"), parseInt(getEnvVar("CHAIN_ID", "11155111")));
   }
   return provider;
 }

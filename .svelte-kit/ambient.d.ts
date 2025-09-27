@@ -26,18 +26,13 @@
  * ```
  */
 declare module '$env/static/private' {
-	export const SUDO_GID: string;
 	export const GITHUB_STATE: string;
 	export const COPILOT_AGENT_ACTION: string;
 	export const COPILOT_AGENT_START_TIME_SEC: string;
-	export const CURL_CA_BUNDLE: string;
 	export const DOTNET_NOLOGO: string;
-	export const MAIL: string;
-	export const NODE_EXTRA_CA_CERTS: string;
 	export const USER: string;
 	export const npm_config_user_agent: string;
 	export const CI: string;
-	export const XDG_SESSION_TYPE: string;
 	export const RUNNER_ENVIRONMENT: string;
 	export const GITHUB_ENV: string;
 	export const COPILOT_AGENT_ONLINE_EVALUATION_DISABLED: string;
@@ -50,7 +45,6 @@ declare module '$env/static/private' {
 	export const OLDPWD: string;
 	export const RUNNER_TEMP: string;
 	export const GITHUB_EVENT_PATH: string;
-	export const CAROOT: string;
 	export const COPILOT_AGENT_FIREWALL_RULESET_ALLOW_LIST: string;
 	export const npm_package_json: string;
 	export const JAVA_HOME_11_X64: string;
@@ -63,13 +57,11 @@ declare module '$env/static/private' {
 	export const GITHUB_RETENTION_DAYS: string;
 	export const GITHUB_REPOSITORY_OWNER_ID: string;
 	export const POWERSHELL_DISTRIBUTION_CHANNEL: string;
-	export const SSL_CERT_FILE: string;
 	export const AZURE_EXTENSION_DIR: string;
 	export const GITHUB_HEAD_REF: string;
 	export const npm_config_userconfig: string;
 	export const npm_config_local_prefix: string;
 	export const SYSTEMD_EXEC_PID: string;
-	export const DBUS_SESSION_BUS_ADDRESS: string;
 	export const GITHUB_GRAPHQL_URL: string;
 	export const GITHUB_DOWNLOADS_URL: string;
 	export const COLOR: string;
@@ -77,7 +69,6 @@ declare module '$env/static/private' {
 	export const DOTNET_SKIP_FIRST_TIME_EXPERIENCE: string;
 	export const JAVA_HOME_17_X64: string;
 	export const ImageVersion: string;
-	export const SUDO_UID: string;
 	export const BLACKBIRD_MODE: string;
 	export const LOGNAME: string;
 	export const COPILOT_AGENT_PR_COMMIT_COUNT: string;
@@ -97,13 +88,11 @@ declare module '$env/static/private' {
 	export const npm_config_npm_version: string;
 	export const COPILOT_AGENT_BRANCH_NAME: string;
 	export const MEMORY_PRESSURE_WATCH: string;
-	export const XDG_SESSION_CLASS: string;
 	export const GOROOT_1_24_X64: string;
 	export const ACTIONS_RUNNER_ACTION_ARCHIVE_CACHE: string;
 	export const COPILOT_AGENT_FIREWALL_ENABLE_RULESET_ALLOW_LIST: string;
 	export const GITHUB_RUN_ID: string;
 	export const TERM: string;
-	export const XDG_SESSION_ID: string;
 	export const npm_config_cache: string;
 	export const GITHUB_REF_TYPE: string;
 	export const BOOTSTRAP_HASKELL_NONINTERACTIVE: string;
@@ -124,7 +113,6 @@ declare module '$env/static/private' {
 	export const INVOCATION_ID: string;
 	export const RUNNER_TOOL_CACHE: string;
 	export const GITHUB_UPLOADS_URL: string;
-	export const REQUESTS_CA_BUNDLE: string;
 	export const NODE: string;
 	export const npm_package_name: string;
 	export const GITHUB_ACTION: string;
@@ -134,7 +122,6 @@ declare module '$env/static/private' {
 	export const RUNNER_ARCH: string;
 	export const XDG_RUNTIME_DIR: string;
 	export const AGENT_TOOLSDIRECTORY: string;
-	export const SSL_CERT_DIR: string;
 	export const LANG: string;
 	export const VCPKG_INSTALLATION_ROOT: string;
 	export const CONDA: string;
@@ -143,7 +130,6 @@ declare module '$env/static/private' {
 	export const GITHUB_REF_NAME: string;
 	export const GITHUB_REPOSITORY: string;
 	export const npm_lifecycle_script: string;
-	export const SUDO_COMMAND: string;
 	export const ANDROID_NDK_ROOT: string;
 	export const GITHUB_ACTION_REF: string;
 	export const DEBIAN_FRONTEND: string;
@@ -155,9 +141,7 @@ declare module '$env/static/private' {
 	export const npm_lifecycle_event: string;
 	export const GITHUB_REF_PROTECTED: string;
 	export const GITHUB_WORKSPACE: string;
-	export const SUDO_USER: string;
 	export const ACCEPT_EULA: string;
-	export const DOTNET_SYSTEM_NET_DISABLEIPV6: string;
 	export const GITHUB_JOB: string;
 	export const GITHUB_SHA: string;
 	export const GITHUB_RUN_ATTEMPT: string;
@@ -166,7 +150,6 @@ declare module '$env/static/private' {
 	export const COPILOT_AGENT_ISSUE_NUMBER: string;
 	export const COPILOT_AGENT_SOURCE_ENVIRONMENT: string;
 	export const GITHUB_ACTOR: string;
-	export const FIREWALL_RULESET_CONTENT: string;
 	export const ANDROID_SDK_ROOT: string;
 	export const npm_config_globalconfig: string;
 	export const npm_config_init_module: string;
@@ -195,7 +178,6 @@ declare module '$env/static/private' {
 	export const SELENIUM_JAR_PATH: string;
 	export const MEMORY_PRESSURE_WRITE: string;
 	export const COPILOT_AGENT_COMMIT_EMAIL: string;
-	export const COPILOT_AGENT_FIREWALL_LOG_FILE: string;
 	export const COPILOT_FEATURE_FLAGS: string;
 	export const COPILOT_API_URL: string;
 	export const ANDROID_NDK_HOME: string;
@@ -204,13 +186,7 @@ declare module '$env/static/private' {
 	export const COPILOT_AGENT_TIMEOUT_MIN: string;
 	export const INIT_CWD: string;
 	export const EDITOR: string;
-	export const TEST: string;
-	export const VITEST: string;
 	export const NODE_ENV: string;
-	export const PROD: string;
-	export const DEV: string;
-	export const BASE_URL: string;
-	export const MODE: string;
 }
 
 /**
@@ -240,18 +216,13 @@ declare module '$env/static/public' {
  */
 declare module '$env/dynamic/private' {
 	export const env: {
-		SUDO_GID: string;
 		GITHUB_STATE: string;
 		COPILOT_AGENT_ACTION: string;
 		COPILOT_AGENT_START_TIME_SEC: string;
-		CURL_CA_BUNDLE: string;
 		DOTNET_NOLOGO: string;
-		MAIL: string;
-		NODE_EXTRA_CA_CERTS: string;
 		USER: string;
 		npm_config_user_agent: string;
 		CI: string;
-		XDG_SESSION_TYPE: string;
 		RUNNER_ENVIRONMENT: string;
 		GITHUB_ENV: string;
 		COPILOT_AGENT_ONLINE_EVALUATION_DISABLED: string;
@@ -264,7 +235,6 @@ declare module '$env/dynamic/private' {
 		OLDPWD: string;
 		RUNNER_TEMP: string;
 		GITHUB_EVENT_PATH: string;
-		CAROOT: string;
 		COPILOT_AGENT_FIREWALL_RULESET_ALLOW_LIST: string;
 		npm_package_json: string;
 		JAVA_HOME_11_X64: string;
@@ -277,13 +247,11 @@ declare module '$env/dynamic/private' {
 		GITHUB_RETENTION_DAYS: string;
 		GITHUB_REPOSITORY_OWNER_ID: string;
 		POWERSHELL_DISTRIBUTION_CHANNEL: string;
-		SSL_CERT_FILE: string;
 		AZURE_EXTENSION_DIR: string;
 		GITHUB_HEAD_REF: string;
 		npm_config_userconfig: string;
 		npm_config_local_prefix: string;
 		SYSTEMD_EXEC_PID: string;
-		DBUS_SESSION_BUS_ADDRESS: string;
 		GITHUB_GRAPHQL_URL: string;
 		GITHUB_DOWNLOADS_URL: string;
 		COLOR: string;
@@ -291,7 +259,6 @@ declare module '$env/dynamic/private' {
 		DOTNET_SKIP_FIRST_TIME_EXPERIENCE: string;
 		JAVA_HOME_17_X64: string;
 		ImageVersion: string;
-		SUDO_UID: string;
 		BLACKBIRD_MODE: string;
 		LOGNAME: string;
 		COPILOT_AGENT_PR_COMMIT_COUNT: string;
@@ -311,13 +278,11 @@ declare module '$env/dynamic/private' {
 		npm_config_npm_version: string;
 		COPILOT_AGENT_BRANCH_NAME: string;
 		MEMORY_PRESSURE_WATCH: string;
-		XDG_SESSION_CLASS: string;
 		GOROOT_1_24_X64: string;
 		ACTIONS_RUNNER_ACTION_ARCHIVE_CACHE: string;
 		COPILOT_AGENT_FIREWALL_ENABLE_RULESET_ALLOW_LIST: string;
 		GITHUB_RUN_ID: string;
 		TERM: string;
-		XDG_SESSION_ID: string;
 		npm_config_cache: string;
 		GITHUB_REF_TYPE: string;
 		BOOTSTRAP_HASKELL_NONINTERACTIVE: string;
@@ -338,7 +303,6 @@ declare module '$env/dynamic/private' {
 		INVOCATION_ID: string;
 		RUNNER_TOOL_CACHE: string;
 		GITHUB_UPLOADS_URL: string;
-		REQUESTS_CA_BUNDLE: string;
 		NODE: string;
 		npm_package_name: string;
 		GITHUB_ACTION: string;
@@ -348,7 +312,6 @@ declare module '$env/dynamic/private' {
 		RUNNER_ARCH: string;
 		XDG_RUNTIME_DIR: string;
 		AGENT_TOOLSDIRECTORY: string;
-		SSL_CERT_DIR: string;
 		LANG: string;
 		VCPKG_INSTALLATION_ROOT: string;
 		CONDA: string;
@@ -357,7 +320,6 @@ declare module '$env/dynamic/private' {
 		GITHUB_REF_NAME: string;
 		GITHUB_REPOSITORY: string;
 		npm_lifecycle_script: string;
-		SUDO_COMMAND: string;
 		ANDROID_NDK_ROOT: string;
 		GITHUB_ACTION_REF: string;
 		DEBIAN_FRONTEND: string;
@@ -369,9 +331,7 @@ declare module '$env/dynamic/private' {
 		npm_lifecycle_event: string;
 		GITHUB_REF_PROTECTED: string;
 		GITHUB_WORKSPACE: string;
-		SUDO_USER: string;
 		ACCEPT_EULA: string;
-		DOTNET_SYSTEM_NET_DISABLEIPV6: string;
 		GITHUB_JOB: string;
 		GITHUB_SHA: string;
 		GITHUB_RUN_ATTEMPT: string;
@@ -380,7 +340,6 @@ declare module '$env/dynamic/private' {
 		COPILOT_AGENT_ISSUE_NUMBER: string;
 		COPILOT_AGENT_SOURCE_ENVIRONMENT: string;
 		GITHUB_ACTOR: string;
-		FIREWALL_RULESET_CONTENT: string;
 		ANDROID_SDK_ROOT: string;
 		npm_config_globalconfig: string;
 		npm_config_init_module: string;
@@ -409,7 +368,6 @@ declare module '$env/dynamic/private' {
 		SELENIUM_JAR_PATH: string;
 		MEMORY_PRESSURE_WRITE: string;
 		COPILOT_AGENT_COMMIT_EMAIL: string;
-		COPILOT_AGENT_FIREWALL_LOG_FILE: string;
 		COPILOT_FEATURE_FLAGS: string;
 		COPILOT_API_URL: string;
 		ANDROID_NDK_HOME: string;
@@ -418,13 +376,7 @@ declare module '$env/dynamic/private' {
 		COPILOT_AGENT_TIMEOUT_MIN: string;
 		INIT_CWD: string;
 		EDITOR: string;
-		TEST: string;
-		VITEST: string;
 		NODE_ENV: string;
-		PROD: string;
-		DEV: string;
-		BASE_URL: string;
-		MODE: string;
 		[key: `PUBLIC_${string}`]: undefined;
 		[key: `${string}`]: string | undefined;
 	}
