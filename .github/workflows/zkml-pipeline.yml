@@ -22,7 +22,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        yarn install
+          yarn install
 
       - name: Create test environment file
         run: |
