@@ -10,7 +10,7 @@ Before running the demo, ensure the following local setup:
 
 1. **Environment Setup**:
    - Node.js (v18+), Yarn/NPM, Hardhat, TypeScript.
-   - Install dependencies: `yarn install` (or `npm install`).
+   - Install dependencies: `yarn install`.
    - Clone the repo: `/Users/oli/code/Reputation-gated-airdrop`.
    - Set up `.env` with local RPC (e.g., `VITE_RPC_URL=http://localhost:8546`).
 
