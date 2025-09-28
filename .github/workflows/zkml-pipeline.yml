@@ -59,7 +59,7 @@ jobs:
       #   run: npm run test:unit || echo "Unit tests failed but not blocking"
 
       - name: Build application
-        run: npm run build
+        run: yarn build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
