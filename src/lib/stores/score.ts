@@ -1,4 +1,4 @@
-import { writable, derived } from "svelte/store";
+import { writable, derived, get } from "svelte/store";
 import { walletMock } from "./walletMock";
 import { wallet } from "./wallet";
 
@@ -7,11 +7,57 @@ export type ScoreState = {
   value?: number;
   lastUpdated?: string;
   error?: string;
+  cachedAt?: number; // Timestamp when cached
 };
 
 export const score = writable<ScoreState>({
   loading: false,
 });
+
+const CACHE_KEY = 'reputation_score_cache';
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+// Load from cache
+function loadFromCache(address: string): ScoreState | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  if (!address) return null;
+  const cacheString = localStorage.getItem(`${CACHE_KEY}_${address}`);
+  if (!cacheString) return null;
+  const cache = JSON.parse(cacheString);
+  if (Date.now() - cache.cachedAt > CACHE_TTL) {
+    localStorage.removeItem(`${CACHE_KEY}_${address}`);
+    return null;
+  }
+  return cache;
+}
+
+// Save to cache
+function saveToCache(address: string, state: ScoreState): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  if (!address) return;
+  localStorage.setItem(`${CACHE_KEY}_${address}`, JSON.stringify({
+    ...state,
+    cachedAt: Date.now()
+  }));
+}
+
+// Clear cache on wallet change
+if (typeof window !== 'undefined') {
+  wallet.subscribe($wallet => {
+    if ($wallet.address) {
+      // Clear old cache if address changes
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith(`${CACHE_KEY}_`)) {
+          localStorage.removeItem(key);
+        }
+      });
+    }
+  });
+}
 
 // Reputation scores for different tiers (in 1e6 scale)
 const tierScores = {
@@ -21,28 +67,42 @@ const tierScores = {
   ineligible: 450000 // 0.45 - Below threshold
 };
 
-// Create a derived store that automatically updates score based on mock wallet state
+// Create a derived store that automatically updates score based on mock wallet state or cache
 export const mockScore = derived(
   [walletMock, wallet],
   ([$walletMock, $wallet]) => {
+    const address = $walletMock.enabled ? 'mock' : $wallet.address;
+    
+    if (address) {
+      // Try to load from cache first
+      const cached = loadFromCache(address);
+      if (cached && !cached.error) {
+        return cached;
+      }
+    }
+
     if ($walletMock.enabled && $walletMock.connectionState === "connected") {
       // Use mock score based on reputation tier
-      return {
+      const state = {
         loading: false,
         value: tierScores[$walletMock.userReputationTier],
         lastUpdated: new Date().toISOString(),
         error: undefined,
+        cachedAt: Date.now()
       };
-    } else if ($wallet.connected && !$walletMock.enabled) {
+      if (address) saveToCache(address, state);
+      return state;
+    } else if ($wallet.connected && !$walletMock.enabled && address && typeof address === 'string' && address.startsWith('0x')) {
       // For real wallet connections without mock, generate deterministic score
-      if ($wallet.address) {
-        return {
-          loading: false,
-          value: generateDeterministicScore($wallet.address),
-          lastUpdated: new Date().toISOString(),
-          error: undefined,
-        };
-      }
+      const state = {
+        loading: false,
+        value: generateDeterministicScore(address as `0x${string}`),
+        lastUpdated: new Date().toISOString(),
+        error: undefined,
+        cachedAt: Date.now()
+      };
+      saveToCache(address, state);
+      return state;
     }
     
     // Default state when no wallet connected
@@ -51,6 +111,7 @@ export const mockScore = derived(
       value: undefined,
       lastUpdated: undefined,
       error: undefined,
+      cachedAt: undefined,
     };
   }
 );
@@ -81,26 +142,45 @@ export const scoreActions = {
   },
   
   setValue: (value: number) => {
-    score.update(s => ({ 
-      ...s, 
-      value, 
+    const newState = {
+      ...get(score),
+      value,
       lastUpdated: new Date().toISOString(),
-      error: undefined 
-    }));
+      error: undefined,
+      cachedAt: Date.now()
+    };
+    score.set(newState);
+    const currentWallet = get(wallet);
+    if (currentWallet?.address) {
+      saveToCache(currentWallet.address, newState);
+    }
   },
   
   setError: (error: string) => {
-    score.update(s => ({ 
-      ...s, 
-      error, 
-      loading: false 
-    }));
+    const currentScore = get(score);
+    const newState = {
+      ...currentScore,
+      error,
+      loading: false,
+      cachedAt: Date.now()
+    };
+    score.set(newState);
+    const currentWallet = get(wallet);
+    if (currentWallet?.address) {
+      saveToCache(currentWallet.address, newState);
+    }
   },
   
   reset: () => {
     score.set({
       loading: false,
     });
+  },
+
+  clearCache: (address: string) => {
+    if (typeof window !== 'undefined' && localStorage) {
+      localStorage.removeItem(`${CACHE_KEY}_${address}`);
+    }
   }
 };
 

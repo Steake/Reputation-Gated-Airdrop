@@ -22,7 +22,7 @@
   $: scoreShort = typeof score === "number" ? (score / 1e6).toFixed(2) : "0.00";
 </script>
 
-<div class="score-ring relative" role="img" aria-label="Score progress">
+<div class="score-ring relative" role="img" aria-label={`Reputation score progress: ${percent}% of eligible range`} alt={`Score progress ring showing ${percent}% completion`}>
   <svg class="h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
     <!-- Background track -->
     <circle cx={50} cy={50} r={radius} fill="transparent" stroke={trackColor} stroke-width="8" />

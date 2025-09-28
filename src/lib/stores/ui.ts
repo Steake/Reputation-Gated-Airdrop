@@ -1,5 +1,6 @@
 import type { ToastMessage } from "$lib/types";
 import { writable } from "svelte/store";
+import { captureException } from "@sentry/sveltekit";
 
 let toastId = 0;
 
@@ -29,3 +30,35 @@ function createToastStore() {
 }
 
 export const toasts = createToastStore();
+
+// Global UI loading state
+export const isLoading = writable(false);
+
+function setLoading(loading: boolean) {
+  isLoading.set(loading);
+}
+
+// Global UI error state with toast integration
+export const uiError = writable<string | null>(null);
+
+function setError(error: string | null) {
+  uiError.set(error);
+  if (error) {
+    toasts.error(error);
+    captureException(new Error(error), {
+      contexts: {
+        ui: {
+          errorType: "uiError",
+          timestamp: new Date().toISOString()
+        }
+      }
+    });
+  } else {
+    toasts.success("Error cleared");
+  }
+}
+
+export const uiActions = {
+  setLoading,
+  setError
+};

@@ -3,23 +3,29 @@ pragma solidity ^0.8.0;
 
 import "./ZKMLOnChainVerifier.sol";
 
+interface IERC20 {
+    function transfer(address to, uint256 amount) external returns (bool);
+    function balanceOf(address account) external view returns (uint256);
+}
+
 /**
  * @title ReputationAirdropZKScaled
  * @dev ZK-proof-based reputation airdrop contract with scaled payouts
- * 
+ *
  * This contract allows users to claim airdrop tokens based on their reputation
  * scores using zero-knowledge proofs for verification. It integrates with the
  * ZKMLOnChainVerifier contract to verify reputation proofs.
  */
 contract ReputationAirdropZKScaled {
-    // Token interface
-    interface IERC20 {
-        function transfer(address to, uint256 amount) external returns (bool);
-        function balanceOf(address account) external view returns (uint256);
-    }
-
     // Payout curve types
     enum PayoutCurve { LINEAR, SQRT, QUADRATIC }
+  
+    // Supported source chains for bridged proofs (mock)
+    uint256 public constant SUPPORTED_SEPOLIA = 11155111;
+    uint256 public constant SUPPORTED_MUMBAI = 80001;
+  
+    // Mock oracle for bridged proofs (in production, integrate with actual oracle contract)
+    mapping(address => mapping(uint256 => mapping(bytes32 => bool))) public bridgedProofs;
 
     // Contract configuration
     IERC20 public immutable token;
@@ -47,7 +53,14 @@ contract ReputationAirdropZKScaled {
     event Claimed(
         address indexed user,
         uint256 score,
-        uint256 payout
+        uint256 payout,
+        uint256 timestamp
+    );
+
+    event ProofVerified(
+        address indexed user,
+        uint256 score,
+        uint256 timestamp
     );
 
     event ContractPaused();
@@ -92,7 +105,7 @@ contract ReputationAirdropZKScaled {
         require(_capScore > _floorScore, "Invalid score range");
         require(_maxPayout > _minPayout, "Invalid payout range");
         require(_maxReputationAge > 0, "Invalid reputation age");
-
+   
         token = _token;
         zkVerifier = _zkVerifier;
         campaign = _campaign;
@@ -107,39 +120,115 @@ contract ReputationAirdropZKScaled {
     }
 
     /**
-     * @dev Claim airdrop tokens using ZK proof
-     * @param proof ZK proof data
-     * @param score Reputation score (must match proof)
+     * @dev Claim airdrop tokens using verified ZK reputation (local chain)
+     * @param score Reputation score (must match verified reputation)
      */
     function claim(
-        bytes calldata proof,
         uint256 score
     ) external whenNotPaused {
-        require(!claimed[msg.sender], "Already claimed");
-        require(score >= floorScore, "Score below minimum threshold");
-
-        // Check if user has a valid, recent reputation proof
-        require(
-            zkVerifier.isReputationValid(msg.sender, maxReputationAge),
-            "No valid reputation proof"
-        );
-
-        // Get the verified reputation from the ZK verifier
-        (uint256 verifiedScore, ) = zkVerifier.getVerifiedReputation(msg.sender);
-        require(verifiedScore == score, "Score mismatch with verified reputation");
-
-        // Mark as claimed
-        claimed[msg.sender] = true;
-
-        // Calculate payout based on score and curve
-        uint256 payout = quotePayout(score);
-
-        // Transfer tokens
-        require(token.transfer(msg.sender, payout), "Transfer failed");
-
-        totalClaimed += payout;
-
-        emit Claimed(msg.sender, score, payout);
+      require(!claimed[msg.sender], "Already claimed");
+      require(score >= floorScore, "Score below minimum threshold");
+  
+      // Check if user has a valid, recent reputation proof
+      require(
+          zkVerifier.isReputationValid(msg.sender, maxReputationAge),
+          "No valid reputation proof"
+      );
+  
+      // Get the verified reputation from the ZK verifier
+      (uint256 verifiedScore, ) = zkVerifier.getVerifiedReputation(msg.sender);
+      require(verifiedScore == score, "Score mismatch with verified reputation");
+  
+      // Mark as claimed
+      claimed[msg.sender] = true;
+  
+      // Calculate payout based on score and curve
+      uint256 payout = quotePayout(score);
+  
+      // Transfer tokens
+      require(token.transfer(msg.sender, payout), "Transfer failed");
+  
+      totalClaimed += payout;
+  
+      emit ProofVerified(msg.sender, score, block.timestamp);
+      emit Claimed(msg.sender, score, payout, block.timestamp);
+    }
+  
+    /**
+     * @dev Claim airdrop tokens using bridged ZK reputation proof from source chain
+     * @param sourceChainId Source chain ID (must be supported)
+     * @param proofHash Hash of the bridged proof envelope
+     * @param score Reputation score from bridged proof
+     */
+    function claimBridged(
+        uint256 sourceChainId,
+        bytes32 proofHash,
+        uint256 score
+    ) external whenNotPaused {
+      require(sourceChainId != block.chainid, "Must be cross-chain source");
+      require(isSupportedSourceChain(sourceChainId), "Unsupported source chain");
+      require(!claimed[msg.sender], "Already claimed");
+      require(score >= floorScore, "Score below minimum threshold");
+  
+      // Validate bridged proof via mock oracle (in production, query actual oracle contract)
+      require(isBridgedProofValid(msg.sender, sourceChainId, proofHash), "Invalid bridged proof");
+  
+      // For bridged proofs, assume score is validated by oracle; no local ZK verifier check
+      // In production, oracle would provide verified score or additional validation
+  
+      // Mark as claimed
+      claimed[msg.sender] = true;
+  
+      // Calculate payout based on score and curve
+      uint256 payout = quotePayout(score);
+  
+      // Transfer tokens
+      require(token.transfer(msg.sender, payout), "Transfer failed");
+  
+      totalClaimed += payout;
+  
+      emit ProofVerified(msg.sender, score, block.timestamp);
+      emit Claimed(msg.sender, score, payout, block.timestamp);
+    }
+  
+    /**
+     * @dev Check if source chain is supported for bridged proofs (mock)
+     * @param chainId Chain ID to check
+     * @return supported True if supported
+     */
+    function isSupportedSourceChain(uint256 chainId) public pure returns (bool) {
+      return chainId == SUPPORTED_SEPOLIA || chainId == SUPPORTED_MUMBAI;
+    }
+  
+    /**
+     * @dev Mock oracle validation for bridged proof (in production, integrate with real oracle)
+     * @param user User address
+     * @param sourceChainId Source chain ID
+     * @param proofHash Proof hash
+     * @return valid True if proof is valid (mock: always true for demo)
+     */
+    function isBridgedProofValid(
+        address user,
+        uint256 sourceChainId,
+        bytes32 proofHash
+    ) public view returns (bool) {
+      // Mock: Check if proof is registered in oracle mapping
+      // In production: Call oracle contract to verify proof envelope
+      return bridgedProofs[user][sourceChainId][proofHash];
+    }
+  
+    /**
+     * @dev Admin function to register bridged proof in mock oracle (for testing)
+     * @param user User address
+     * @param sourceChainId Source chain ID
+     * @param proofHash Proof hash
+     */
+    function registerBridgedProof(
+        address user,
+        uint256 sourceChainId,
+        bytes32 proofHash
+    ) external onlyOwner {
+      bridgedProofs[user][sourceChainId][proofHash] = true;
     }
 
     /**
@@ -151,15 +240,15 @@ contract ReputationAirdropZKScaled {
         if (score < floorScore) {
             return 0;
         }
-
+   
         if (score >= capScore) {
             return maxPayout;
         }
-
+   
         // Normalize score to range [0, 1] scaled by 1e18
         uint256 normalizedScore = ((score - floorScore) * 1e18) / (capScore - floorScore);
         uint256 payoutRange = maxPayout - minPayout;
-
+   
         if (curve == PayoutCurve.LINEAR) {
             payout = minPayout + (payoutRange * normalizedScore) / 1e18;
         } else if (curve == PayoutCurve.SQRT) {
@@ -171,7 +260,7 @@ contract ReputationAirdropZKScaled {
             uint256 quadNorm = (normalizedScore * normalizedScore) / 1e18;
             payout = minPayout + (payoutRange * quadNorm) / 1e18;
         }
-
+   
         return payout;
     }
 

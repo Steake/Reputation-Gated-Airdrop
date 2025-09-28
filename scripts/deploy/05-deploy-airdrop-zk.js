@@ -4,6 +4,7 @@ const { ethers } = require("hardhat");
 async function main() {
   const tokenAddress = process.env.TOKEN_ADDRESS;
   const zkmlAddress = process.env.ZKML_ADDRESS;
+  const priceFeedAddress = process.env.PRICE_FEED_ADDRESS;
 
   if (!tokenAddress) {
     throw new Error("TOKEN_ADDRESS environment variable not set");
@@ -11,10 +12,14 @@ async function main() {
   if (!zkmlAddress) {
     throw new Error("ZKML_ADDRESS environment variable not set");
   }
+  if (!priceFeedAddress) {
+    throw new Error("PRICE_FEED_ADDRESS environment variable not set");
+  }
 
   console.log("Deploying ReputationAirdropZKScaled...");
   console.log("Using token address:", tokenAddress);
   console.log("Using ZKML verifier address:", zkmlAddress);
+  console.log("Using Chainlink price feed address:", priceFeedAddress);
 
   // Contract parameters
   const campaign = ethers.keccak256(ethers.toUtf8Bytes("shadowgraph-zk-airdrop-v1"));
@@ -35,7 +40,8 @@ async function main() {
     minPayout,
     maxPayout,
     curve,
-    maxReputationAge
+    maxReputationAge,
+    priceFeedAddress
   );
   await airdrop.waitForDeployment();
 

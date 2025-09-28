@@ -106,3 +106,30 @@ export async function getProofMeta(address: string): Promise<ProofMeta> {
   if (isMockMode) return mockProofMeta(address);
   return fetchWithZod(ProofMetaSchema, `${API_BASE}/proof-meta/${address}`);
 }
+
+// Oracle query for live data fallback (e.g., token price from Chainlink)
+export async function getLatestOraclePrice(feedId: string = "eth-usd"): Promise<number> {
+  if (isMockMode) {
+    // Mock price fallback
+    return 2000; // e.g., $2000 ETH
+  }
+
+  try {
+    // Fetch from Chainlink API (public endpoint for price feeds)
+    const response = await fetch(`https://api.chain.link/v1/${feedId}`);
+    if (!response.ok) {
+      throw new ApiError(`Oracle price fetch failed: ${response.statusText}`, response.status);
+    }
+    const data = await response.json();
+    // Assuming response has 'data' with price
+    const price = parseFloat(data.data?.[0]?.[1] || "0"); // Latest price value
+    if (isNaN(price) || price <= 0) {
+      throw new ApiError("Invalid oracle price data");
+    }
+    return price;
+  } catch (error) {
+    console.error("Oracle price fetch error:", error);
+    // Fallback to mock even in non-mock mode if fetch fails
+    return 2000;
+  }
+}

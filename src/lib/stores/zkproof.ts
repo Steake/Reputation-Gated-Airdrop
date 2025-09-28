@@ -1,4 +1,6 @@
-import { writable } from "svelte/store";
+import { writable, get } from "svelte/store";
+import { captureException } from "@sentry/sveltekit";
+import { wallet } from "./wallet";
 
 export interface ZKProofState {
   generating: boolean;
@@ -6,10 +8,13 @@ export interface ZKProofState {
   verifying: boolean;
   verified: boolean;
   error: string | null;
+  proofType: 'exact' | 'threshold' | 'gated';
   proofData: {
     proof: number[] | null;
     publicInputs: number[] | null;
     hash: string | null;
+    communityId?: string;
+    encryptedMetadata?: string; // Base64 encoded encrypted metadata
   };
 }
 
@@ -19,10 +24,13 @@ export const zkProofStore = writable<ZKProofState>({
   verifying: false,
   verified: false,
   error: null,
+  proofType: 'exact',
   proofData: {
     proof: null,
     publicInputs: null,
     hash: null,
+    communityId: undefined,
+    encryptedMetadata: undefined,
   },
 });
 
@@ -34,10 +42,13 @@ export const zkProofActions = {
       verifying: false,
       verified: false,
       error: null,
+      proofType: 'exact',
       proofData: {
         proof: null,
         publicInputs: null,
         hash: null,
+        communityId: undefined,
+        encryptedMetadata: undefined,
       },
     }),
 
@@ -48,12 +59,26 @@ export const zkProofActions = {
       error: null,
     })),
 
-  setGenerated: (proof: number[], publicInputs: number[], hash: string) =>
+  setGenerated: (
+    proof: number[], 
+    publicInputs: number[], 
+    hash: string, 
+    proofType: 'exact' | 'threshold' | 'gated',
+    communityId?: string,
+    encryptedMetadata?: string
+  ) =>
     zkProofStore.update((state) => ({
       ...state,
       generating: false,
       generated: true,
-      proofData: { proof, publicInputs, hash },
+      proofType,
+      proofData: { 
+        proof, 
+        publicInputs, 
+        hash, 
+        communityId, 
+        encryptedMetadata 
+      },
     })),
 
   setVerifying: () =>
@@ -71,10 +96,24 @@ export const zkProofActions = {
     })),
 
   setError: (error: string) =>
-    zkProofStore.update((state) => ({
-      ...state,
-      generating: false,
-      verifying: false,
-      error,
-    })),
+    zkProofStore.update((state) => {
+      const walletState = get(wallet);
+      const chainId = walletState.chainId;
+      captureException(new Error(error), {
+        contexts: {
+          zkproof: {
+            proofType: state.proofType,
+            chainId,
+            generating: state.generating,
+            verifying: state.verifying
+          }
+        }
+      });
+      return {
+        ...state,
+        generating: false,
+        verifying: false,
+        error,
+      };
+    }),
 };

@@ -1,11 +1,21 @@
 <script lang="ts">
-  import { wallet } from "$lib/stores/wallet";
+  import { get, writable } from "svelte/store";
+  import { wallet, selectedChainId } from "$lib/stores/wallet";
   import { walletMock, walletMockActions, walletConfigs } from "$lib/stores/walletMock";
-  import { connectWallet, disconnectWallet } from "$lib/chain/client";
+  import { connectWallet, disconnectWallet, getPublicClient, getWalletClient } from "$lib/chain/client";
+  import { CHAIN_NAMES, SUPPORTED_CHAINS } from "$lib/chain/constants";
   import { shortenAddress } from "$lib/utils";
-  import { LogIn, LogOut, AlertTriangle, Clock } from "lucide-svelte";
+  import { LogIn, LogOut, AlertTriangle, Clock, ChevronDown } from "lucide-svelte";
+  import type { ChainInfo } from "$lib/chain/constants";
 
   let connecting = false;
+  let chainMenuOpen = false;
+
+  // Supported chains for selector
+  const supportedChains = Object.entries(SUPPORTED_CHAINS).map(([key, info]) => ({
+    ...info,
+    name: CHAIN_NAMES[Number(key) as keyof typeof CHAIN_NAMES] || info.name,
+  }));
 
   async function handleConnect() {
     if ($walletMock.enabled) {
@@ -16,6 +26,16 @@
       connecting = true;
       try {
         await connectWallet();
+        // After connect, get current chain from provider and update selectedChainId
+        try {
+          const wc = await getWalletClient();
+          if (wc) {
+            const chainId = await wc.getChainId();
+            selectedChainId.set(chainId);
+          }
+        } catch (e) {
+          console.warn("Could not detect chain after connect:", e);
+        }
       } catch (e) {
         console.error(e);
       } finally {
@@ -37,6 +57,61 @@
       }
     }
   }
+
+  async function handleChainSelect(chainId: number) {
+    if ($walletMock.enabled) {
+      // For mock, just update store
+      selectedChainId.set(chainId);
+      chainMenuOpen = false;
+      return;
+    }
+
+    if (!$wallet.connected) {
+      // If not connected, just update preferred chain
+      selectedChainId.set(chainId);
+      chainMenuOpen = false;
+      return;
+    }
+
+    // Switch chain if connected
+    try {
+      const wc = await getWalletClient();
+      if (wc) {
+        const hexChainId = `0x${chainId.toString(16)}`;
+        await wc.switchChain({ id: hexChainId as `0x${number}` });
+        selectedChainId.set(chainId);
+      }
+    } catch (error) {
+      console.error("Failed to switch chain:", error);
+      // If switch fails, try to add chain if not present
+      if (error.message.includes("chain not added")) {
+        try {
+          const info = supportedChains.find(c => c.chainId === chainId);
+          if (info) {
+            const hexChainId = `0x${chainId.toString(16)}`;
+            await wc.addChain({
+              chain: {
+                id: hexChainId as `0x${number}`,
+                name: info.name,
+                nativeCurrency: info.chainId === 80001 ? { name: "MATIC", symbol: "MATIC", decimals: 18 } : { name: "ETH", symbol: "ETH", decimals: 18 },
+                rpcUrls: { default: { http: [info.rpcUrl] } },
+                blockExplorers: { default: { name: `${info.name} Explorer`, url: info.explorer } },
+              },
+            });
+            await wc.switchChain({ id: hexChainId as `0x${number}` });
+            selectedChainId.set(chainId);
+          }
+        } catch (addError) {
+          console.error("Failed to add chain:", addError);
+        }
+      }
+    }
+    chainMenuOpen = false;
+  }
+
+  // Current selected chain info
+  $: currentChainId = $walletMock.enabled ? 11155111 : ($wallet.chainId ?? get(selectedChainId) ?? 11155111);
+  $: currentChain = supportedChains.find(c => c.chainId === currentChainId) || supportedChains[0];
 
   // Determine if we're in a connecting state (either real or mock)
   $: isConnecting = connecting || ($walletMock.enabled && $walletMock.connectionState === "connecting");
@@ -72,7 +147,7 @@
     
     <button
       on:click={handleConnect}
-      class="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex-shrink-0"
+      class="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
       aria-label="Retry connection"
       style="min-width: 44px; min-height: 44px;"
     >
@@ -110,6 +185,34 @@
       </div>
     </div>
 
+    <!-- Chain Selector -->
+    <div class="relative">
+      <button
+        on:click={() => (chainMenuOpen = !chainMenuOpen)}
+        class="flex items-center gap-1 px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        aria-label="Select chain"
+      >
+        <span class="hidden sm:inline">{currentChain?.name || 'Unknown'}</span>
+        <ChevronDown class="h-3 w-3 transition-transform {chainMenuOpen ? 'rotate-180' : ''}" />
+      </button>
+
+      {#if chainMenuOpen}
+        <div class="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+          {#each supportedChains as chain}
+            <button
+              on:click={() => handleChainSelect(chain.chainId)}
+              class="w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors {currentChainId === chain.chainId ? 'bg-blue-50 dark:bg-blue-900/20' : ''}"
+            >
+              {chain.name}
+              {#if currentChainId === chain.chainId}
+                <span class="ml-2 text-blue-600 dark:text-blue-400 text-xs">(Current)</span>
+              {/if}
+            </button>
+          {/each}
+        </div>
+      {/if}
+    </div>
+
     <!-- Network warning for unsupported networks -->
     {#if $walletMock.enabled && !$walletMock.networkSupported}
       <div class="flex items-center gap-1 px-2 py-1 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded text-xs text-yellow-700 dark:text-yellow-300">
@@ -121,7 +224,7 @@
     <button
       on:click={handleDisconnect}
       disabled={isSwitching}
-      class="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors flex-shrink-0"
+      class="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
       aria-label="Disconnect wallet"
       style="min-width: 44px; min-height: 44px;"
     >
@@ -134,7 +237,7 @@
   <button
     on:click={handleConnect}
     disabled={isConnecting}
-    class="inline-flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors text-sm sm:text-base"
+    class="inline-flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
     aria-label="Connect wallet"
     style="min-width: 44px; min-height: 44px;"
   >

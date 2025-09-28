@@ -1,0 +1,14 @@
+# Core deep learning and numerical libraries
+torch==2.8.0
+numpy~=1.26.0
+
+# Data handling and graph manipulation
+pandas~=2.2.0
+networkx==3.5
+
+# ZKML proof generation and model format
+ezkl==22.2.1
+onnx~=1.16.0
+
+# Visualization (optional but used in the notebook)
+matplotlib~=3.8.0

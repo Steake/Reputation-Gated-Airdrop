@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./interfaces/IVerifier.sol";
+import "../interfaces/IVerifier.sol";
 
 /**
  * @title MockVerifier
@@ -44,27 +44,18 @@ contract MockVerifier is IVerifier {
     function verifyProof(
         uint256[] calldata proof,
         uint256[] calldata publicInputs
-    ) external override returns (bool) {
+    ) external view override returns (bool) {
         require(proof.length > 0, "Empty proof");
         require(publicInputs.length > 0, "Empty public inputs");
-
-        // Create a hash of the proof and inputs for tracking
-        bytes32 proofHash = keccak256(abi.encodePacked(proof, publicInputs));
-        
-        // Track this verification call
-        verificationCalls[proofHash] = true;
-        verificationCount++;
 
         // Basic validation: reputation score should be in valid range
         if (publicInputs.length > 0) {
             uint256 reputationScore = publicInputs[0];
             if (reputationScore < 600000 || reputationScore > 1000000) {
-                emit ProofVerified(proofHash, false, publicInputs.length);
                 return false;
             }
         }
 
-        emit ProofVerified(proofHash, verificationResult, publicInputs.length);
         return verificationResult;
     }
 

@@ -112,15 +112,33 @@
       </div>
     </div>
   {:else if $score.loading}
-    <!-- Loading Score State -->
-    <div class="text-center p-8">
-      <div class="flex items-center justify-center mb-4">
-        <svg class="animate-spin h-6 w-6 text-purple-600" viewBox="0 0 24 24" fill="none">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-        </svg>
+    <!-- Loading Score State with Skeleton -->
+    <div class="card animate-pulse">
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 mx-auto mb-4 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+        <h2 class="text-2xl mb-2 bg-gray-200 dark:bg-gray-700 h-8 rounded w-48 mx-auto"></h2>
+        <p class="text-[var(--fg-secondary)] bg-gray-200 dark:bg-gray-700 h-4 rounded w-64 mx-auto"></p>
       </div>
-      <p class="text-[var(--fg-secondary)]">Loading your reputation score...</p>
+      
+      <!-- Skeleton for attestations/score breakdown -->
+      <div class="space-y-4">
+        <div class="flex justify-between items-center p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+          <div class="bg-gray-200 dark:bg-gray-700 h-4 rounded w-20"></div>
+          <div class="bg-gray-200 dark:bg-gray-700 h-4 rounded w-12"></div>
+        </div>
+        <div class="flex justify-between items-center p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+          <div class="bg-gray-200 dark:bg-gray-700 h-4 rounded w-24"></div>
+          <div class="bg-gray-200 dark:bg-gray-700 h-4 rounded w-16"></div>
+        </div>
+        <div class="flex justify-between items-center p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+          <div class="bg-gray-200 dark:bg-gray-700 h-4 rounded w-28"></div>
+          <div class="bg-gray-200 dark:bg-gray-700 h-4 rounded w-20"></div>
+        </div>
+      </div>
+      
+      <div class="mt-8 text-center">
+        <div class="bg-gray-200 dark:bg-gray-700 h-12 rounded-lg w-48 mx-auto"></div>
+      </div>
     </div>
   {:else if !isEligible}
     <!-- Ineligible State -->
@@ -159,7 +177,9 @@
       <div class="mt-8 text-center">
         <a
           href="/attest"
-          class="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+          class="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+          role="button"
+          aria-label="Navigate to attestation page to start building reputation"
         >
           Start Building Reputation
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -194,7 +214,11 @@
       </div>
       
       <!-- Claim Card -->
-      <ClaimCard />
+      <ClaimCard
+        role="main"
+        aria-labelledby="claim-title"
+        aria-describedby="claim-description"
+      />
     </div>
   {/if}
 </div>

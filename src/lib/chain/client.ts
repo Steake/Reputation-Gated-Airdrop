@@ -11,31 +11,45 @@ import {
   type Hex,
   type Abi,
 } from "viem";
+import { getChainInfo, type ChainInfo } from "./constants";
+import { selectedChainId } from "$lib/stores/wallet";
 
-/** Build a minimal viem Chain from env (works for Base/Arb/custom) */
-function getChain(): Chain {
-  const chainId = import.meta.env.VITE_CHAIN_ID || "11155111";
-  const rpcUrl = import.meta.env.VITE_RPC_URL || "https://rpc.sepolia.org";
-  const id = Number(chainId);
-  if (!Number.isFinite(id)) throw new Error("CHAIN_ID missing/invalid");
+/** Build a viem Chain dynamically from chainId */
+function getViemChain(chainId: number): Chain {
+  const info: ChainInfo = getChainInfo(chainId);
+  const nativeCurrency = info.chainId === 80001
+    ? { name: "MATIC", symbol: "MATIC", decimals: 18 }
+    : { name: "ETH", symbol: "ETH", decimals: 18 };
   return {
-    id,
-    name: `chain-${id}`,
-    nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
-    rpcUrls: { default: { http: [rpcUrl] } },
+    id: info.chainId,
+    name: info.name,
+    nativeCurrency,
+    rpcUrls: { default: { http: [info.rpcUrl] } },
+    blockExplorers: {
+      default: { name: `${info.name} Explorer`, url: info.explorer },
+    },
   };
 }
 
-const publicClient = createPublicClient({
-  chain: getChain(),
-  transport: http(import.meta.env.VITE_RPC_URL || "https://rpc.sepolia.org"),
-});
-
-export function getPublicClient() {
-  return publicClient;
+/** Get current chainId: from store if browser, else default from env */
+function getCurrentChainId(): number {
+  if (browser) {
+    return get(selectedChainId) ?? Number(import.meta.env.VITE_CHAIN_ID || "11155111");
+  }
+  return Number(import.meta.env.VITE_CHAIN_ID || "11155111");
 }
 
-async function getWalletClient() {
+export function getPublicClient() {
+  const chainId = getCurrentChainId();
+  const chain = getViemChain(chainId);
+  const rpcUrl = getChainInfo(chainId).rpcUrl;
+  return createPublicClient({
+    chain,
+    transport: http(rpcUrl),
+  });
+}
+
+export async function getWalletClient() {
   if (!browser) throw new Error("Wallet actions only in browser");
   await initOnboard();
   const w = get(wallets)[0];
@@ -43,8 +57,10 @@ async function getWalletClient() {
   const provider = w.provider as EIP1193Provider;
   const account = w.accounts?.[0]?.address as `0x${string}`;
   if (!account) throw new Error("No active account");
+  const chainId = getCurrentChainId();
+  const chain = getViemChain(chainId);
   return createWalletClient({
-    chain: getChain(),
+    chain,
     account,
     transport: custom(provider),
   });
@@ -98,12 +114,144 @@ export async function readContract<T = unknown>(
   functionName: string,
   args?: unknown[]
 ): Promise<T> {
+  const publicClient = getPublicClient();
   return publicClient.readContract({
     address,
     abi,
     functionName,
     args,
   }) as Promise<T>;
+}
+
+/** ABI for ReputationAirdropZKScaled events */
+const reputationAirdropEventsAbi = [
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: "address", name: "user", type: "address" },
+      { indexed: false, internalType: "uint256", name: "score", type: "uint256" },
+      { indexed: false, internalType: "uint256", name: "payout", type: "uint256" },
+      { indexed: false, internalType: "uint256", name: "timestamp", type: "uint256" }
+    ],
+    name: "Claimed",
+    type: "event"
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: "address", name: "user", type: "address" },
+      { indexed: false, internalType: "uint256", name: "score", type: "uint256" },
+      { indexed: false, internalType: "uint256", name: "timestamp", type: "uint256" }
+    ],
+    name: "ProofVerified",
+    type: "event"
+  }
+] as const;
+
+/** Query recent Claimed events for dashboard metrics */
+export async function getRecentClaimEvents(
+  contractAddress: Hex,
+  fromBlock?: bigint,
+  toBlock?: bigint,
+  limit: number = 100
+): Promise<Array<{
+  user: `0x${string}`;
+  score: bigint;
+  payout: bigint;
+  timestamp: bigint;
+  blockNumber: bigint;
+  transactionHash: `0x${string}`;
+}>> {
+  const publicClient = getPublicClient();
+  const filter = {
+    address: contractAddress,
+    event: reputationAirdropEventsAbi.find(e => e.name === 'Claimed'),
+    fromBlock,
+    toBlock,
+    args: {}
+  };
+
+  const logs = await publicClient.getLogs(filter);
+  const parsedLogs = await publicClient.parseEventLogs({
+    logs,
+    abi: reputationAirdropEventsAbi
+  });
+
+  return parsedLogs
+    .filter(log => log.eventName === 'Claimed')
+    .map(log => ({
+      user: log.args.user,
+      score: log.args.score,
+      payout: log.args.payout,
+      timestamp: log.args.timestamp,
+      blockNumber: log.blockNumber,
+      transactionHash: log.transactionHash
+    }))
+    .slice(0, limit);
+}
+
+/** Query recent ProofVerified events for dashboard metrics */
+export async function getRecentProofEvents(
+  contractAddress: Hex,
+  fromBlock?: bigint,
+  toBlock?: bigint,
+  limit: number = 100
+): Promise<Array<{
+  user: `0x${string}`;
+  score: bigint;
+  timestamp: bigint;
+  blockNumber: bigint;
+  transactionHash: `0x${string}`;
+}>> {
+  const publicClient = getPublicClient();
+  const filter = {
+    address: contractAddress,
+    event: reputationAirdropEventsAbi.find(e => e.name === 'ProofVerified'),
+    fromBlock,
+    toBlock,
+    args: {}
+  };
+
+  const logs = await publicClient.getLogs(filter);
+  const parsedLogs = await publicClient.parseEventLogs({
+    logs,
+    abi: reputationAirdropEventsAbi
+  });
+
+  return parsedLogs
+    .filter(log => log.eventName === 'ProofVerified')
+    .map(log => ({
+      user: log.args.user,
+      score: log.args.score,
+      timestamp: log.args.timestamp,
+      blockNumber: log.blockNumber,
+      transactionHash: log.transactionHash
+    }))
+    .slice(0, limit);
+}
+
+/** Get dashboard metrics summary (total claims, average score, total payout) */
+export async function getDashboardMetrics(
+  contractAddress: Hex,
+  fromBlock?: bigint,
+  toBlock?: bigint
+): Promise<{
+  totalClaims: number;
+  totalPayout: bigint;
+  averageScore: number;
+  totalProofs: number;
+}> {
+  const claims = await getRecentClaimEvents(contractAddress, fromBlock, toBlock);
+  const proofs = await getRecentProofEvents(contractAddress, fromBlock, toBlock);
+
+  const totalClaims = claims.length;
+  const totalPayout = claims.reduce((sum, c) => sum + c.payout, 0n);
+  const averageScore = totalClaims > 0
+    ? Number(claims.reduce((sum, c) => sum + c.score, 0n)) / totalClaims
+    : 0;
+  const totalProofs = proofs.length;
+
+  return { totalClaims, totalPayout, averageScore, totalProofs };
 }
 
 /** Write contract (client only)
@@ -121,6 +269,8 @@ export async function writeContract(
 ): Promise<string> {
   const wc = await getWalletClient();
   if (!wc) throw new Error("Wallet not connected");
+
+  const publicClient = getPublicClient();
 
   // Determine account for simulation: prefer provided account, fallback to onboard wallet
   const acct = account ?? (get(wallets)[0]?.accounts?.[0]?.address as `0x${string}`);

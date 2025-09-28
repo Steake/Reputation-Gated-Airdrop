@@ -123,26 +123,53 @@ describe('EBSL Core Algorithm', () => {
     });
 
     it('should return single opinion unchanged', () => {
-      const opinion: SubjectiveOpinion = {
-        belief: 0.7,
-        disbelief: 0.2,
-        uncertainty: 0.1,
-        base_rate: 0.4
+      const attestation: TrustAttestation = {
+        source: '0xsource',
+        target: '0xtarget',
+        opinion: { belief: 0.7, disbelief: 0.2, uncertainty: 0.1, base_rate: 0.4 },
+        attestation_type: 'trust',
+        weight: 1.0,
+        created_at: Date.now(),
+        expires_at: Date.now() + 86400000
       };
 
-      const result = ebsl.fuseMultipleOpinions([opinion]);
+      const result = ebsl.fuseMultipleOpinions([attestation]);
 
-      expect(result).toEqual(opinion);
+      expect(result).toEqual(attestation.opinion);
     });
 
     it('should fuse multiple opinions correctly', () => {
-      const opinions: SubjectiveOpinion[] = [
-        { belief: 0.6, disbelief: 0.1, uncertainty: 0.3, base_rate: 0.5 },
-        { belief: 0.4, disbelief: 0.2, uncertainty: 0.4, base_rate: 0.6 },
-        { belief: 0.5, disbelief: 0.1, uncertainty: 0.4, base_rate: 0.4 }
+      const attestations: TrustAttestation[] = [
+        {
+          source: '0xsource1',
+          target: '0xtarget',
+          opinion: { belief: 0.6, disbelief: 0.1, uncertainty: 0.3, base_rate: 0.5 },
+          attestation_type: 'trust',
+          weight: 1.0,
+          created_at: Date.now(),
+          expires_at: Date.now() + 86400000
+        },
+        {
+          source: '0xsource2',
+          target: '0xtarget',
+          opinion: { belief: 0.4, disbelief: 0.2, uncertainty: 0.4, base_rate: 0.6 },
+          attestation_type: 'skill',
+          weight: 1.0,
+          created_at: Date.now(),
+          expires_at: Date.now() + 86400000
+        },
+        {
+          source: '0xsource3',
+          target: '0xtarget',
+          opinion: { belief: 0.5, disbelief: 0.1, uncertainty: 0.4, base_rate: 0.4 },
+          attestation_type: 'vouch',
+          weight: 1.0,
+          created_at: Date.now(),
+          expires_at: Date.now() + 86400000
+        }
       ];
 
-      const result = ebsl.fuseMultipleOpinions(opinions);
+      const result = ebsl.fuseMultipleOpinions(attestations);
 
       expect(ebsl.validateOpinion(result)).toBe(true);
       // With more evidence, uncertainty should decrease
@@ -262,6 +289,75 @@ describe('EBSL Core Algorithm', () => {
       };
 
       expect(ebsl.opinionToReputation(uncertainOpinion)).toBeCloseTo(0.7, 5);
+    });
+  });
+
+  describe('Set Membership Helper', () => {
+    const mockAttestations: TrustAttestation[] = [
+      {
+        source: '0xsource1',
+        target: '0xtarget1',
+        opinion: { belief: 0.7, disbelief: 0.1, uncertainty: 0.2, base_rate: 0.5 },
+        attestation_type: 'trust',
+        weight: 1.0,
+        created_at: Date.now(),
+        expires_at: Date.now() + 86400000
+      },
+      {
+        source: '0xsource2',
+        target: '0xtarget2',
+        opinion: { belief: 0.6, disbelief: 0.2, uncertainty: 0.2, base_rate: 0.6 },
+        attestation_type: 'skill',
+        weight: 0.8,
+        created_at: Date.now(),
+        expires_at: Date.now() + 86400000
+      }
+    ];
+
+    const targetAttestation = {
+      source: '0xtargetSource',
+      target: '0xtargetAddress',
+      opinion: { belief: 0.8, disbelief: 0.05, uncertainty: 0.15, base_rate: 0.5 },
+      attestation_type: 'vouch',
+      weight: 1.2,
+      created_at: Date.now(),
+      expires_at: Date.now() + 86400000
+    };
+
+    it('should compute set commitment and member hash correctly', () => {
+      const result = ebsl.computeSetMembershipInputs(mockAttestations, targetAttestation);
+
+      expect(result.commitment).toMatch(/^0x[a-fA-F0-9]{64}$/); // Valid hex hash
+      expect(result.memberHash).toMatch(/^0x[a-fA-F0-9]{64}$/); // Valid hex hash
+      expect(typeof result.commitment).toBe('string');
+      expect(typeof result.memberHash).toBe('string');
+    });
+
+    it('should compute only commitment when no target attestation provided', () => {
+      const result = ebsl.computeSetMembershipInputs(mockAttestations);
+
+      expect(result.commitment).toMatch(/^0x[a-fA-F0-9]{64}$/);
+      expect(result.memberHash).toBeUndefined();
+    });
+
+    it('should throw error for empty attestations array', () => {
+      expect(() => ebsl.computeSetMembershipInputs([])).toThrow('No attestations provided for set membership');
+    });
+
+    it('should produce consistent member hash for same target attestation', () => {
+      const result1 = ebsl.computeSetMembershipInputs(mockAttestations, targetAttestation);
+      const result2 = ebsl.computeSetMembershipInputs(mockAttestations, targetAttestation);
+
+      expect(result1.memberHash).toBe(result2.memberHash);
+    });
+
+    it('should produce different commitments for different sets', () => {
+      const differentAttestations = [mockAttestations[0]]; // Single attestation
+
+      const result1 = ebsl.computeSetMembershipInputs(mockAttestations);
+      const result2 = ebsl.computeSetMembershipInputs(differentAttestations);
+
+      expect(result1.commitment).not.toBe(result2.commitment);
     });
   });
 });

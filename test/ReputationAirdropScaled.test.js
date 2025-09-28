@@ -1,5 +1,8 @@
-const { expect } = require("chai");
-const { ethers } = require("hardhat");
+/* global describe it beforeEach */
+
+import { expect } from "chai";
+import hre from "hardhat";
+const { ethers } = hre;
 
 describe("ReputationAirdropScaled", function () {
   let airdrop;

@@ -233,7 +233,7 @@
     </div>
   </div>
 
-  <div class="h-64 relative">
-    <canvas bind:this={chartCanvas} class="w-full h-full"></canvas>
+  <div class="h-64 relative" role="img" aria-label="{type === 'global' ? 'Global reputation metrics distribution chart' : 'User reputation score history chart'}">
+    <canvas bind:this={chartCanvas} class="w-full h-full" aria-hidden="true"></canvas>
   </div>
 </div>

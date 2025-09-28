@@ -1,6 +1,21 @@
 <script>
   import { page } from "$app/stores";
   import { AlertTriangle } from "lucide-svelte";
+  import { onMount } from "svelte";
+  import { captureException } from "@sentry/sveltekit";
+
+  onMount(() => {
+    if ($page.error) {
+      captureException($page.error, {
+        contexts: {
+          page: {
+            status: $page.status,
+            url: $page.url.href
+          }
+        }
+      });
+    }
+  });
 </script>
 
 <div class="text-center py-20">

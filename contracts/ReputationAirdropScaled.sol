@@ -1,21 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+interface IERC20 {
+    function transfer(address to, uint256 amount) external returns (bool);
+    function balanceOf(address account) external view returns (uint256);
+}
+
 /**
  * @title ReputationAirdropScaled
  * @dev ECDSA-based reputation airdrop contract with scaled payouts
- * 
+ *
  * This contract allows users to claim airdrop tokens based on their reputation
  * scores using ECDSA signatures for verification. The payout is scaled based
  * on the reputation score using configurable curves.
  */
 contract ReputationAirdropScaled {
-    // Token interface
-    interface IERC20 {
-        function transfer(address to, uint256 amount) external returns (bool);
-        function balanceOf(address account) external view returns (uint256);
-    }
-
     // Payout curve types
     enum PayoutCurve { LINEAR, SQRT, QUADRATIC }
 
