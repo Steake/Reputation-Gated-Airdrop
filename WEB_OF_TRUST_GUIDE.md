@@ -21,6 +21,7 @@ The Web of Trust (WoT) visualization is a core component of the Shadowgraph Repu
 ### Accessing the Visualization
 
 1. **Navigate to Explore Page**
+
    ```
    URL: http://localhost:5173/explore
    ```
@@ -54,26 +55,28 @@ The Web of Trust (WoT) visualization is a core component of the Shadowgraph Repu
 ### 1. Network Graph (D3.js Force Layout)
 
 #### Node Properties
+
 ```typescript
 interface NetworkNode {
-  id: string;           // User address or identifier
-  label: string;        // Display name or truncated address
-  score: number;        // Reputation score (0.6-1.0 scale)
-  size: number;         // Visual size based on reputation
-  color: string;        // Color based on score range
-  connections: number;  // Total relationship count
-  type: 'user' | 'authority' | 'new'; // Node classification
+  id: string; // User address or identifier
+  label: string; // Display name or truncated address
+  score: number; // Reputation score (0.6-1.0 scale)
+  size: number; // Visual size based on reputation
+  color: string; // Color based on score range
+  connections: number; // Total relationship count
+  type: "user" | "authority" | "new"; // Node classification
 }
 ```
 
 #### Edge Properties
+
 ```typescript
 interface NetworkEdge {
-  source: string;       // Source node ID
-  target: string;       // Target node ID
-  type: 'attestation' | 'vouch' | 'trust'; // Relationship type
-  weight: number;       // Relationship strength (0-1)
-  timestamp: number;    // When relationship was established
+  source: string; // Source node ID
+  target: string; // Target node ID
+  type: "attestation" | "vouch" | "trust"; // Relationship type
+  weight: number; // Relationship strength (0-1)
+  timestamp: number; // When relationship was established
   bidirectional: boolean; // Whether trust is mutual
 }
 ```
@@ -81,17 +84,20 @@ interface NetworkEdge {
 #### Visual Encoding
 
 **Node Sizes**
+
 - **Large (radius 12-16px)**: High reputation (0.9-1.0)
 - **Medium (radius 8-12px)**: Medium reputation (0.7-0.9)
 - **Small (radius 4-8px)**: Low reputation (0.6-0.7)
 
 **Node Colors**
+
 - **Green (#10B981)**: High reputation (≥0.9)
 - **Blue (#3B82F6)**: Medium reputation (0.7-0.9)
 - **Orange (#F59E0B)**: Threshold reputation (0.6-0.7)
 - **Red (#EF4444)**: Below threshold (<0.6)
 
 **Edge Styles**
+
 - **Green edges**: Attestation relationships (highest trust)
 - **Blue edges**: Vouch relationships (medium trust)
 - **Purple edges**: Direct trust declarations
@@ -101,11 +107,11 @@ interface NetworkEdge {
 
 ```typescript
 interface NetworkStats {
-  totalNodes: number;        // Total users in network
-  totalEdges: number;        // Total relationships
-  averageScore: number;      // Network average reputation
-  clusteringCoeff: number;   // Network density measure
-  shortestPath: number;      // Average path length
+  totalNodes: number; // Total users in network
+  totalEdges: number; // Total relationships
+  averageScore: number; // Network average reputation
+  clusteringCoeff: number; // Network density measure
+  shortestPath: number; // Average path length
   zkProofsGenerated: number; // Total ZK proofs
 }
 ```
@@ -113,6 +119,7 @@ interface NetworkStats {
 ### 3. Interactive Controls
 
 #### Zoom and Pan
+
 ```typescript
 // Mouse wheel: Zoom in/out
 // Click and drag: Pan around network
@@ -121,16 +128,18 @@ interface NetworkStats {
 ```
 
 #### Filter Options
+
 ```typescript
 interface FilterOptions {
-  relationshipType: 'all' | 'attestation' | 'vouch' | 'trust';
+  relationshipType: "all" | "attestation" | "vouch" | "trust";
   scoreRange: { min: number; max: number };
-  activityPeriod: '24h' | '7d' | '30d' | 'all';
+  activityPeriod: "24h" | "7d" | "30d" | "all";
   connectionDegree: number; // Minimum connections to show
 }
 ```
 
 #### Layout Algorithms
+
 ```typescript
 // Force-directed: Default physics-based layout
 // Hierarchical: Layered by reputation score
@@ -145,6 +154,7 @@ interface FilterOptions {
 ### 1. Exploring the Global Network
 
 #### Initial View
+
 ```typescript
 // Default view shows:
 // - ~100-200 most connected nodes
@@ -154,6 +164,7 @@ interface FilterOptions {
 ```
 
 **Demo Steps:**
+
 1. **Observe Overall Structure**
    - Note clusters of highly connected users
    - Identify central "hub" nodes
@@ -172,18 +183,20 @@ interface FilterOptions {
 ### 2. Filtering and Focus
 
 #### Relationship Type Filtering
+
 ```typescript
 // Show only attestations (green edges)
-filterNetwork({ relationshipType: 'attestation' });
+filterNetwork({ relationshipType: "attestation" });
 
-// Show only vouches (blue edges)  
-filterNetwork({ relationshipType: 'vouch' });
+// Show only vouches (blue edges)
+filterNetwork({ relationshipType: "vouch" });
 
 // Show only direct trust (purple edges)
-filterNetwork({ relationshipType: 'trust' });
+filterNetwork({ relationshipType: "trust" });
 ```
 
 **Demo Steps:**
+
 1. **Attestation Network**
    - Click "Attestations Only" filter
    - Observe formal verification relationships
@@ -203,6 +216,7 @@ filterNetwork({ relationshipType: 'trust' });
    - Variable weights based on history
 
 #### Score Range Filtering
+
 ```typescript
 // Show only high reputation users
 filterNetwork({ scoreRange: { min: 0.9, max: 1.0 } });
@@ -214,17 +228,19 @@ filterNetwork({ scoreRange: { min: 0.6, max: 0.7 } });
 ### 3. Personal Network Analysis
 
 #### Wallet Connected View
+
 ```typescript
 interface PersonalNetwork {
-  centerNode: string;        // Connected wallet address
+  centerNode: string; // Connected wallet address
   directConnections: Node[]; // 1st degree connections
   indirectConnections: Node[]; // 2nd degree connections
   reputationSources: Edge[]; // Relationships contributing to score
-  networkReach: number;      // Total reachable users
+  networkReach: number; // Total reachable users
 }
 ```
 
 **Demo Steps:**
+
 1. **Connect Wallet**
    - Click "Connect Wallet" button
    - Select wallet provider
@@ -243,18 +259,20 @@ interface PersonalNetwork {
 ### 4. Network Evolution Over Time
 
 #### Time-based Filtering
+
 ```typescript
 // Show recent activity (last 24 hours)
-filterNetwork({ activityPeriod: '24h' });
+filterNetwork({ activityPeriod: "24h" });
 
 // Show weekly patterns
-filterNetwork({ activityPeriod: '7d' });
+filterNetwork({ activityPeriod: "7d" });
 
 // Show monthly trends
-filterNetwork({ activityPeriod: '30d' });
+filterNetwork({ activityPeriod: "30d" });
 ```
 
 **Demo Steps:**
+
 1. **Recent Activity**
    - Filter to last 24 hours
    - See new relationships forming
@@ -277,12 +295,14 @@ filterNetwork({ activityPeriod: '30d' });
 ### Scenario 1: Dense Academic Network
 
 **Characteristics:**
+
 - High interconnectivity
 - Many bidirectional attestations
 - Hub nodes with formal credentials
 - Clear authority hierarchy
 
 **Visual Pattern:**
+
 ```
      [Authority]
     /    |    \
@@ -292,12 +312,14 @@ filterNetwork({ activityPeriod: '30d' });
 ```
 
 **Reputation Dynamics:**
+
 - Attestations carry high weight
 - Formal verification processes
 - Slow but stable reputation building
 - Clear trust pathways
 
 **Demo Script:**
+
 1. Filter to attestation relationships only
 2. Identify central authority nodes
 3. Show how reputation flows outward
@@ -306,12 +328,14 @@ filterNetwork({ activityPeriod: '30d' });
 ### Scenario 2: Sparse Emerging Community
 
 **Characteristics:**
+
 - Lower connection density
 - Mix of relationship types
 - Emerging hub formation
 - Rapid growth potential
 
 **Visual Pattern:**
+
 ```
 [User]   [User]
   |       /
@@ -321,12 +345,14 @@ filterNetwork({ activityPeriod: '30d' });
 ```
 
 **Reputation Dynamics:**
+
 - Individual relationships high impact
 - Vouches more common than attestations
 - Easier entry for new users
 - More volatile reputation scores
 
 **Demo Script:**
+
 1. Show overall sparse structure
 2. Identify emerging hub nodes
 3. Demonstrate growth opportunities
@@ -335,12 +361,14 @@ filterNetwork({ activityPeriod: '30d' });
 ### Scenario 3: Multi-Cluster Professional Network
 
 **Characteristics:**
+
 - Multiple distinct clusters
 - Bridge nodes connecting clusters
 - Specialized domains/industries
 - Cross-cluster attestations rare
 
 **Visual Pattern:**
+
 ```
 Cluster A    Bridge    Cluster B
 [A1]-[A2]   [Bridge]   [B1]-[B2]
@@ -351,12 +379,14 @@ Cluster A    Bridge    Cluster B
 ```
 
 **Reputation Dynamics:**
+
 - High intra-cluster trust
 - Bridge nodes very valuable
 - Domain-specific reputation
 - Cross-cluster verification premium
 
 **Demo Script:**
+
 1. Identify distinct clusters
 2. Find bridge nodes connecting clusters
 3. Show reputation transfer across bridges
@@ -365,12 +395,14 @@ Cluster A    Bridge    Cluster B
 ### Scenario 4: Celebrity/Influencer Network
 
 **Characteristics:**
+
 - Star topology around influencers
 - Many one-way relationships
 - High vouch-to-attestation ratio
 - Rapid reputation propagation
 
 **Visual Pattern:**
+
 ```
     [User]
       |
@@ -380,12 +412,14 @@ Cluster A    Bridge    Cluster B
 ```
 
 **Reputation Dynamics:**
+
 - Central nodes accumulate high reputation
 - Proximity to influencers valuable
 - Vouch relationships dominant
 - Risk of reputation bubbles
 
 **Demo Script:**
+
 1. Identify star-pattern formations
 2. Show reputation concentration
 3. Demonstrate influence propagation
@@ -401,13 +435,13 @@ Cluster A    Bridge    Cluster B
 // Generate mock network with specific characteristics
 function generateMockNetwork(scenario: string): NetworkData {
   switch (scenario) {
-    case 'dense_academic':
+    case "dense_academic":
       return generateDenseAcademicNetwork();
-    case 'sparse_emerging':
+    case "sparse_emerging":
       return generateSparseEmergingNetwork();
-    case 'multi_cluster':
+    case "multi_cluster":
       return generateMultiClusterNetwork();
-    case 'celebrity':
+    case "celebrity":
       return generateCelebrityNetwork();
     default:
       return generateRandomNetwork();
@@ -418,30 +452,32 @@ function generateMockNetwork(scenario: string): NetworkData {
 ### Scenario Parameters
 
 #### Dense Academic Network
+
 ```typescript
 const denseAcademicConfig = {
   nodeCount: 150,
-  edgeDensity: 0.08,        // 8% of possible edges
-  attestationRatio: 0.6,    // 60% attestations
-  vouchRatio: 0.3,          // 30% vouches
-  trustRatio: 0.1,          // 10% direct trust
-  hubCount: 5,              // 5 authority nodes
+  edgeDensity: 0.08, // 8% of possible edges
+  attestationRatio: 0.6, // 60% attestations
+  vouchRatio: 0.3, // 30% vouches
+  trustRatio: 0.1, // 10% direct trust
+  hubCount: 5, // 5 authority nodes
   avgReputationScore: 0.85, // High average
-  bidirectionalRate: 0.7    // 70% mutual relationships
+  bidirectionalRate: 0.7, // 70% mutual relationships
 };
 ```
 
 #### Sparse Emerging Network
+
 ```typescript
 const sparseEmergingConfig = {
   nodeCount: 80,
-  edgeDensity: 0.03,        // 3% of possible edges
-  attestationRatio: 0.2,    // 20% attestations
-  vouchRatio: 0.6,          // 60% vouches
-  trustRatio: 0.2,          // 20% direct trust
-  hubCount: 2,              // 2 emerging hubs
+  edgeDensity: 0.03, // 3% of possible edges
+  attestationRatio: 0.2, // 20% attestations
+  vouchRatio: 0.6, // 60% vouches
+  trustRatio: 0.2, // 20% direct trust
+  hubCount: 2, // 2 emerging hubs
   avgReputationScore: 0.72, // Lower average
-  bidirectionalRate: 0.4    // 40% mutual relationships
+  bidirectionalRate: 0.4, // 40% mutual relationships
 };
 ```
 
@@ -452,12 +488,12 @@ const sparseEmergingConfig = {
 function generateConsistentMockData(walletAddress: string): UserNetworkData {
   const seed = hashAddress(walletAddress);
   const rng = new SeededRandom(seed);
-  
+
   return {
     personalScore: generateScore(rng),
     directConnections: generateConnections(rng, 8, 15),
     reputationSources: generateSources(rng),
-    networkPosition: calculatePosition(rng)
+    networkPosition: calculatePosition(rng),
   };
 }
 ```
@@ -470,25 +506,33 @@ function generateConsistentMockData(walletAddress: string): UserNetworkData {
 
 ```typescript
 // Set up force simulation
-const simulation = d3.forceSimulation(nodes)
-  .force("link", d3.forceLink(links).id(d => d.id).distance(50))
+const simulation = d3
+  .forceSimulation(nodes)
+  .force(
+    "link",
+    d3
+      .forceLink(links)
+      .id((d) => d.id)
+      .distance(50)
+  )
   .force("charge", d3.forceManyBody().strength(-300))
   .force("center", d3.forceCenter(width / 2, height / 2))
-  .force("collision", d3.forceCollide().radius(d => d.radius + 2));
+  .force(
+    "collision",
+    d3.forceCollide().radius((d) => d.radius + 2)
+  );
 
 // Update positions on tick
 simulation.on("tick", () => {
   // Update node positions
-  nodeElements
-    .attr("cx", d => d.x)
-    .attr("cy", d => d.y);
-    
+  nodeElements.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
+
   // Update edge positions
   linkElements
-    .attr("x1", d => d.source.x)
-    .attr("y1", d => d.source.y)
-    .attr("x2", d => d.target.x)
-    .attr("y2", d => d.target.y);
+    .attr("x1", (d) => d.source.x)
+    .attr("y1", (d) => d.source.y)
+    .attr("x2", (d) => d.target.x)
+    .attr("y2", (d) => d.target.y);
 });
 ```
 
@@ -502,15 +546,12 @@ function setupNodeInteractions() {
     .on("mouseout", handleNodeUnhover)
     .on("click", handleNodeClick)
     .on("dblclick", handleNodeDoubleClick)
-    .call(d3.drag()
-      .on("start", handleDragStart)
-      .on("drag", handleDrag)
-      .on("end", handleDragEnd)
-    );
+    .call(d3.drag().on("start", handleDragStart).on("drag", handleDrag).on("end", handleDragEnd));
 }
 
 // Zoom and pan handler
-const zoom = d3.zoom()
+const zoom = d3
+  .zoom()
   .scaleExtent([0.1, 10])
   .on("zoom", (event) => {
     container.attr("transform", event.transform);
@@ -525,17 +566,16 @@ svg.call(zoom);
 // Apply filters to network data
 function applyFilters(filters: FilterOptions): void {
   // Filter nodes by score range
-  const filteredNodes = allNodes.filter(node => 
-    node.score >= filters.scoreRange.min && 
-    node.score <= filters.scoreRange.max
+  const filteredNodes = allNodes.filter(
+    (node) => node.score >= filters.scoreRange.min && node.score <= filters.scoreRange.max
   );
-  
+
   // Filter edges by relationship type
-  const filteredEdges = allEdges.filter(edge => {
-    if (filters.relationshipType === 'all') return true;
+  const filteredEdges = allEdges.filter((edge) => {
+    if (filters.relationshipType === "all") return true;
     return edge.type === filters.relationshipType;
   });
-  
+
   // Update visualization
   updateVisualization(filteredNodes, filteredEdges);
 }
@@ -548,13 +588,13 @@ function applyFilters(filters: FilterOptions): void {
 function optimizeRendering(nodeCount: number): void {
   if (nodeCount > 500) {
     // Reduce visual detail
-    nodeElements.attr("r", d => Math.min(d.radius, 4));
+    nodeElements.attr("r", (d) => Math.min(d.radius, 4));
     linkElements.attr("stroke-width", 1);
-    
+
     // Disable some interactions
     simulation.alpha(0.1); // Reduce simulation intensity
   }
-  
+
   if (nodeCount > 1000) {
     // Further optimizations
     enableCulling();

@@ -7,6 +7,7 @@ The Reputation-Gated Airdrop system is a decentralized application (dApp) that e
 The core innovation is the integration of subjective logic with ZK proofs, allowing users to prove reputation scores or thresholds without revealing underlying trust network data. This preserves privacy while enabling selective disclosure for airdrop eligibility. The system supports scalability through partitioning and incremental updates, ensuring it handles large trust networks efficiently.
 
 Key features include:
+
 - Client-side reputation computation using EBSL.
 - ZK proof generation for exact scores or thresholds.
 - On-chain verification without exposing private data.
@@ -114,7 +115,7 @@ No traditional backend; computations are client-side for privacy.
     - `validateOpinion()`: Ensures b + d + u = 1.
     - `fuseOpinions()`: Weighted fusion with numerical stability (handles zero uncertainty).
     - `fuseMultipleOpinions()`: Iterative fusion for attestations.
-    - `computeReputation()`: Filters valid attestations, partitions if >50, fuses, computes score = b + a*u.
+    - `computeReputation()`: Filters valid attestations, partitions if >50, fuses, computes score = b + a\*u.
     - `incrementalUpdateReputation()`: Updates base reputation with new attestations (decay factor 0.7).
     - `partitionAttestations()`: Splits into groups ≤20 for scalability.
   - **Types**: [`SubjectiveOpinion`](src/lib/ebsl/core.ts), [`ReputationResult`](src/lib/ebsl/core.ts), [`TrustAttestation`](src/lib/ebsl/core.ts).
@@ -216,7 +217,7 @@ graph TD
     L --> N[Airdrop Contracts]
     N --> O[Token Contract MockERC20]
     F --> P[Trust Network Data]
-    
+
     classDef userNode fill:#f9f,stroke:#333,stroke-width:2px
     classDef contractNode fill:#bbf,stroke:#333,stroke-width:2px
     class A userNode
@@ -270,7 +271,7 @@ graph LR
     F --> G[getVerifiedReputation]
     G --> H[Airdrop Claim]
     H --> I[ReputationAirdropZKScaled]
-    
+
     classDef contractNode fill:#bbf,stroke:#333,stroke-width:2px
     class C,E contractNode
 ```

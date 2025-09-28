@@ -13,7 +13,7 @@ export type WalletState = {
 export const wallet = writable<WalletState>({
   connected: false,
   selectedChainId: 11155111, // Default to Sepolia
-  error: null
+  error: null,
 });
 
 export const selectedChainId = writable<number>(11155111);
@@ -23,22 +23,22 @@ export const walletActions = {
     const currentState = get(wallet);
     wallet.update((state) => ({
       ...state,
-      error
+      error,
     }));
     captureException(new Error(error), {
       contexts: {
         wallet: {
           address: currentState.address,
           chainId: currentState.chainId,
-          connected: currentState.connected
-        }
-      }
+          connected: currentState.connected,
+        },
+      },
     });
   },
   clearError: () => {
     wallet.update((state) => ({
       ...state,
-      error: null
+      error: null,
     }));
-  }
+  },
 };

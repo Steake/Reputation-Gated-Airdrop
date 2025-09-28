@@ -28,10 +28,10 @@ async function main() {
   // Mock oracle: Simulate validation and "relay" by emitting event or storing
   // In real implementation, this would send message via LayerZero endpoint
   console.log("\n[Mock] Validating proof origin from source chain...");
-  await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate delay
+  await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate delay
 
   console.log("[Mock] Proof validated. Relaying to target chain oracle...");
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   console.log("[Mock] Oracle updated on target chain with bridged proof data");
   console.log("[Mock] Target chain can now accept this proof with chainId validation");
@@ -44,7 +44,7 @@ async function main() {
     proofHash,
     publicInputs,
     timestamp: Math.floor(Date.now() / 1000),
-    relayed: true
+    relayed: true,
   };
 
   console.log("\nBridged Proof Envelope:");

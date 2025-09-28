@@ -67,8 +67,10 @@ describe("ZKMLOnChainVerifier", function () {
       // Mock the verifier to return true for this proof
       await mockVerifier.connect(owner).setVerificationResult(true);
 
-      await expect(zkmlVerifier.connect(user1).verifyReputationProof(proof, publicInputs))
-        .to.emit(zkmlVerifier, "ReputationVerified");
+      await expect(zkmlVerifier.connect(user1).verifyReputationProof(proof, publicInputs)).to.emit(
+        zkmlVerifier,
+        "ReputationVerified"
+      );
 
       // Check stored reputation
       const [reputation, timestamp] = await zkmlVerifier.getVerifiedReputation(user1.address);
@@ -126,8 +128,10 @@ describe("ZKMLOnChainVerifier", function () {
       // Mock verifier to return false
       await mockVerifier.connect(owner).setVerificationResult(false);
 
-      await expect(zkmlVerifier.connect(user1).verifyReputationProof(proof, publicInputs))
-        .to.emit(zkmlVerifier, "ProofRejected");
+      await expect(zkmlVerifier.connect(user1).verifyReputationProof(proof, publicInputs)).to.emit(
+        zkmlVerifier,
+        "ProofRejected"
+      );
 
       // Reputation should not be stored
       const [reputation, timestamp] = await zkmlVerifier.getVerifiedReputation(user1.address);
@@ -144,8 +148,9 @@ describe("ZKMLOnChainVerifier", function () {
       // Mock verifier
       await mockVerifier.connect(owner).setVerificationResult(true);
 
-      await expect(zkmlVerifier.connect(user1).verifyReputationThreshold(proof, publicInputs))
-        .to.emit(zkmlVerifier, "ThresholdVerified");
+      await expect(
+        zkmlVerifier.connect(user1).verifyReputationThreshold(proof, publicInputs)
+      ).to.emit(zkmlVerifier, "ThresholdVerified");
 
       // Check stored reputation (stores threshold as proxy)
       const [reputation, timestamp] = await zkmlVerifier.getVerifiedReputation(user1.address);
@@ -203,8 +208,9 @@ describe("ZKMLOnChainVerifier", function () {
       // Mock verifier to return false
       await mockVerifier.connect(owner).setVerificationResult(false);
 
-      await expect(zkmlVerifier.connect(user1).verifyReputationThreshold(proof, publicInputs))
-        .to.emit(zkmlVerifier, "ProofRejected");
+      await expect(
+        zkmlVerifier.connect(user1).verifyReputationThreshold(proof, publicInputs)
+      ).to.emit(zkmlVerifier, "ProofRejected");
 
       // Reputation should not be stored
       const [reputation, timestamp] = await zkmlVerifier.getVerifiedReputation(user1.address);
@@ -257,9 +263,9 @@ describe("ZKMLOnChainVerifier", function () {
     });
 
     it("Should prevent non-owner from transferring ownership", async function () {
-      await expect(
-        zkmlVerifier.connect(user1).transferOwnership(user2.address)
-      ).to.be.revertedWith("Not authorized");
+      await expect(zkmlVerifier.connect(user1).transferOwnership(user2.address)).to.be.revertedWith(
+        "Not authorized"
+      );
     });
 
     it("Should revert updateVerifier since verifier is immutable", async function () {
@@ -289,11 +295,12 @@ describe("ZKMLOnChainVerifier", function () {
       // Mock verifier to return false
       await mockVerifier.connect(owner).setVerificationResult(false);
 
-      await expect(zkmlVerifier.connect(user1).verifyReputationProof(proof, publicInputs))
-        .to.emit(zkmlVerifier, "ProofRejected");
+      await expect(zkmlVerifier.connect(user1).verifyReputationProof(proof, publicInputs)).to.emit(
+        zkmlVerifier,
+        "ProofRejected"
+      );
     });
   });
-
 
   describe("Anonymous Credential Verification", function () {
     it("Should verify a valid anonymous credential", async function () {
@@ -307,7 +314,9 @@ describe("ZKMLOnChainVerifier", function () {
       await mockSemaphoreVerifier.connect(owner).setVerificationResult(true);
 
       await expect(
-        zkmlVerifier.connect(user1).verifyAnonymousCredential(proof, nullifierHash, externalNullifier, signal, merkleProof)
+        zkmlVerifier
+          .connect(user1)
+          .verifyAnonymousCredential(proof, nullifierHash, externalNullifier, signal, merkleProof)
       ).to.emit(zkmlVerifier, "ReputationVerified");
 
       // Check stored timestamp (score is 0 for anonymous)
@@ -327,7 +336,9 @@ describe("ZKMLOnChainVerifier", function () {
       await mockSemaphoreVerifier.connect(owner).setVerificationResult(false);
 
       await expect(
-        zkmlVerifier.connect(user1).verifyAnonymousCredential(proof, nullifierHash, externalNullifier, signal, merkleProof)
+        zkmlVerifier
+          .connect(user1)
+          .verifyAnonymousCredential(proof, nullifierHash, externalNullifier, signal, merkleProof)
       ).to.emit(zkmlVerifier, "ProofRejected");
 
       // No storage
@@ -347,11 +358,15 @@ describe("ZKMLOnChainVerifier", function () {
       await mockSemaphoreVerifier.connect(owner).setVerificationResult(true);
 
       // First verification succeeds
-      await zkmlVerifier.connect(user1).verifyAnonymousCredential(proof, nullifierHash, externalNullifier, signal, merkleProof);
+      await zkmlVerifier
+        .connect(user1)
+        .verifyAnonymousCredential(proof, nullifierHash, externalNullifier, signal, merkleProof);
 
       // Second fails
       await expect(
-        zkmlVerifier.connect(user1).verifyAnonymousCredential(proof, nullifierHash, externalNullifier, signal, merkleProof)
+        zkmlVerifier
+          .connect(user1)
+          .verifyAnonymousCredential(proof, nullifierHash, externalNullifier, signal, merkleProof)
       ).to.be.revertedWith("Proof already used");
     });
 
@@ -363,7 +378,9 @@ describe("ZKMLOnChainVerifier", function () {
       const merkleProof = Array.from({ length: 32 }, () => 0n);
 
       await expect(
-        zkmlVerifier.connect(user1).verifyAnonymousCredential(proof, nullifierHash, externalNullifier, signal, merkleProof)
+        zkmlVerifier
+          .connect(user1)
+          .verifyAnonymousCredential(proof, nullifierHash, externalNullifier, signal, merkleProof)
       ).to.be.revertedWith("Empty proof");
     });
   });
@@ -373,22 +390,28 @@ describe("ZKMLOnChainVerifier", function () {
       const proof = [1, 2, 3, 4, 5];
       const publicInputs = [750000, 789012]; // [setCommitment, memberHash] as numbers, setCommitment >= threshold
 
-      console.log('Set membership publicInputs:', publicInputs);
-      console.log('MockVerifier verificationResult before:', await mockVerifier.verificationResult());
+      console.log("Set membership publicInputs:", publicInputs);
+      console.log(
+        "MockVerifier verificationResult before:",
+        await mockVerifier.verificationResult()
+      );
 
       // Mock verifier
       await mockVerifier.connect(owner).setVerificationResult(true);
-      console.log('MockVerifier verificationResult after set:', await mockVerifier.verificationResult());
+      console.log(
+        "MockVerifier verificationResult after set:",
+        await mockVerifier.verificationResult()
+      );
 
       const tx = await zkmlVerifier.connect(user1).verifySetMembership(proof, publicInputs);
-      console.log('Transaction successful:', tx.hash);
-      console.log('Transaction receipt:', await tx.wait());
+      console.log("Transaction successful:", tx.hash);
+      console.log("Transaction receipt:", await tx.wait());
 
       await expect(tx).to.emit(zkmlVerifier, "ReputationVerified");
 
       // Check stored (setCommitment as proxy)
       const [reputation, timestamp] = await zkmlVerifier.getVerifiedReputation(user1.address);
-      console.log('Stored reputation:', Number(reputation), 'Timestamp:', timestamp);
+      console.log("Stored reputation:", Number(reputation), "Timestamp:", timestamp);
       expect(Number(reputation)).to.equal(750000);
       expect(timestamp).to.be.gt(0);
     });
@@ -414,21 +437,21 @@ describe("ZKMLOnChainVerifier", function () {
       const proof = [1, 2, 3, 4, 5];
       const publicInputs = [750000, 789012]; // Valid setCommitment
 
-      console.log('Replay test publicInputs:', publicInputs);
+      console.log("Replay test publicInputs:", publicInputs);
 
       // Mock verifier
       await mockVerifier.connect(owner).setVerificationResult(true);
 
       // First succeeds
-      console.log('First verification attempt:');
+      console.log("First verification attempt:");
       const tx1 = await zkmlVerifier.connect(user1).verifySetMembership(proof, publicInputs);
-      console.log('First tx hash:', tx1.hash);
+      console.log("First tx hash:", tx1.hash);
       await tx1.wait();
 
       // Second fails
-      console.log('Second verification attempt:');
+      console.log("Second verification attempt:");
       const tx2Promise = zkmlVerifier.connect(user1).verifySetMembership(proof, publicInputs);
-      console.log('Second tx attempt result:');
+      console.log("Second tx attempt result:");
       await expect(tx2Promise).to.be.revertedWith("Proof already used");
     });
 
@@ -469,7 +492,9 @@ describe("ZKMLOnChainVerifier", function () {
       const campaign = ethers.keccak256(ethers.toUtf8Bytes("test-campaign-zk"));
 
       // Deploy ReputationAirdropZKScaled with zkmlVerifier
-      const ReputationAirdropZKScaled = await ethers.getContractFactory("ReputationAirdropZKScaled");
+      const ReputationAirdropZKScaled = await ethers.getContractFactory(
+        "ReputationAirdropZKScaled"
+      );
       airdropZK = await ReputationAirdropZKScaled.deploy(
         await token.getAddress(),
         await zkmlVerifier.getAddress(),
@@ -499,8 +524,7 @@ describe("ZKMLOnChainVerifier", function () {
 
       // For ZK airdrop, claim might take proof or just address since verified on-chain
       // Assuming it calls isReputationValid on zkmlVerifier
-      await expect(airdropZK.connect(user1).claim(750000))
-        .to.emit(airdropZK, "Claimed");
+      await expect(airdropZK.connect(user1).claim(750000)).to.emit(airdropZK, "Claimed");
 
       const finalBalance = await token.balanceOf(user1.address);
       expect(finalBalance).to.be.gt(initialBalance);
@@ -509,8 +533,9 @@ describe("ZKMLOnChainVerifier", function () {
 
     it("Should reject claim if reputation not verified or expired", async function () {
       // No verification, direct claim should fail
-      await expect(airdropZK.connect(user1).claim(750000))
-        .to.be.revertedWith("No valid reputation proof");
+      await expect(airdropZK.connect(user1).claim(750000)).to.be.revertedWith(
+        "No valid reputation proof"
+      );
 
       // Or if expired, advance time
       // But for simplicity, test without verification
@@ -524,8 +549,7 @@ describe("ZKMLOnChainVerifier", function () {
       await zkmlVerifier.connect(user1).verifyReputationProof(proof, publicInputs);
 
       // Claim should revert with "Contract is paused"
-      await expect(airdropZK.connect(user1).claim(750000))
-        .to.be.revertedWith("Contract is paused");
+      await expect(airdropZK.connect(user1).claim(750000)).to.be.revertedWith("Contract is paused");
     });
   });
 });

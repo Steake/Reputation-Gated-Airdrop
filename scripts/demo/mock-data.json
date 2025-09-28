@@ -1,0 +1,132 @@
+{
+  "small": {
+    "userAddress": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    "attestations": [
+      {
+        "source": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "target": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "opinion": { "belief": 0.9, "disbelief": 0.05, "uncertainty": 0.05, "base_rate": 0.5 },
+        "attestation_type": "trust",
+        "weight": 1.0,
+        "created_at": 1690000000000,
+        "expires_at": 1720000000000
+      },
+      {
+        "source": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "target": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "opinion": { "belief": 0.85, "disbelief": 0.1, "uncertainty": 0.05, "base_rate": 0.5 },
+        "attestation_type": "trust",
+        "weight": 0.9,
+        "created_at": 1691000000000,
+        "expires_at": 1721000000000
+      },
+      {
+        "source": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+        "target": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "opinion": { "belief": 0.95, "disbelief": 0.02, "uncertainty": 0.03, "base_rate": 0.5 },
+        "attestation_type": "skill",
+        "weight": 1.2,
+        "created_at": 1692000000000,
+        "expires_at": 1722000000000
+      },
+      {
+        "source": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+        "target": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "opinion": { "belief": 0.8, "disbelief": 0.15, "uncertainty": 0.05, "base_rate": 0.5 },
+        "attestation_type": "vouch",
+        "weight": 0.8,
+        "created_at": 1693000000000,
+        "expires_at": 1723000000000
+      },
+      {
+        "source": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+        "target": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "opinion": { "belief": 0.9, "disbelief": 0.05, "uncertainty": 0.05, "base_rate": 0.5 },
+        "attestation_type": "endorsement",
+        "weight": 1.1,
+        "created_at": 1694000000000,
+        "expires_at": 1724000000000
+      },
+      {
+        "source": "0x976EA74026E726554dB657fAab86f9bA41fA5e1a",
+        "target": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "opinion": { "belief": 0.85, "disbelief": 0.1, "uncertainty": 0.05, "base_rate": 0.5 },
+        "attestation_type": "trust",
+        "weight": 1.0,
+        "created_at": 1695000000000,
+        "expires_at": 1725000000000
+      },
+      {
+        "source": "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+        "target": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "opinion": { "belief": 0.9, "disbelief": 0.05, "uncertainty": 0.05, "base_rate": 0.5 },
+        "attestation_type": "trust",
+        "weight": 0.95,
+        "created_at": 1696000000000,
+        "expires_at": 1726000000000
+      },
+      {
+        "source": "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5ADf21a",
+        "target": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "opinion": { "belief": 0.8, "disbelief": 0.15, "uncertainty": 0.05, "base_rate": 0.5 },
+        "attestation_type": "skill",
+        "weight": 0.85,
+        "created_at": 1697000000000,
+        "expires_at": 1727000000000
+      },
+      {
+        "source": "0xa0Cf8c64049B6f462e1Ea9D1D334aff1Fc0d785",
+        "target": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "opinion": { "belief": 0.95, "disbelief": 0.02, "uncertainty": 0.03, "base_rate": 0.5 },
+        "attestation_type": "vouch",
+        "weight": 1.15,
+        "created_at": 1698000000000,
+        "expires_at": 1728000000000
+      },
+      {
+        "source": "0xBcd4042DE499D14e55001CcB14A6918C0b32AC5e",
+        "target": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "opinion": { "belief": 0.85, "disbelief": 0.1, "uncertainty": 0.05, "base_rate": 0.5 },
+        "attestation_type": "endorsement",
+        "weight": 1.0,
+        "created_at": 1699000000000,
+        "expires_at": 1729000000000
+      }
+    ],
+    "community": "dev-community",
+    "chainId": 31337
+  },
+  "large": {
+    "userAddress": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    "attestations": [
+      {
+        "source": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "target": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "opinion": { "belief": 0.8, "disbelief": 0.1, "uncertainty": 0.1, "base_rate": 0.5 },
+        "attestation_type": "trust",
+        "weight": 1.0,
+        "created_at": 1690000000000,
+        "expires_at": 1720000000000
+      }
+    ],
+    "community": "dev-community",
+    "chainId": 31337
+  },
+  "anonymous": {
+    "userAddress": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    "attestations": [
+      {
+        "source": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "target": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "opinion": { "belief": 0.8, "disbelief": 0.1, "uncertainty": 0.1, "base_rate": 0.5 },
+        "attestation_type": "trust",
+        "weight": 1.0,
+        "created_at": 1690000000000,
+        "expires_at": 1720000000000
+      }
+    ],
+    "community": "anonymous-dev-group",
+    "chainId": 31337,
+    "semaphoreGroupId": 1
+  }
+}

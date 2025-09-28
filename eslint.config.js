@@ -28,6 +28,13 @@ export default [
     },
   },
   {
-    ignores: ["build/", ".svelte-kit/", "dist/", "node_modules/", "hardhat.config.cjs", "scripts/**/*.js"],
+    ignores: [
+      "build/",
+      ".svelte-kit/",
+      "dist/",
+      "node_modules/",
+      "hardhat.config.cjs",
+      "scripts/**/*.js",
+    ],
   },
 ];

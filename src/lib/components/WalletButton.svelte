@@ -2,7 +2,12 @@
   import { get, writable } from "svelte/store";
   import { wallet, selectedChainId } from "$lib/stores/wallet";
   import { walletMock, walletMockActions, walletConfigs } from "$lib/stores/walletMock";
-  import { connectWallet, disconnectWallet, getPublicClient, getWalletClient } from "$lib/chain/client";
+  import {
+    connectWallet,
+    disconnectWallet,
+    getPublicClient,
+    getWalletClient,
+  } from "$lib/chain/client";
   import { CHAIN_NAMES, SUPPORTED_CHAINS } from "$lib/chain/constants";
   import { shortenAddress } from "$lib/utils";
   import { LogIn, LogOut, AlertTriangle, Clock, ChevronDown } from "lucide-svelte";
@@ -86,14 +91,17 @@
       // If switch fails, try to add chain if not present
       if (error.message.includes("chain not added")) {
         try {
-          const info = supportedChains.find(c => c.chainId === chainId);
+          const info = supportedChains.find((c) => c.chainId === chainId);
           if (info) {
             const hexChainId = `0x${chainId.toString(16)}`;
             await wc.addChain({
               chain: {
                 id: hexChainId as `0x${number}`,
                 name: info.name,
-                nativeCurrency: info.chainId === 80001 ? { name: "MATIC", symbol: "MATIC", decimals: 18 } : { name: "ETH", symbol: "ETH", decimals: 18 },
+                nativeCurrency:
+                  info.chainId === 80001
+                    ? { name: "MATIC", symbol: "MATIC", decimals: 18 }
+                    : { name: "ETH", symbol: "ETH", decimals: 18 },
                 rpcUrls: { default: { http: [info.rpcUrl] } },
                 blockExplorers: { default: { name: `${info.name} Explorer`, url: info.explorer } },
               },
@@ -110,26 +118,34 @@
   }
 
   // Current selected chain info
-  $: currentChainId = $walletMock.enabled ? 11155111 : ($wallet.chainId ?? get(selectedChainId) ?? 11155111);
-  $: currentChain = supportedChains.find(c => c.chainId === currentChainId) || supportedChains[0];
+  $: currentChainId = $walletMock.enabled
+    ? 11155111
+    : ($wallet.chainId ?? get(selectedChainId) ?? 11155111);
+  $: currentChain = supportedChains.find((c) => c.chainId === currentChainId) || supportedChains[0];
 
   // Determine if we're in a connecting state (either real or mock)
-  $: isConnecting = connecting || ($walletMock.enabled && $walletMock.connectionState === "connecting");
-  
+  $: isConnecting =
+    connecting || ($walletMock.enabled && $walletMock.connectionState === "connecting");
+
   // Determine if we're connected (either real or mock)
-  $: isConnected = $wallet.connected || ($walletMock.enabled && $walletMock.connectionState === "connected");
-  
+  $: isConnected =
+    $wallet.connected || ($walletMock.enabled && $walletMock.connectionState === "connected");
+
   // Check for error states
   $: hasError = $walletMock.enabled && $walletMock.connectionState === "error";
-  
+
   // Check for network switching
   $: isSwitching = $walletMock.enabled && $walletMock.connectionState === "switching";
 
   // Get display address (prioritize mock if enabled)
-  $: displayAddress = $walletMock.enabled && $walletMock.address ? $walletMock.address : $wallet.address;
-  
+  $: displayAddress =
+    $walletMock.enabled && $walletMock.address ? $walletMock.address : $wallet.address;
+
   // Get wallet type for display
-  $: walletType = $walletMock.enabled && $walletMock.walletType ? walletConfigs[$walletMock.walletType].name : "Wallet";
+  $: walletType =
+    $walletMock.enabled && $walletMock.walletType
+      ? walletConfigs[$walletMock.walletType].name
+      : "Wallet";
 </script>
 
 {#if hasError}
@@ -144,7 +160,7 @@
         <div class="text-xs text-red-600 dark:text-red-400">{$walletMock.error}</div>
       </div>
     </div>
-    
+
     <button
       on:click={handleConnect}
       class="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
@@ -180,7 +196,9 @@
           {#if displayAddress}{shortenAddress(displayAddress)}{:else}—{/if}
         </div>
         <div class="text-xs text-gray-500 dark:text-gray-400">
-          {isSwitching ? "Switching..." : `Connected${$walletMock.enabled ? ` (${walletType})` : ""}`}
+          {isSwitching
+            ? "Switching..."
+            : `Connected${$walletMock.enabled ? ` (${walletType})` : ""}`}
         </div>
       </div>
     </div>
@@ -192,16 +210,21 @@
         class="flex items-center gap-1 px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         aria-label="Select chain"
       >
-        <span class="hidden sm:inline">{currentChain?.name || 'Unknown'}</span>
+        <span class="hidden sm:inline">{currentChain?.name || "Unknown"}</span>
         <ChevronDown class="h-3 w-3 transition-transform {chainMenuOpen ? 'rotate-180' : ''}" />
       </button>
 
       {#if chainMenuOpen}
-        <div class="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+        <div
+          class="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50"
+        >
           {#each supportedChains as chain}
             <button
               on:click={() => handleChainSelect(chain.chainId)}
-              class="w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors {currentChainId === chain.chainId ? 'bg-blue-50 dark:bg-blue-900/20' : ''}"
+              class="w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors {currentChainId ===
+              chain.chainId
+                ? 'bg-blue-50 dark:bg-blue-900/20'
+                : ''}"
             >
               {chain.name}
               {#if currentChainId === chain.chainId}
@@ -215,7 +238,9 @@
 
     <!-- Network warning for unsupported networks -->
     {#if $walletMock.enabled && !$walletMock.networkSupported}
-      <div class="flex items-center gap-1 px-2 py-1 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded text-xs text-yellow-700 dark:text-yellow-300">
+      <div
+        class="flex items-center gap-1 px-2 py-1 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded text-xs text-yellow-700 dark:text-yellow-300"
+      >
         <AlertTriangle class="h-3 w-3" />
         <span class="hidden sm:inline">Wrong Network</span>
       </div>
@@ -255,7 +280,9 @@
         ></path>
       </svg>
       <span class="text-xs sm:text-sm">
-        {$walletMock.enabled && $walletMock.simulateSlowConnection ? "Connecting (slow)..." : "Connecting..."}
+        {$walletMock.enabled && $walletMock.simulateSlowConnection
+          ? "Connecting (slow)..."
+          : "Connecting..."}
       </span>
     {:else}
       <LogIn class="h-3 w-3 sm:h-4 sm:w-4" />

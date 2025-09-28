@@ -9,15 +9,19 @@
   import Spinner from "./Spinner.svelte";
   import { CheckCircle, AlertCircle, Zap, Shield, UserCog } from "lucide-svelte";
   import { toasts } from "$lib/stores/ui";
-  import { trackProofGenStart, trackProofGenDuration, trackProofGenSuccess } from "$lib/stores/analytics";
-  import type { FullProof, Group } from '@semaphore-protocol/interfaces';
-  import { Identity } from '@semaphore-protocol/identity';
+  import {
+    trackProofGenStart,
+    trackProofGenDuration,
+    trackProofGenSuccess,
+  } from "$lib/stores/analytics";
+  import type { FullProof, Group } from "@semaphore-protocol/interfaces";
+  import { Identity } from "@semaphore-protocol/identity";
 
   export let contractAddress: string | undefined;
 
   let reputationScore: number | null = null;
   let lastVerified: Date | null = null;
-  let proofType: 'exact' | 'threshold' | 'anonymous' = 'exact';
+  let proofType: "exact" | "threshold" | "anonymous" = "exact";
   let anonymousMode = false;
   let identity: Identity | null = null;
   let identityCommitment: string | null = null;
@@ -30,7 +34,7 @@
   function getCurrentVerifierAddress(): string {
     const currentChainId = get(selectedChainId) ?? 11155111;
     const chainInfo = getChainInfo(currentChainId);
-    return contractAddress ?? chainInfo.verifierAddress ?? '';
+    return contractAddress ?? chainInfo.verifierAddress ?? "";
   }
 
   // Generate or load Semaphore identity for anonymous mode
@@ -40,14 +44,14 @@
         // Generate new identity if not exists
         identity = new Identity();
         identityCommitment = identity.genIdentityCommitment(mockGroupId);
-        
+
         // Update wallet store with commitment
-        wallet.update(w => ({ ...w, identityCommitment }));
-        
-        toasts.success('Anonymous identity generated and commitment stored');
+        wallet.update((w) => ({ ...w, identityCommitment }));
+
+        toasts.success("Anonymous identity generated and commitment stored");
       } catch (error) {
-        console.error('Failed to generate identity:', error);
-        toasts.error('Failed to generate anonymous identity');
+        console.error("Failed to generate identity:", error);
+        toasts.error("Failed to generate anonymous identity");
       }
     }
   }
@@ -57,12 +61,12 @@
     anonymousMode = !anonymousMode;
     if (anonymousMode) {
       generateIdentityCommitmentIfNeeded();
-      proofType = 'anonymous';
+      proofType = "anonymous";
     } else {
       identity = null;
       identityCommitment = null;
-      wallet.update(w => ({ ...w, identityCommitment: undefined }));
-      proofType = 'exact';
+      wallet.update((w) => ({ ...w, identityCommitment: undefined }));
+      proofType = "exact";
     }
   }
 
@@ -99,19 +103,21 @@
 
       let mockProof: any;
       let mockPublicInputs: number[];
-      let mockHash = "0x" + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
+      let mockHash =
+        "0x" +
+        Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
 
-      if (proofType === 'exact') {
+      if (proofType === "exact") {
         // Exact score proof
         mockProof = Array.from({ length: 8 }, () => Math.floor(Math.random() * 1000000));
         mockPublicInputs = [750000]; // Mock reputation score
-      } else if (proofType === 'threshold') {
+      } else if (proofType === "threshold") {
         // Threshold proof: [threshold, isAboveThreshold (1=true)]
         mockProof = Array.from({ length: 8 }, () => Math.floor(Math.random() * 1000000));
         const threshold = 600000;
         const isAbove = true; // Mock above threshold
         mockPublicInputs = [threshold, isAbove ? 1 : 0];
-      } else if (proofType === 'anonymous') {
+      } else if (proofType === "anonymous") {
         // Anonymous mode: either Semaphore proof or set membership
         if (anonymousMode) {
           // Mock Semaphore proof for anonymous credential
@@ -120,12 +126,23 @@
             nullifierHash: Math.floor(Math.random() * 1000000),
             externalNullifier: Math.floor(Math.random() * 1000000),
             signal: 1, // Mock signal
-            merkleProof: mockMerkleProof
+            merkleProof: mockMerkleProof,
           };
-          
+
           // For set membership, use ebslEngine to compute inputs
-          const mockTargetAtt = { source: 'mock', target: $wallet.address, opinion: { belief: 0.8, disbelief: 0.1, uncertainty: 0.1, base_rate: 0.5 }, attestation_type: 'trust' as const, weight: 1, created_at: Date.now(), expires_at: Date.now() + 86400000 };
-          const { commitment, memberHash } = ebslEngine.computeSetMembershipInputs(mockAttestations || [mockTargetAtt], mockTargetAtt);
+          const mockTargetAtt = {
+            source: "mock",
+            target: $wallet.address,
+            opinion: { belief: 0.8, disbelief: 0.1, uncertainty: 0.1, base_rate: 0.5 },
+            attestation_type: "trust" as const,
+            weight: 1,
+            created_at: Date.now(),
+            expires_at: Date.now() + 86400000,
+          };
+          const { commitment, memberHash } = ebslEngine.computeSetMembershipInputs(
+            mockAttestations || [mockTargetAtt],
+            mockTargetAtt
+          );
           mockPublicInputs = [Number(commitment), Number(memberHash || 0)]; // For set membership
         } else {
           mockProof = Array.from({ length: 8 }, () => Math.floor(Math.random() * 1000000));
@@ -159,14 +176,14 @@
 
     try {
       let txHash: string;
-      if ($zkProofStore.proofType === 'exact') {
+      if ($zkProofStore.proofType === "exact") {
         txHash = await writeContractEthers(
           verifierAddress,
           zkmlOnChainVerifierAbi,
           "verifyReputationProof",
           [$zkProofStore.proofData.proof, $zkProofStore.proofData.publicInputs]
         );
-      } else if ($zkProofStore.proofType === 'threshold') {
+      } else if ($zkProofStore.proofType === "threshold") {
         // Threshold proof
         txHash = await writeContractEthers(
           verifierAddress,
@@ -174,7 +191,7 @@
           "verifyReputationThreshold",
           [$zkProofStore.proofData.proof, $zkProofStore.proofData.publicInputs]
         );
-      } else if ($zkProofStore.proofType === 'anonymous') {
+      } else if ($zkProofStore.proofType === "anonymous") {
         if (anonymousMode) {
           // Anonymous credential with Semaphore
           const proofData = $zkProofStore.proofData.proof as any;
@@ -182,7 +199,13 @@
             verifierAddress,
             zkmlOnChainVerifierAbi,
             "verifyAnonymousCredential",
-            [proofData.proof, proofData.nullifierHash, proofData.externalNullifier, proofData.signal, proofData.merkleProof]
+            [
+              proofData.proof,
+              proofData.nullifierHash,
+              proofData.externalNullifier,
+              proofData.signal,
+              proofData.merkleProof,
+            ]
           );
         } else {
           // Set membership proof
@@ -199,7 +222,9 @@
       await new Promise((resolve) => setTimeout(resolve, 5000)); // Mock transaction time
 
       zkProofActions.setVerified();
-      toasts.success(`Reputation ${proofType} verified on-chain on ${getChainInfo(get(selectedChainId)).name}!`);
+      toasts.success(
+        `Reputation ${proofType} verified on-chain on ${getChainInfo(get(selectedChainId)).name}!`
+      );
 
       // Refresh reputation data
       await fetchVerifiedReputation();
@@ -234,7 +259,9 @@
   }
 </script>
 
-<div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+<div
+  class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
+>
   <div class="flex items-center justify-between mb-4">
     <h3 class="text-xl font-bold flex items-center gap-2">
       <Zap class="h-5 w-5 text-purple-500" />
@@ -266,7 +293,9 @@
 
     <!-- Anonymous Mode Toggle -->
     <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-      <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      <label
+        class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+      >
         <input
           type="checkbox"
           bind:checked={anonymousMode}
@@ -278,7 +307,8 @@
       </label>
       {#if anonymousMode}
         <p class="text-xs text-gray-500">
-          Anonymous mode uses Semaphore for identity commitments and ZK set membership proofs for privacy-preserving claims.
+          Anonymous mode uses Semaphore for identity commitments and ZK set membership proofs for
+          privacy-preserving claims.
           {#if identityCommitment}
             <details class="mt-1">
               <summary class="cursor-pointer underline">View Identity Commitment</summary>
@@ -290,7 +320,7 @@
         </p>
       {/if}
     </div>
-  
+
     <!-- Proof Type Selection -->
     <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -309,11 +339,11 @@
         {/if}
       </select>
       <p class="text-xs text-gray-500 mt-1">
-        {#if proofType === 'exact'}
+        {#if proofType === "exact"}
           Reveals exact reputation score for precise verification.
-        {:else if proofType === 'threshold'}
+        {:else if proofType === "threshold"}
           Proves reputation is above threshold without revealing exact value.
-        {:else if proofType === 'anonymous'}
+        {:else if proofType === "anonymous"}
           Proves membership in trusted set anonymously using Semaphore identity.
         {/if}
       </p>
@@ -334,20 +364,21 @@
               <Spinner />
               <span>Generating ZK {proofType} Proof... {progress}%</span>
               <div class="w-full bg-gray-200 rounded-full h-2">
-                <div class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: {progress}%"></div>
+                <div
+                  class="bg-purple-600 h-2 rounded-full transition-all duration-300"
+                  style="width: {progress}%"
+                ></div>
               </div>
             </div>
-          {:else}
-            {#if proofType === 'exact'}
-              <Zap class="h-4 w-4" />
-              <span>Generate Exact Score Proof</span>
-            {:else if proofType === 'threshold'}
-              <Shield class="h-4 w-4" />
-              <span>Generate Threshold Proof</span>
-            {:else if proofType === 'anonymous'}
-              <UserCog class="h-4 w-4" />
-              <span>Generate Anonymous Membership Proof</span>
-            {/if}
+          {:else if proofType === "exact"}
+            <Zap class="h-4 w-4" />
+            <span>Generate Exact Score Proof</span>
+          {:else if proofType === "threshold"}
+            <Shield class="h-4 w-4" />
+            <span>Generate Threshold Proof</span>
+          {:else if proofType === "anonymous"}
+            <UserCog class="h-4 w-4" />
+            <span>Generate Anonymous Membership Proof</span>
           {/if}
         </button>
       {:else}
@@ -369,21 +400,21 @@
           {#if $zkProofStore.verifying}
             <Spinner />
             <span>Verifying {proofType} On-Chain...</span>
-          {:else}
-            {#if proofType === 'exact'}
-              <span>Submit Exact Proof to Blockchain</span>
-            {:else if proofType === 'threshold'}
-              <span>Submit Threshold Proof to Blockchain</span>
-            {:else if proofType === 'anonymous'}
-              <span>Submit Anonymous Proof to Blockchain</span>
-            {/if}
+          {:else if proofType === "exact"}
+            <span>Submit Exact Proof to Blockchain</span>
+          {:else if proofType === "threshold"}
+            <span>Submit Threshold Proof to Blockchain</span>
+          {:else if proofType === "anonymous"}
+            <span>Submit Anonymous Proof to Blockchain</span>
           {/if}
         </button>
       {/if}
 
       <!-- Success State -->
       {#if $zkProofStore.verified}
-        <div class="p-4 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg">
+        <div
+          class="p-4 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg"
+        >
           <div class="flex items-center gap-2 text-green-800 dark:text-green-200">
             <CheckCircle class="h-5 w-5" />
             <span class="font-semibold">Reputation {proofType} Verified On-Chain!</span>
@@ -396,7 +427,9 @@
 
       <!-- Error State -->
       {#if $zkProofStore.error}
-        <div class="p-4 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg">
+        <div
+          class="p-4 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg"
+        >
           <div class="flex items-center gap-2 text-red-800 dark:text-red-200">
             <AlertCircle class="h-5 w-5" />
             <span class="font-semibold">Error</span>
@@ -422,7 +455,8 @@
         <summary class="cursor-pointer font-semibold">Technical Details</summary>
         <div class="mt-2 space-y-2 text-gray-600 dark:text-gray-300">
           <div>
-            <strong>Proof Type:</strong> {$zkProofStore.proofType}
+            <strong>Proof Type:</strong>
+            {$zkProofStore.proofType}
           </div>
           <div>
             <strong>Proof Hash:</strong>

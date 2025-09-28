@@ -8,7 +8,7 @@ export interface ZKProofState {
   verifying: boolean;
   verified: boolean;
   error: string | null;
-  proofType: 'exact' | 'threshold' | 'gated';
+  proofType: "exact" | "threshold" | "gated";
   proofData: {
     proof: number[] | null;
     publicInputs: number[] | null;
@@ -24,7 +24,7 @@ export const zkProofStore = writable<ZKProofState>({
   verifying: false,
   verified: false,
   error: null,
-  proofType: 'exact',
+  proofType: "exact",
   proofData: {
     proof: null,
     publicInputs: null,
@@ -42,7 +42,7 @@ export const zkProofActions = {
       verifying: false,
       verified: false,
       error: null,
-      proofType: 'exact',
+      proofType: "exact",
       proofData: {
         proof: null,
         publicInputs: null,
@@ -60,10 +60,10 @@ export const zkProofActions = {
     })),
 
   setGenerated: (
-    proof: number[], 
-    publicInputs: number[], 
-    hash: string, 
-    proofType: 'exact' | 'threshold' | 'gated',
+    proof: number[],
+    publicInputs: number[],
+    hash: string,
+    proofType: "exact" | "threshold" | "gated",
     communityId?: string,
     encryptedMetadata?: string
   ) =>
@@ -72,12 +72,12 @@ export const zkProofActions = {
       generating: false,
       generated: true,
       proofType,
-      proofData: { 
-        proof, 
-        publicInputs, 
-        hash, 
-        communityId, 
-        encryptedMetadata 
+      proofData: {
+        proof,
+        publicInputs,
+        hash,
+        communityId,
+        encryptedMetadata,
       },
     })),
 
@@ -105,9 +105,9 @@ export const zkProofActions = {
             proofType: state.proofType,
             chainId,
             generating: state.generating,
-            verifying: state.verifying
-          }
-        }
+            verifying: state.verifying,
+          },
+        },
       });
       return {
         ...state,

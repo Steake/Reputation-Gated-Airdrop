@@ -16,7 +16,7 @@ export async function load({ parent }) {
   }
 
   // Track claim attempt when loading claim page with connected wallet
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     trackClaimAttempt(0, undefined);
   }
 
@@ -25,14 +25,14 @@ export async function load({ parent }) {
     // Track claim success with score and community if available
     const score = scoreData?.score || 0;
     const community = scoreData?.community;
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       trackClaimSuccess(score, community);
     }
     return { scoreData };
   } catch (error) {
     console.error("Failed to load score for claim page:", error);
     // Track claim attempt failure
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       trackClaimAttempt(0, undefined);
     }
     return { scoreData: null, error: "Failed to load reputation score." };

@@ -1,5 +1,4 @@
-import pkg from "hardhat";
-const { ethers } = pkg;
+const { ethers } = require("hardhat");
 
 // Deploy on Polygon Mumbai: MockERC20, ZKMLOnChainVerifier, ReputationAirdropZKScaled
 
@@ -7,7 +6,11 @@ async function main() {
   // Deploy mock token for testing
   console.log("Deploying MockERC20...");
   const MockERC20 = await ethers.getContractFactory("MockERC20");
-  const token = await MockERC20.deploy("Mock Reputation Token", "MRT", ethers.parseEther("1000000"));
+  const token = await MockERC20.deploy(
+    "Mock Reputation Token",
+    "MRT",
+    ethers.parseEther("1000000")
+  );
   await token.waitForDeployment();
   const tokenAddress = await token.getAddress();
   console.log("MockERC20 deployed to:", tokenAddress);
@@ -60,7 +63,7 @@ async function main() {
   return { tokenAddress, zkmlAddress, airdropAddress };
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (require.main === module) {
   main()
     .then(() => process.exit(0))
     .catch((error) => {
@@ -69,4 +72,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     });
 }
 
-export default main;
+module.exports = main;

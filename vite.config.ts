@@ -12,7 +12,7 @@ export default defineConfig({
         assets: "./dist/**",
       },
     }),
-    sveltekit()
+    sveltekit(),
   ],
   test: {
     include: ["src/**/*.{test,spec}.{js,ts}"],

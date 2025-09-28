@@ -49,9 +49,9 @@ function setError(error: string | null) {
       contexts: {
         ui: {
           errorType: "uiError",
-          timestamp: new Date().toISOString()
-        }
-      }
+          timestamp: new Date().toISOString(),
+        },
+      },
     });
   } else {
     toasts.success("Error cleared");
@@ -60,5 +60,5 @@ function setError(error: string | null) {
 
 export const uiActions = {
   setLoading,
-  setError
+  setError,
 };

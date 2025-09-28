@@ -9,8 +9,10 @@ This directory contains comprehensive documentation for the client-side prover i
 ### 1. Core Specifications
 
 #### [BDD Specification](./client-side-prover-bdd-specification.md)
+
 **Purpose**: Defines detailed Behavior-Driven Development scenarios for all client-side prover features  
 **Key Content**:
+
 - Zero-knowledge proof generation scenarios
 - EBSL algorithm integration requirements
 - Web of trust state reading specifications
@@ -18,8 +20,10 @@ This directory contains comprehensive documentation for the client-side prover i
 - Performance and security requirements
 
 #### [Global Web of Trust Architecture](./global-web-of-trust-architecture.md)
+
 **Purpose**: Comprehensive architecture for reading and processing global trust network state  
 **Key Content**:
+
 - Trust network data layer design
 - Scalable query engine architecture
 - EBSL computation engine specifications
@@ -27,8 +31,10 @@ This directory contains comprehensive documentation for the client-side prover i
 - Real-time updates and consistency models
 
 #### [Airdrop Proof Types and Strategy](./airdrop-proof-types-and-strategy.md)
+
 **Purpose**: Defines specific proof types required for the airdrop system and implementation strategy  
 **Key Content**:
+
 - Public proof claims with full transparency
 - Private proof claims with privacy preservation
 - Gated proof claims with selective disclosure
@@ -38,8 +44,10 @@ This directory contains comprehensive documentation for the client-side prover i
 ### 2. Implementation Guidance
 
 #### [Technical Implementation Roadmap](./technical-implementation-roadmap.md)
+
 **Purpose**: Detailed project roadmap with subtasks, timelines, and deliverables  
 **Key Content**:
+
 - 16-week implementation timeline
 - 12 major tasks broken down into manageable subtasks
 - BDD scenarios for each development phase
@@ -47,8 +55,10 @@ This directory contains comprehensive documentation for the client-side prover i
 - Success metrics and quality assurance
 
 #### [EBSL Algorithm Integration Strategy](./ebsl-algorithm-integration-strategy.md)
+
 **Purpose**: Technical strategy for integrating EBSL algorithm with EZKL for ZK proof generation  
 **Key Content**:
+
 - Mathematical framework and ZK-compatible implementation
 - PyTorch to EZKL conversion pipeline
 - Scalability architecture for arbitrary network sizes
@@ -56,8 +66,10 @@ This directory contains comprehensive documentation for the client-side prover i
 - Performance optimization strategies
 
 #### [ZKML On-Chain Verifier Specification](./zkml-on-chain-verifier-specification.md)
+
 **Purpose**: Smart contract specification for on-chain proof verification  
 **Key Content**:
+
 - Smart contract architecture and functions for verifying client-generated ZK proofs
 - EBSL circuit design for zero-knowledge proofs
 - Integration architecture and data flow
@@ -67,6 +79,7 @@ This directory contains comprehensive documentation for the client-side prover i
 ## Implementation Phases
 
 ### Phase 1: Foundation (Weeks 1-4)
+
 - [x] **Documentation Complete**: All architectural specifications documented
 - [ ] **EBSL Algorithm Integration**: Core fusion logic implementation
 - [ ] **Trust Network Reader**: Query infrastructure for web of trust
@@ -74,18 +87,21 @@ This directory contains comprehensive documentation for the client-side prover i
 - [ ] **Proof Generation Service**: API and workflow infrastructure
 
 ### Phase 2: Advanced Features (Weeks 5-8)
+
 - [ ] **Private Proofs**: Privacy-preserving proof mechanisms
 - [ ] **Aggregate Proofs**: Multi-source reputation combination
 - [ ] **Gated Proofs**: Selective disclosure implementations
 - [ ] **Performance Optimization**: Parallel processing and caching
 
 ### Phase 3: Production Ready (Weeks 9-12)
+
 - [ ] **Scalability**: Large network handling and optimization
 - [ ] **Security Audit**: Comprehensive security review
 - [ ] **Frontend Integration**: User interface and experience
 - [ ] **Testing & Validation**: Complete test suite implementation
 
 ### Phase 4: Advanced Features (Weeks 13-16)
+
 - [ ] **Cross-Chain Support**: Multi-blockchain proof portability
 - [ ] **Advanced Privacy**: Anonymous credentials and membership proofs
 - [ ] **Production Deployment**: Live system deployment and monitoring
@@ -117,6 +133,7 @@ This directory contains comprehensive documentation for the client-side prover i
 ## Dependencies and Prerequisites
 
 ### Technical Dependencies
+
 - **EZKL**: Zero-knowledge proof generation library
 - **PyTorch**: Machine learning framework for EBSL implementation
 - **Node.js/TypeScript**: Client-side implementation environment
@@ -125,6 +142,7 @@ This directory contains comprehensive documentation for the client-side prover i
 - **Ethereum/Polygon**: Blockchain infrastructure for proof verification
 
 ### Knowledge Prerequisites
+
 - **Zero-Knowledge Proofs**: Understanding of ZK-SNARK/STARK protocols
 - **Subjective Logic**: Mathematical foundation of EBSL algorithm
 - **Graph Algorithms**: Trust network traversal and analysis
@@ -134,18 +152,21 @@ This directory contains comprehensive documentation for the client-side prover i
 ## Contribution Guidelines
 
 ### Documentation Updates
+
 1. All new features must include corresponding BDD scenarios
 2. Architecture changes require updates to relevant specification documents
 3. Implementation changes should update the technical roadmap
 4. Security implications must be documented in appropriate sections
 
 ### Code Implementation
+
 1. Follow BDD methodology for all development
 2. Implement comprehensive test coverage (>95%)
 3. Include performance benchmarks for all critical paths
 4. Document all public APIs and integration points
 
 ### Quality Assurance
+
 1. All code must pass security review
 2. Performance requirements must be validated
 3. Privacy properties must be formally verified where applicable
@@ -154,12 +175,14 @@ This directory contains comprehensive documentation for the client-side prover i
 ## Support and Resources
 
 ### Internal Resources
+
 - **Notebooks/**: EBSL algorithm reference implementation
 - **src/lib/components/ZKMLProver.svelte**: Current proof generation UI
 - **src/lib/stores/zkproof.ts**: Proof state management
 - **tests/**: Existing test infrastructure
 
 ### External Resources
+
 - **EZKL Documentation**: https://docs.ezkl.xyz/
 - **Subjective Logic Papers**: Mathematical foundations and research
 - **Zero-Knowledge Learning Resources**: ZK proof system education
@@ -170,17 +193,20 @@ This directory contains comprehensive documentation for the client-side prover i
 This documentation package requires approval from the following stakeholders before implementation begins:
 
 ### Technical Approval
+
 - [ ] **Lead Architect**: Architecture and design review
 - [ ] **ZK Specialist**: Cryptographic protocol validation
 - [ ] **Security Lead**: Security model and threat analysis
 - [ ] **Performance Engineer**: Scalability and optimization review
 
 ### Product Approval
+
 - [ ] **Product Owner**: Feature completeness and user experience
 - [ ] **Project Manager**: Timeline and resource allocation
 - [ ] **Compliance Officer**: Regulatory and privacy compliance
 
 ### Implementation Readiness
+
 - [ ] **Development Team**: Technical feasibility and resource commitment
 - [ ] **QA Team**: Testing strategy and automation readiness
 - [ ] **DevOps Team**: Infrastructure and deployment planning

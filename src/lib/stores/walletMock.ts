@@ -31,7 +31,7 @@ const defaultMockState: MockWalletState = {
 };
 
 // Global access for testing
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   (window as any).mockWalletTesting = {
     setHighRepUser: () => walletMockActions.presets.highReputationUser(),
     setMediumRepUser: () => walletMockActions.presets.mediumReputationUser(),
@@ -47,9 +47,9 @@ if (typeof window !== 'undefined') {
         walletType: state.walletType,
         address: state.address,
         userReputationTier: state.userReputationTier,
-        error: state.error
+        error: state.error,
       };
-    }
+    },
   };
 }
 
@@ -90,11 +90,11 @@ const walletConfigs = {
 export const walletMockActions = {
   // Enable/disable mock mode
   setEnabled: (enabled: boolean) => {
-    walletMock.update(state => ({
+    walletMock.update((state) => ({
       ...state,
       enabled,
     }));
-    
+
     if (!enabled) {
       // Reset to actual wallet state when disabling mock
       walletMockActions.reset();
@@ -109,11 +109,11 @@ export const walletMockActions = {
 
   // Set connection state
   setConnectionState: (connectionState: MockWalletState["connectionState"]) => {
-    walletMock.update(state => ({
+    walletMock.update((state) => ({
       ...state,
       connectionState,
     }));
-    
+
     // Update actual wallet store based on mock state
     const mockState = get(walletMock);
     if (mockState.enabled) {
@@ -127,7 +127,7 @@ export const walletMockActions = {
 
   // Set wallet type and corresponding address
   setWalletType: (walletType: MockWalletState["walletType"]) => {
-    walletMock.update(state => ({
+    walletMock.update((state) => ({
       ...state,
       walletType,
     }));
@@ -135,16 +135,16 @@ export const walletMockActions = {
 
   // Set user reputation tier (affects which address is used)
   setReputationTier: (tier: MockWalletState["userReputationTier"]) => {
-    walletMock.update(state => ({
+    walletMock.update((state) => ({
       ...state,
       userReputationTier: tier,
       address: tierAddresses[tier],
     }));
-    
+
     // Update actual wallet store if mock is enabled and connected
     const mockState = get(walletMock);
     if (mockState.enabled && mockState.connectionState === "connected") {
-      wallet.update(w => ({
+      wallet.update((w) => ({
         ...w,
         address: tierAddresses[tier],
       }));
@@ -153,16 +153,16 @@ export const walletMockActions = {
 
   // Set network chain ID
   setChainId: (chainId: number) => {
-    walletMock.update(state => ({
+    walletMock.update((state) => ({
       ...state,
       chainId,
       networkSupported: chainId === 11155111 || chainId === 1, // Sepolia or Mainnet
     }));
-    
+
     // Update actual wallet store if mock is enabled and connected
     const mockState = get(walletMock);
     if (mockState.enabled && mockState.connectionState === "connected") {
-      wallet.update(w => ({
+      wallet.update((w) => ({
         ...w,
         chainId,
       }));
@@ -171,7 +171,7 @@ export const walletMockActions = {
 
   // Set error state
   setError: (error: string | null) => {
-    walletMock.update(state => ({
+    walletMock.update((state) => ({
       ...state,
       error,
       connectionState: error ? "error" : state.connectionState,
@@ -180,7 +180,7 @@ export const walletMockActions = {
 
   // Configure connection behavior
   setConnectionBehavior: (slow: boolean = false, autoFail: boolean = false) => {
-    walletMock.update(state => ({
+    walletMock.update((state) => ({
       ...state,
       simulateSlowConnection: slow,
       autoFailConnection: autoFail,
@@ -201,7 +201,7 @@ export const walletMockActions = {
     const connectionTime = mockState.simulateSlowConnection ? baseTime * 2 : baseTime;
 
     // Simulate connection delay
-    await new Promise(resolve => setTimeout(resolve, connectionTime));
+    await new Promise((resolve) => setTimeout(resolve, connectionTime));
 
     // Check if should auto-fail
     if (mockState.autoFailConnection) {
@@ -211,7 +211,7 @@ export const walletMockActions = {
 
     // Set address based on reputation tier
     const address = tierAddresses[mockState.userReputationTier];
-    walletMock.update(state => ({
+    walletMock.update((state) => ({
       ...state,
       address,
       connectionState: "connected",
@@ -232,7 +232,7 @@ export const walletMockActions = {
     if (!mockState.enabled) return;
 
     walletMockActions.setConnectionState("disconnected");
-    walletMock.update(state => ({
+    walletMock.update((state) => ({
       ...state,
       address: null,
       error: null,
@@ -247,10 +247,10 @@ export const walletMockActions = {
     if (!mockState.enabled || mockState.connectionState !== "connected") return;
 
     walletMockActions.setConnectionState("switching");
-    
+
     // Simulate network switch delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     walletMockActions.setChainId(newChainId);
     walletMockActions.setConnectionState("connected");
   },
@@ -299,7 +299,9 @@ export const walletMockActions = {
     connectionError: () => {
       walletMockActions.setEnabled(true);
       walletMockActions.setConnectionState("error");
-      walletMockActions.setError("Failed to connect to MetaMask. Please ensure it's installed and unlocked.");
+      walletMockActions.setError(
+        "Failed to connect to MetaMask. Please ensure it's installed and unlocked."
+      );
       walletMockActions.setWalletType("metamask");
     },
 

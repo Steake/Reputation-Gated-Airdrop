@@ -1,7 +1,7 @@
 const { ethers } = require("hardhat");
-const Safe = require('@safe-global/safe-core-sdk').default;
-const EthersAdapter = require('@safe-global/safe-ethers-lib').default;
-const SafeFactory = require('@safe-global/safe-factory').default;
+const Safe = require("@safe-global/safe-core-sdk").default;
+const EthersAdapter = require("@safe-global/safe-ethers-lib").default;
+const SafeFactory = require("@safe-global/safe-factory").default;
 
 async function main() {
   const airdropAddress = process.env.AIRDROP_ADDRESS;
@@ -15,7 +15,7 @@ async function main() {
   const owners = [
     "0x742d35Cc6634C0532925a3b8D3D8f8f3eD8f8f3e", // Owner 1
     "0x8fD8f8f3eD8f8f3e742d35Cc6634C0532925a3b8", // Owner 2
-    "0x3e742d35Cc6634C0532925a3b8D3D8f8f3eD8f8f"  // Owner 3
+    "0x3e742d35Cc6634C0532925a3b8D3D8f8f3eD8f8f", // Owner 3
   ];
   const threshold = 2; // Require 2/3 signatures
 
@@ -23,18 +23,18 @@ async function main() {
   const [signer] = await ethers.getSigners();
   const ethAdapter = new EthersAdapter({
     ethers,
-    signerOrProvider: signer
+    signerOrProvider: signer,
   });
 
   const safeFactory = await SafeFactory.create({
-    ethAdapter
+    ethAdapter,
   });
 
   // Create Safe
   const safeAccountConfig = {
     owners: owners,
     threshold: threshold,
-    __unsafeSkipHardhatForkingChecks: true // For local testing
+    __unsafeSkipHardhatForkingChecks: true, // For local testing
   };
 
   const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });

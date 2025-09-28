@@ -6,32 +6,46 @@
         "name": "_verifier",
         "type": "address",
         "internalType": "contract IVerifier"
+      },
+      {
+        "name": "_semaphoreVerifier",
+        "type": "address",
+        "internalType": "contract ISemaphoreVerifier"
+      },
+      {
+        "name": "_semaphoreGroupId",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ]
   },
   {
     "type": "function",
-    "name": "verifyReputationProof",
-    "inputs": [
-      {
-        "name": "proof",
-        "type": "uint256[]",
-        "internalType": "uint256[]"
-      },
-      {
-        "name": "publicInputs",
-        "type": "uint256[]",
-        "internalType": "uint256[]"
-      }
-    ],
+    "name": "getCircuitParameters",
+    "inputs": [],
     "outputs": [
       {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
+        "name": "maxOpinions",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "opinionSize",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "minThreshold",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "maxScore",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
-    "stateMutability": "nonpayable"
+    "stateMutability": "pure"
   },
   {
     "type": "function",
@@ -83,19 +97,33 @@
   },
   {
     "type": "function",
-    "name": "verifiedReputations",
-    "inputs": [
+    "name": "owner",
+    "inputs": [],
+    "outputs": [
       {
         "name": "",
         "type": "address",
         "internalType": "address"
       }
     ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "pause",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "paused",
+    "inputs": [],
     "outputs": [
       {
         "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "bool",
+        "internalType": "bool"
       }
     ],
     "stateMutability": "view"
@@ -121,6 +149,26 @@
   },
   {
     "type": "function",
+    "name": "transferOwnership",
+    "inputs": [
+      {
+        "name": "newOwner",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "unpause",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "updateVerifier",
     "inputs": [
       {
@@ -134,43 +182,190 @@
   },
   {
     "type": "function",
-    "name": "pause",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "unpause",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "owner",
-    "inputs": [],
-    "outputs": [
+    "name": "verifiedReputations",
+    "inputs": [
       {
         "name": "",
         "type": "address",
         "internalType": "address"
       }
     ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
     "stateMutability": "view"
   },
   {
     "type": "function",
-    "name": "paused",
-    "inputs": [],
+    "name": "verifyAnonymousCredential",
+    "inputs": [
+      {
+        "name": "proof",
+        "type": "uint256[8]",
+        "internalType": "uint256[8]"
+      },
+      {
+        "name": "nullifierHash",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "externalNullifier",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "signal",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "merkleProof",
+        "type": "uint256[32]",
+        "internalType": "uint256[32]"
+      }
+    ],
     "outputs": [
       {
-        "name": "",
+        "name": "success",
         "type": "bool",
         "internalType": "bool"
       }
     ],
-    "stateMutability": "view"
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "verifyReputationProof",
+    "inputs": [
+      {
+        "name": "proof",
+        "type": "uint256[]",
+        "internalType": "uint256[]"
+      },
+      {
+        "name": "publicInputs",
+        "type": "uint256[]",
+        "internalType": "uint256[]"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "success",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "verifyReputationThreshold",
+    "inputs": [
+      {
+        "name": "proof",
+        "type": "uint256[]",
+        "internalType": "uint256[]"
+      },
+      {
+        "name": "publicInputs",
+        "type": "uint256[]",
+        "internalType": "uint256[]"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "success",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "verifySetMembership",
+    "inputs": [
+      {
+        "name": "proof",
+        "type": "uint256[]",
+        "internalType": "uint256[]"
+      },
+      {
+        "name": "publicInputs",
+        "type": "uint256[]",
+        "internalType": "uint256[]"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "success",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "OwnershipTransferred",
+    "inputs": [
+      {
+        "name": "previousOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "newOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Paused",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ProofRejected",
+    "inputs": [
+      {
+        "name": "user",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "proofHash",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "reason",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      }
+    ],
+    "anonymous": false
   },
   {
     "type": "event",
@@ -205,7 +400,7 @@
   },
   {
     "type": "event",
-    "name": "ProofRejected",
+    "name": "ThresholdVerified",
     "inputs": [
       {
         "name": "user",
@@ -214,16 +409,41 @@
         "internalType": "address"
       },
       {
+        "name": "threshold",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "isAboveThreshold",
+        "type": "bool",
+        "indexed": false,
+        "internalType": "bool"
+      },
+      {
         "name": "proofHash",
         "type": "bytes32",
         "indexed": false,
         "internalType": "bytes32"
       },
       {
-        "name": "reason",
-        "type": "string",
+        "name": "timestamp",
+        "type": "uint256",
         "indexed": false,
-        "internalType": "string"
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Unpaused",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
       }
     ],
     "anonymous": false

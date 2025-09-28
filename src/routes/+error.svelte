@@ -10,9 +10,9 @@
         contexts: {
           page: {
             status: $page.status,
-            url: $page.url.href
-          }
-        }
+            url: $page.url.href,
+          },
+        },
       });
     }
   });

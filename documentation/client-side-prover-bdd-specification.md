@@ -9,7 +9,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **Privacy-First Design**: Users MUST be able to compute their reputation scores locally without sharing sensitive information with third parties. The client-side prover implements:
 
 1. **Local EBSL Computation**: Complete reputation calculation runs in the browser/client
-2. **Private Attestation Processing**: Trust network data is processed locally 
+2. **Private Attestation Processing**: Trust network data is processed locally
 3. **Optional Backend Services**: Web services are provided for convenience but never required
 4. **Zero Data Leakage**: No sensitive trust information leaves the user's device during computation
 
@@ -20,6 +20,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **So that** my trust network data never leaves my control
 
 #### Scenario: Fully local reputation computation
+
 **Given** I have my attestation data stored locally or retrieved via public APIs  
 **When** I compute my reputation score  
 **Then** all EBSL calculations should run in my browser/client  
@@ -36,6 +37,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **So that** I can claim airdrops while preserving privacy of my trust network
 
 #### Scenario: Successful proof generation for public claim
+
 **Given** I have connected my wallet with address "0x123...abc"  
 **And** I have at least 3 reputation attestations in the trust network  
 **And** my computed reputation score is above the minimum threshold (0.6)  
@@ -47,6 +49,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** optionally publish metadata publicly
 
 #### Scenario: Proof generation for private claim
+
 **Given** I have connected my wallet with address "0x123...abc"  
 **And** I have sufficient reputation attestations  
 **And** I want to keep my claim private  
@@ -57,6 +60,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** provide minimal public proof for verification
 
 #### Scenario: Insufficient reputation for proof generation
+
 **Given** I have connected my wallet  
 **And** my reputation score is below the minimum threshold  
 **When** I attempt to generate a proof  
@@ -65,6 +69,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** suggest ways to improve my reputation
 
 #### Scenario: Network error during attestation retrieval
+
 **Given** I have initiated proof generation  
 **And** the trust network service is unavailable  
 **When** the system attempts to retrieve my attestations  
@@ -79,6 +84,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **So that** proof generation is based on mathematically sound trust fusion
 
 #### Scenario: EBSL computation with varied attestation types
+
 **Given** I have attestations of types ["trust", "attestation", "vouch"]  
 **And** each attestation has opinion values [belief, disbelief, uncertainty, base_rate]  
 **When** the EBSL algorithm processes these inputs  
@@ -88,6 +94,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** maintain mathematical properties (commutativity, associativity)
 
 #### Scenario: Handling large trust networks
+
 **Given** I have more than 100 direct attestations  
 **And** the trust network has more than 1000 nodes  
 **When** EBSL computation is performed  
@@ -97,6 +104,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** maintain accuracy equivalent to classical computation
 
 #### Scenario: Numerical stability in edge cases
+
 **Given** opinion values that could cause numerical instability  
 **Such as** very small uncertainty values or extreme belief/disbelief ratios  
 **When** EBSL fusion is performed  
@@ -112,6 +120,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **So that** I can compute accurate and up-to-date reputation scores
 
 #### Scenario: Retrieving user's trust subgraph
+
 **Given** a user's wallet address "0x123...abc"  
 **When** I request their trust subgraph  
 **Then** the system should return all direct attestations  
@@ -121,6 +130,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** filter out expired or revoked attestations
 
 #### Scenario: Handling network partitions
+
 **Given** the global trust network has temporary partitions  
 **When** I attempt to read trust state  
 **Then** the system should detect partition conditions  
@@ -129,6 +139,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** provide degraded service rather than complete failure
 
 #### Scenario: Privacy-preserving state access
+
 **Given** I need trust network data for proof generation  
 **But** want to maintain privacy of my social connections  
 **When** accessing the web of trust  
@@ -145,6 +156,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **Important**: Zero knowledge proofs are generated by origin (client-side) and validated by receiver (on-chain verifier). The smart contract does NOT generate proofs.
 
 #### Scenario: On-chain proof verification
+
 **Given** a client-generated ZK proof with public inputs [reputation_score, merkle_root]  
 **When** the proof is submitted to the on-chain verification contract  
 **Then** the contract should verify the proof cryptographically  
@@ -154,6 +166,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** store the verified reputation for future reference
 
 #### Scenario: Client-side proof generation and on-chain verification
+
 **Given** I have computed my reputation score locally  
 **When** I generate a ZK proof on my device  
 **Then** the proof should be generated entirely client-side  
@@ -162,6 +175,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** prove my reputation meets the threshold without revealing exact score
 
 #### Scenario: Batch proof verification
+
 **Given** multiple users submit proofs simultaneously  
 **When** batch verification is performed  
 **Then** the system should process all proofs efficiently  
@@ -176,6 +190,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **So that** I can handle large trust networks efficiently
 
 #### Scenario: Combining reputation proofs from different sources
+
 **Given** I have reputation from multiple independent trust networks  
 **When** I generate proofs for each network separately  
 **Then** I should be able to combine them into an aggregate proof  
@@ -184,6 +199,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** be verifiable as a single proof on-chain
 
 #### Scenario: Incremental proof updates
+
 **Given** I have an existing reputation proof  
 **And** I receive new attestations  
 **When** I want to update my proof  
@@ -195,6 +211,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 ## Error Handling and Edge Cases
 
 ### Scenario: Malformed attestation data
+
 **Given** corrupted or malformed attestation data  
 **When** the EBSL algorithm processes this data  
 **Then** it should validate input format rigorously  
@@ -203,6 +220,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** provide detailed logging for debugging
 
 ### Scenario: Proof generation timeout
+
 **Given** proof generation takes longer than expected (>5 minutes)  
 **When** the timeout threshold is reached  
 **Then** the system should gracefully cancel the operation  
@@ -211,6 +229,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** preserve any intermediate results for analysis
 
 ### Scenario: Circuit compilation failure
+
 **Given** EZKL circuit compilation fails  
 **When** proof generation is attempted  
 **Then** the system should detect compilation errors  
@@ -221,6 +240,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 ## Performance Requirements
 
 ### Scenario: Proof generation performance
+
 **Given** a standard reputation computation (10-50 attestations)  
 **When** proof generation is initiated  
 **Then** it should complete within 60 seconds on average hardware  
@@ -229,6 +249,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** be interruptible by the user
 
 ### Scenario: Network scalability
+
 **Given** the trust network grows to 10,000+ users  
 **When** reputation computation is performed  
 **Then** the system should maintain sub-linear scaling  
@@ -239,6 +260,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 ## Security Requirements
 
 ### Scenario: Input validation
+
 **Given** any user input or external data  
 **When** it enters the system  
 **Then** it must be validated against expected schemas  
@@ -247,6 +269,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** rejected if it doesn't meet security criteria
 
 ### Scenario: Key management
+
 **Given** cryptographic keys used in proof generation  
 **When** they are created, stored, or used  
 **Then** they must follow best practices for key management  
@@ -255,6 +278,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** maintain forward secrecy where applicable
 
 ### Scenario: Proof integrity
+
 **Given** a generated zero-knowledge proof  
 **When** it is transmitted or stored  
 **Then** its integrity must be verifiable  
@@ -265,6 +289,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 ## Integration Requirements
 
 ### Scenario: Frontend integration
+
 **Given** the client-side prover runs in a web browser  
 **When** it needs to interact with the UI  
 **Then** it should provide clear status updates  
@@ -273,6 +298,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** maintain compatibility with major browsers
 
 ### Scenario: Backend API integration
+
 **Given** the prover needs external data  
 **When** it calls backend APIs  
 **Then** it should handle API failures gracefully  
@@ -281,6 +307,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** maintain compatibility across API versions
 
 ### Scenario: Blockchain integration
+
 **Given** proofs need to be submitted on-chain  
 **When** interacting with smart contracts  
 **Then** the system should estimate gas costs accurately  
@@ -291,6 +318,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 ## Testing and Quality Assurance
 
 ### Scenario: Property-based testing
+
 **Given** the EBSL algorithm implementation  
 **When** property-based tests are run  
 **Then** they should verify mathematical properties hold  
@@ -299,6 +327,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** validate equivalence with reference implementations
 
 ### Scenario: Integration testing
+
 **Given** the complete proof generation pipeline  
 **When** end-to-end tests are executed  
 **Then** they should cover all major user flows  
@@ -307,6 +336,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** ensure security properties are maintained
 
 ### Scenario: Regression testing
+
 **Given** system updates or modifications  
 **When** regression tests are run  
 **Then** they should detect any breaking changes  
@@ -317,6 +347,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 ## Future Extensibility
 
 ### Scenario: Algorithm upgrades
+
 **Given** improvements to the EBSL algorithm  
 **When** they need to be deployed  
 **Then** the system should support versioned algorithms  
@@ -325,6 +356,7 @@ This document provides detailed Behavior-Driven Development (BDD) specifications
 **And** provide clear upgrade paths for users
 
 ### Scenario: New proof types
+
 **Given** requirements for additional proof types  
 **When** they are implemented  
 **Then** the system architecture should accommodate them  

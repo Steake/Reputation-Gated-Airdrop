@@ -1,7 +1,9 @@
-import { request, gql } from 'graphql-request';
-import type { TrustAttestation } from '$lib/ebsl/core';
+import { request, gql } from "graphql-request";
+import type { TrustAttestation } from "$lib/ebsl/core";
 
-const GRAPHQL_ENDPOINT = import.meta.env.VITE_API_BASE ? `${import.meta.env.VITE_API_BASE}/graphql` : null;
+const GRAPHQL_ENDPOINT = import.meta.env.VITE_API_BASE
+  ? `${import.meta.env.VITE_API_BASE}/graphql`
+  : null;
 
 export interface GraphQLAttestation {
   source: string;
@@ -44,18 +46,20 @@ export async function queryAttestations(target: string): Promise<TrustAttestatio
   `;
 
   try {
-    const data = await request<{ attestations: GraphQLAttestation[] }>(GRAPHQL_ENDPOINT, query, { target });
-    return data.attestations.map(att => ({
+    const data = await request<{ attestations: GraphQLAttestation[] }>(GRAPHQL_ENDPOINT, query, {
+      target,
+    });
+    return data.attestations.map((att) => ({
       source: att.source,
       target: att.target,
       opinion: att.opinion,
       attestation_type: att.attestationType as any,
       weight: att.weight,
       created_at: att.createdAt,
-      expires_at: att.expiresAt
+      expires_at: att.expiresAt,
     }));
   } catch (error) {
-    console.warn('GraphQL query failed, using mock data:', error);
+    console.warn("GraphQL query failed, using mock data:", error);
     return generateMockAttestations(target);
   }
 }
@@ -65,7 +69,7 @@ function generateMockAttestations(target: string): TrustAttestation[] {
   const attestations: TrustAttestation[] = [];
 
   for (let i = 0; i < numAttestations; i++) {
-    const source = `0x${Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
+    const source = `0x${Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`;
     const belief = Math.random();
     const disbelief = Math.random() * (1 - belief);
     const uncertainty = 1 - belief - disbelief;
@@ -77,10 +81,10 @@ function generateMockAttestations(target: string): TrustAttestation[] {
       source,
       target,
       opinion: { belief, disbelief, uncertainty, base_rate: 0.5 },
-      attestation_type: ['trust', 'skill', 'vouch'][Math.floor(Math.random() * 3)] as any,
+      attestation_type: ["trust", "skill", "vouch"][Math.floor(Math.random() * 3)] as any,
       weight,
       created_at,
-      expires_at
+      expires_at,
     });
   }
 

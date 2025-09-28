@@ -1,19 +1,19 @@
-import { ethers } from 'ethers';
+import { ethers } from "ethers";
 
 /**
  * Core EBSL Algorithm Implementation
- * 
+ *
  * This module implements the Evidence-Based Subjective Logic (EBSL) algorithm
  * for computing reputation scores from trust network data.
- * 
+ *
  * Enhanced with weighted fusion, incremental updates, and circuit partitioning for scalability.
  */
- 
+
 export interface SubjectiveOpinion {
-  belief: number;      // b ∈ [0,1] - Positive evidence strength
-  disbelief: number;   // d ∈ [0,1] - Negative evidence strength  
+  belief: number; // b ∈ [0,1] - Positive evidence strength
+  disbelief: number; // d ∈ [0,1] - Negative evidence strength
   uncertainty: number; // u ∈ [0,1] - Lack of evidence
-  base_rate: number;   // a ∈ [0,1] - Prior probability
+  base_rate: number; // a ∈ [0,1] - Prior probability
 }
 
 export interface ReputationResult {
@@ -36,7 +36,7 @@ export interface TrustAttestation {
   source: string;
   target: string;
   opinion: SubjectiveOpinion;
-  attestation_type: 'trust' | 'skill' | 'vouch' | 'endorsement';
+  attestation_type: "trust" | "skill" | "vouch" | "endorsement";
   weight: number;
   created_at: number;
   expires_at: number;
@@ -55,13 +55,13 @@ export class EBSLEngine {
    */
   validateOpinion(opinion: SubjectiveOpinion): boolean {
     const { belief, disbelief, uncertainty, base_rate } = opinion;
-    
+
     // Check value ranges
     if (belief < 0 || belief > 1) return false;
     if (disbelief < 0 || disbelief > 1) return false;
     if (uncertainty < 0 || uncertainty > 1) return false;
     if (base_rate < 0 || base_rate > 1) return false;
-    
+
     // Check constraint: b + d + u = 1
     const sum = belief + disbelief + uncertainty;
     return Math.abs(sum - 1.0) < this.EPSILON;
@@ -73,7 +73,10 @@ export class EBSLEngine {
    * @param maxSize Maximum size per partition
    * @returns Array of partitioned attestations
    */
-  private partitionAttestations(attestations: TrustAttestation[], maxSize: number = this.MAX_PARTITION_SIZE): TrustAttestation[][] {
+  private partitionAttestations(
+    attestations: TrustAttestation[],
+    maxSize: number = this.MAX_PARTITION_SIZE
+  ): TrustAttestation[][] {
     const partitions: TrustAttestation[][] = [];
     let currentPartition: TrustAttestation[] = [];
 
@@ -100,9 +103,14 @@ export class EBSLEngine {
    * @param weight1 Weight for op1 (0-1)
    * @param weight2 Weight for op2 (0-1)
    */
-  fuseOpinions(op1: SubjectiveOpinion, op2: SubjectiveOpinion, weight1: number = 1.0, weight2: number = 1.0): SubjectiveOpinion {
+  fuseOpinions(
+    op1: SubjectiveOpinion,
+    op2: SubjectiveOpinion,
+    weight1: number = 1.0,
+    weight2: number = 1.0
+  ): SubjectiveOpinion {
     if (!this.validateOpinion(op1) || !this.validateOpinion(op2)) {
-      throw new Error('Invalid opinion values provided');
+      throw new Error("Invalid opinion values provided");
     }
 
     const w1 = weight1 / (weight1 + weight2);
@@ -110,21 +118,21 @@ export class EBSLEngine {
 
     const { belief: b1, disbelief: d1, uncertainty: u1, base_rate: a1 } = op1;
     const { belief: b2, disbelief: d2, uncertainty: u2, base_rate: a2 } = op2;
-    
+
     // Weighted denominator with numerical stability
-    const denominator = (w1 * u1) + (w2 * u2) - (w1 * w2 * u1 * u2);
-    
+    const denominator = w1 * u1 + w2 * u2 - w1 * w2 * u1 * u2;
+
     // Handle edge case: both opinions are certain
     if (Math.abs(denominator) < this.EPSILON) {
       return this.handleCertainOpinionsFusion(op1, op2, w1, w2);
     }
-    
+
     // Weighted EBSL fusion formulas
     let belief_fused = (w1 * b1 * u2 + w2 * b2 * u1) / denominator;
     let disbelief_fused = (w1 * d1 * u2 + w2 * d2 * u1) / denominator;
     let uncertainty_fused = (w1 * w2 * u1 * u2) / denominator;
     const base_rate_fused = (w1 * a1 * u2 + w2 * a2 * u1) / denominator;
-    
+
     // Normalize to ensure b + d + u = 1 due to floating point precision
     let sum = belief_fused + disbelief_fused + uncertainty_fused;
     if (Math.abs(sum - 1) > this.EPSILON && sum > 0) {
@@ -134,12 +142,12 @@ export class EBSLEngine {
       uncertainty_fused *= scale;
       sum = 1; // Reset for clamping
     }
-    
+
     return {
       belief: this.clamp(belief_fused, 0, 1),
       disbelief: this.clamp(disbelief_fused, 0, 1),
       uncertainty: this.clamp(uncertainty_fused, 0, 1),
-      base_rate: this.clamp(base_rate_fused, 0, 1)
+      base_rate: this.clamp(base_rate_fused, 0, 1),
     };
   }
 
@@ -151,20 +159,20 @@ export class EBSLEngine {
     if (attestations.length === 0) {
       return { belief: 0, disbelief: 0, uncertainty: 1, base_rate: 0.5 };
     }
-    
+
     if (attestations.length === 1) {
       return attestations[0].opinion;
     }
 
     let fused = attestations[0].opinion;
     const totalWeight = attestations.reduce((sum, att) => sum + att.weight, 0);
-    
+
     for (let i = 1; i < attestations.length; i++) {
       const currentWeight = attestations[i].weight / totalWeight;
-      const prevWeight = attestations[i-1].weight / totalWeight;
+      const prevWeight = attestations[i - 1].weight / totalWeight;
       fused = this.fuseOpinions(fused, attestations[i].opinion, prevWeight, currentWeight);
     }
-    
+
     return fused;
   }
 
@@ -181,10 +189,11 @@ export class EBSLEngine {
     usePartitioning: boolean = false
   ): ReputationResult {
     // Filter valid attestations for the target user
-    const validAttestations = attestations.filter(att => 
-      att.target === userAddress && 
-      att.expires_at > Date.now() &&
-      this.validateOpinion(att.opinion)
+    const validAttestations = attestations.filter(
+      (att) =>
+        att.target === userAddress &&
+        att.expires_at > Date.now() &&
+        this.validateOpinion(att.opinion)
     );
 
     const opinionCount = validAttestations.length;
@@ -214,7 +223,7 @@ export class EBSLEngine {
 
     // Convert to reputation score
     const reputationScore = this.opinionToReputation(fusedOpinion);
-    
+
     // Compute confidence based on uncertainty and evidence count
     const confidence = this.computeConfidence(fusedOpinion, opinionCount);
 
@@ -224,13 +233,13 @@ export class EBSLEngine {
       opinion: fusedOpinion,
       confidence,
       computation_metadata: {
-        algorithm_version: 'EBSL-Classical-v1.0',
+        algorithm_version: "EBSL-Classical-v1.0",
         opinion_count: opinionCount,
         timestamp: Date.now(),
         is_incremental: false,
         is_partitioned: isPartitioned,
-        partition_count: isPartitioned ? partitionCount : undefined
-      }
+        partition_count: isPartitioned ? partitionCount : undefined,
+      },
     };
   }
 
@@ -251,7 +260,7 @@ export class EBSLEngine {
 
     // Fuse new attestations
     const newFusedOpinion = this.fuseMultipleOpinions(newAttestations);
-    
+
     // Weight the base and new opinions
     const updatedOpinion = this.fuseOpinions(
       baseReputation.opinion,
@@ -261,7 +270,10 @@ export class EBSLEngine {
     );
 
     const updatedScore = this.opinionToReputation(updatedOpinion);
-    const updatedConfidence = this.computeConfidence(updatedOpinion, baseReputation.computation_metadata.opinion_count + newAttestations.length);
+    const updatedConfidence = this.computeConfidence(
+      updatedOpinion,
+      baseReputation.computation_metadata.opinion_count + newAttestations.length
+    );
 
     return {
       ...baseReputation,
@@ -273,8 +285,8 @@ export class EBSLEngine {
         opinion_count: baseReputation.computation_metadata.opinion_count + newAttestations.length,
         timestamp: Date.now(),
         is_incremental: true,
-        base_reputation: baseReputation.opinion
-      }
+        base_reputation: baseReputation.opinion,
+      },
     };
   }
 
@@ -284,19 +296,24 @@ export class EBSLEngine {
   opinionToReputation(opinion: SubjectiveOpinion): number {
     const { belief, uncertainty, base_rate } = opinion;
     // Expected value: E = b + a*u
-    return belief + (base_rate * uncertainty);
+    return belief + base_rate * uncertainty;
   }
 
   /**
    * Handle fusion when both opinions have zero uncertainty (weighted average fallback)
    */
-  private handleCertainOpinionsFusion(op1: SubjectiveOpinion, op2: SubjectiveOpinion, w1: number, w2: number): SubjectiveOpinion {
+  private handleCertainOpinionsFusion(
+    op1: SubjectiveOpinion,
+    op2: SubjectiveOpinion,
+    w1: number,
+    w2: number
+  ): SubjectiveOpinion {
     // Use weighted average when denominator approaches zero
     return {
       belief: w1 * op1.belief + w2 * op2.belief,
       disbelief: w1 * op1.disbelief + w2 * op2.disbelief,
       uncertainty: Math.min(op1.uncertainty, op2.uncertainty),
-      base_rate: w1 * op1.base_rate + w2 * op2.base_rate
+      base_rate: w1 * op1.base_rate + w2 * op2.base_rate,
     };
   }
 
@@ -308,7 +325,7 @@ export class EBSLEngine {
     // Confidence increases with more evidence and decreases with uncertainty
     const evidenceFactor = Math.min(evidenceCount / 10, 1); // Normalize to [0,1]
     const certaintyFactor = 1 - opinion.uncertainty;
-    
+
     return evidenceFactor * certaintyFactor;
   }
 
@@ -322,7 +339,7 @@ export class EBSLEngine {
     if (opinions.length === 0) {
       return { belief: 0, disbelief: 0, uncertainty: 1, base_rate: 0.5 };
     }
-    
+
     if (opinions.length === 1) {
       return opinions[0];
     }
@@ -331,7 +348,7 @@ export class EBSLEngine {
     for (let i = 1; i < opinions.length; i++) {
       fused = this.fuseOpinions(fused, opinions[i], 1.0, 1.0); // Equal weights
     }
-    
+
     return fused;
   }
 
@@ -347,11 +364,11 @@ export class EBSLEngine {
     targetAttestation?: TrustAttestation
   ): { commitment: string; memberHash?: string } {
     if (attestations.length === 0) {
-      throw new Error('No attestations provided for set membership');
+      throw new Error("No attestations provided for set membership");
     }
 
     // Hash each attestation (placeholder: keccak256 of serialized attestation)
-    const attestationHashes: string[] = attestations.map(att => {
+    const attestationHashes: string[] = attestations.map((att) => {
       const serialized = JSON.stringify({
         source: att.source,
         target: att.target,
@@ -361,13 +378,13 @@ export class EBSLEngine {
         base_rate: att.opinion.base_rate,
         weight: att.weight,
         created_at: att.created_at,
-        expires_at: att.expires_at
+        expires_at: att.expires_at,
       });
       return ethers.keccak256(ethers.toUtf8Bytes(serialized));
     });
 
     // Compute set commitment as hash of concatenated hashes (placeholder for MiMC Merkle root or multi-set hash)
-    const concatenatedBytes = ethers.concat(attestationHashes.map(h => ethers.getBytes(h)));
+    const concatenatedBytes = ethers.concat(attestationHashes.map((h) => ethers.getBytes(h)));
     const commitment = ethers.keccak256(concatenatedBytes);
 
     let memberHash: string | undefined;
@@ -381,14 +398,13 @@ export class EBSLEngine {
         base_rate: targetAttestation.opinion.base_rate,
         weight: targetAttestation.weight,
         created_at: targetAttestation.created_at,
-        expires_at: targetAttestation.expires_at
+        expires_at: targetAttestation.expires_at,
       });
       memberHash = ethers.keccak256(ethers.toUtf8Bytes(targetSerialized));
     }
 
     return { commitment, memberHash };
   }
-
 }
 
 // Export singleton instance for convenience

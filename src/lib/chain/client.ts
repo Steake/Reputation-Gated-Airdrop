@@ -17,9 +17,10 @@ import { selectedChainId } from "$lib/stores/wallet";
 /** Build a viem Chain dynamically from chainId */
 function getViemChain(chainId: number): Chain {
   const info: ChainInfo = getChainInfo(chainId);
-  const nativeCurrency = info.chainId === 80001
-    ? { name: "MATIC", symbol: "MATIC", decimals: 18 }
-    : { name: "ETH", symbol: "ETH", decimals: 18 };
+  const nativeCurrency =
+    info.chainId === 80001
+      ? { name: "MATIC", symbol: "MATIC", decimals: 18 }
+      : { name: "ETH", symbol: "ETH", decimals: 18 };
   return {
     id: info.chainId,
     name: info.name,
@@ -131,21 +132,21 @@ const reputationAirdropEventsAbi = [
       { indexed: true, internalType: "address", name: "user", type: "address" },
       { indexed: false, internalType: "uint256", name: "score", type: "uint256" },
       { indexed: false, internalType: "uint256", name: "payout", type: "uint256" },
-      { indexed: false, internalType: "uint256", name: "timestamp", type: "uint256" }
+      { indexed: false, internalType: "uint256", name: "timestamp", type: "uint256" },
     ],
     name: "Claimed",
-    type: "event"
+    type: "event",
   },
   {
     anonymous: false,
     inputs: [
       { indexed: true, internalType: "address", name: "user", type: "address" },
       { indexed: false, internalType: "uint256", name: "score", type: "uint256" },
-      { indexed: false, internalType: "uint256", name: "timestamp", type: "uint256" }
+      { indexed: false, internalType: "uint256", name: "timestamp", type: "uint256" },
     ],
     name: "ProofVerified",
-    type: "event"
-  }
+    type: "event",
+  },
 ] as const;
 
 /** Query recent Claimed events for dashboard metrics */
@@ -154,38 +155,40 @@ export async function getRecentClaimEvents(
   fromBlock?: bigint,
   toBlock?: bigint,
   limit: number = 100
-): Promise<Array<{
-  user: `0x${string}`;
-  score: bigint;
-  payout: bigint;
-  timestamp: bigint;
-  blockNumber: bigint;
-  transactionHash: `0x${string}`;
-}>> {
+): Promise<
+  Array<{
+    user: `0x${string}`;
+    score: bigint;
+    payout: bigint;
+    timestamp: bigint;
+    blockNumber: bigint;
+    transactionHash: `0x${string}`;
+  }>
+> {
   const publicClient = getPublicClient();
   const filter = {
     address: contractAddress,
-    event: reputationAirdropEventsAbi.find(e => e.name === 'Claimed'),
+    event: reputationAirdropEventsAbi.find((e) => e.name === "Claimed"),
     fromBlock,
     toBlock,
-    args: {}
+    args: {},
   };
 
   const logs = await publicClient.getLogs(filter);
   const parsedLogs = await publicClient.parseEventLogs({
     logs,
-    abi: reputationAirdropEventsAbi
+    abi: reputationAirdropEventsAbi,
   });
 
   return parsedLogs
-    .filter(log => log.eventName === 'Claimed')
-    .map(log => ({
+    .filter((log) => log.eventName === "Claimed")
+    .map((log) => ({
       user: log.args.user,
       score: log.args.score,
       payout: log.args.payout,
       timestamp: log.args.timestamp,
       blockNumber: log.blockNumber,
-      transactionHash: log.transactionHash
+      transactionHash: log.transactionHash,
     }))
     .slice(0, limit);
 }
@@ -196,36 +199,38 @@ export async function getRecentProofEvents(
   fromBlock?: bigint,
   toBlock?: bigint,
   limit: number = 100
-): Promise<Array<{
-  user: `0x${string}`;
-  score: bigint;
-  timestamp: bigint;
-  blockNumber: bigint;
-  transactionHash: `0x${string}`;
-}>> {
+): Promise<
+  Array<{
+    user: `0x${string}`;
+    score: bigint;
+    timestamp: bigint;
+    blockNumber: bigint;
+    transactionHash: `0x${string}`;
+  }>
+> {
   const publicClient = getPublicClient();
   const filter = {
     address: contractAddress,
-    event: reputationAirdropEventsAbi.find(e => e.name === 'ProofVerified'),
+    event: reputationAirdropEventsAbi.find((e) => e.name === "ProofVerified"),
     fromBlock,
     toBlock,
-    args: {}
+    args: {},
   };
 
   const logs = await publicClient.getLogs(filter);
   const parsedLogs = await publicClient.parseEventLogs({
     logs,
-    abi: reputationAirdropEventsAbi
+    abi: reputationAirdropEventsAbi,
   });
 
   return parsedLogs
-    .filter(log => log.eventName === 'ProofVerified')
-    .map(log => ({
+    .filter((log) => log.eventName === "ProofVerified")
+    .map((log) => ({
       user: log.args.user,
       score: log.args.score,
       timestamp: log.args.timestamp,
       blockNumber: log.blockNumber,
-      transactionHash: log.transactionHash
+      transactionHash: log.transactionHash,
     }))
     .slice(0, limit);
 }
@@ -246,9 +251,8 @@ export async function getDashboardMetrics(
 
   const totalClaims = claims.length;
   const totalPayout = claims.reduce((sum, c) => sum + c.payout, 0n);
-  const averageScore = totalClaims > 0
-    ? Number(claims.reduce((sum, c) => sum + c.score, 0n)) / totalClaims
-    : 0;
+  const averageScore =
+    totalClaims > 0 ? Number(claims.reduce((sum, c) => sum + c.score, 0n)) / totalClaims : 0;
   const totalProofs = proofs.length;
 
   return { totalClaims, totalPayout, averageScore, totalProofs };

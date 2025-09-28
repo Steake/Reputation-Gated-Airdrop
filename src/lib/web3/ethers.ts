@@ -9,7 +9,11 @@ import { selectedChainId } from "$lib/stores/wallet";
 function getEnvVar(key: string, fallback: string): string {
   if (browser) {
     try {
-      return String((import.meta.env as Record<string, unknown>)[`PUBLIC_${key}`] ?? (import.meta.env as Record<string, unknown>)[`VITE_${key}`] ?? fallback);
+      return String(
+        (import.meta.env as Record<string, unknown>)[`PUBLIC_${key}`] ??
+          (import.meta.env as Record<string, unknown>)[`VITE_${key}`] ??
+          fallback
+      );
     } catch {
       return fallback;
     }
@@ -30,7 +34,6 @@ function getCurrentChainId(): number {
  * Ethers.js integration for Web3 functionality
  * This provides an alternative to viem for users who prefer ethers.js
  */
-
 
 /**
  * Initialize ethers provider using the connected wallet or fallback to RPC
@@ -172,10 +175,10 @@ export async function getBalance(address: string): Promise<bigint> {
  * Format ethers.js error for user display
  */
 export function formatEthersError(error: unknown): string {
-  if (error && typeof error === 'object' && 'reason' in error) {
+  if (error && typeof error === "object" && "reason" in error) {
     return (error as { reason: string }).reason;
   }
-  if (error && typeof error === 'object' && 'message' in error) {
+  if (error && typeof error === "object" && "message" in error) {
     return (error as { message: string }).message;
   }
   if (typeof error === "string") return error;
