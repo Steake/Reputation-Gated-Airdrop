@@ -24,11 +24,11 @@ mkdir -p deployments/${ENVIRONMENT}
 
 # 1. Build frontend application
 echo "🏗️ Building frontend application..."
-npm run build
+yarn build
 
 # 2. Test application
 echo "🧪 Running tests..."
-npm run test:unit || echo "⚠️ Unit tests failed"
+yarn test:unit || echo "⚠️ Unit tests failed"
 
 # 3. Generate deployment manifests
 echo "📋 Generating deployment manifests..."
@@ -99,10 +99,10 @@ cat > deployments/${ENVIRONMENT}/deployment-summary.md << EOF
 curl -f http://localhost:4173/ || echo "Frontend not accessible"
 
 # Test configuration
-npm run test:unit
+yarn test:unit
 
 # Validate smart contract integration
-npm run test:e2e
+yarn test:e2e
 \`\`\`
 EOF
 

@@ -35,7 +35,7 @@ This is a SvelteKit dApp client for participating in a Shadowgraph reputation-sc
 
 ### Live Demos & Testing
 
-- **Comprehensive E2E Tests**: `npm run test:e2e` - Full user journey validation
+- **Comprehensive E2E Tests**: `yarn test:e2e` - Full user journey validation
 - **Interactive Demos**: Access `/debug` page for advanced testing features
 - **Mock System**: Full functionality available without backend dependencies
 
@@ -50,7 +50,7 @@ Clone the repository and install the dependencies:
 ```bash
 git clone <repository-url>
 cd shadowgraph-airdrop-client
-npm install
+yarn install
 ```
 
 ### 2. Environment Variables
@@ -93,7 +93,7 @@ VITE_DEBUG="true"
 ### 3. Running the Development Server
 
 ```bash
-npm run dev
+yarn dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173) to view the application.
@@ -124,13 +124,13 @@ If both are configured, the UI will prioritize the ZK path by default.
 
 ## Available Scripts
 
-- `npm run dev`: Start the dev server.
-- `npm run build`: Build the application for production.
-- `npm run preview`: Preview the production build locally.
-- `npm run test:unit`: Run unit tests with Vitest.
-- `npm run test:e2e`: Run end-to-end tests with Playwright.
-- `npm run lint`: Check for linting and formatting issues.
-- `npm run format`: Automatically format the code.
+- `yarn dev`: Start the dev server.
+- `yarn build`: Build the application for production.
+- `yarn preview`: Preview the production build locally.
+- `yarn test:unit`: Run unit tests with Vitest.
+- `yarn test:e2e`: Run end-to-end tests with Playwright.
+- `yarn lint`: Check for linting and formatting issues.
+- `yarn format`: Automatically format the code.
 
 ```
 

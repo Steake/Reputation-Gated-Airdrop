@@ -6,7 +6,7 @@
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "npm run test:unit",
+    "test": "yarn test:unit",
     "test:unit": "vitest",
     "test:e2e": "playwright test",
     "test:contracts": "npx hardhat test --config hardhat.config.cjs",
