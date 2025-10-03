@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "@chainlink/contracts": "^1.4.0",
+    "@ezkljs/engine": "^7.0.0",
     "@gnosis.pm/safe-ethers-lib": "^1.7.0",
     "@semaphore-protocol/contracts": "^4.13.1",
     "@semaphore-protocol/identity": "^4.13.1",
