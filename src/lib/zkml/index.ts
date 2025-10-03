@@ -35,3 +35,10 @@ export {
 } from "./proof-service-client";
 
 export { circuitDB, type DBEntry } from "./db";
+
+export {
+  getFeatureFlags,
+  getFeatureFlagDescription,
+  setFeatureFlag,
+  type FeatureFlags,
+} from "./feature-flags";

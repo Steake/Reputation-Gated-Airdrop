@@ -7,6 +7,7 @@
 import type { TrustAttestation, SubjectiveOpinion } from "../ebsl/core";
 import { deviceCapability } from "./device-capability";
 import { proofServiceClient } from "./proof-service-client";
+import { getFeatureFlags } from "./feature-flags";
 
 export interface ProofResult {
   fusedOpinion: SubjectiveOpinion;
@@ -64,17 +65,40 @@ export class HybridProver {
     const startTime = Date.now();
     const timeout = options.timeout || 30000; // 30s default
 
-    // Force simulation mode if requested
-    if (options.forceSimulation) {
+    // Check feature flags first (for quick testing/debugging)
+    const flags = getFeatureFlags();
+    
+    if (flags.forceSimulation || options.forceSimulation) {
+      console.log("[HybridProver] Feature flag: force simulation");
       return this.generateLocalProof(attestations, { ...options, useSimulation: true });
     }
 
-    // Force remote if requested
-    if (options.forceRemote) {
+    if (flags.forceRemote || options.forceRemote) {
+      console.log("[HybridProver] Feature flag: force remote");
       return this.generateRemoteProof(attestations, options);
     }
 
-    // Check device capability
+    if (flags.forceLocal) {
+      console.log("[HybridProver] Feature flag: force local (skip device check)");
+      // Skip device capability check, go straight to local
+      try {
+        const result = await Promise.race([
+          this.generateLocalProof(attestations, options),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error("Local proof timeout")), timeout)
+          )
+        ]);
+        result.duration = Date.now() - startTime;
+        return result;
+      } catch (error) {
+        console.warn("[HybridProver] Forced local failed, falling back to remote:", error);
+        const result = await this.generateRemoteProof(attestations, options);
+        result.duration = Date.now() - startTime;
+        return result;
+      }
+    }
+
+    // Normal flow: check device capability
     const routing = deviceCapability.shouldUseLocal(attestations.length);
     if (!routing.useLocal) {
       console.log(`[HybridProver] ${routing.reason}, using remote`);
