@@ -4,6 +4,7 @@
   import { zkProofStore, zkProofActions } from "$lib/stores/zkproof";
   import { hybridProver, deviceCapability, getCapabilityMessage } from "$lib/zkml";
   import { attestations } from "$lib/stores/attestations";
+  import { trackProof } from "$lib/telemetry";
   import Spinner from "./Spinner.svelte";
   import { CheckCircle, AlertCircle, Zap, Shield, UserCog, X } from "lucide-svelte";
   import { toasts } from "$lib/stores/ui";
@@ -70,6 +71,14 @@
       const duration = Date.now() - startTime;
       trackProofGenSuccess(proofType, false, duration);
 
+      // Track telemetry event
+      trackProof({
+        method: result.mode as "local" | "remote" | "simulation",
+        ms: duration,
+        size: attestationsList.length,
+        success: true,
+      });
+
       zkProofActions.setGenerated(
         result.proof,
         result.publicInputs,
@@ -86,6 +95,16 @@
       clearInterval(elapsedInterval);
       const duration = Date.now() - startTime;
       trackProofGenDuration(proofType, false, duration);
+      
+      // Track telemetry event for failure
+      trackProof({
+        method: "remote", // Assume remote on error
+        ms: duration,
+        size: attestationsList.length,
+        success: false,
+        errorType: error.name || "UnknownError",
+      });
+
       zkProofActions.setError(error.message || "Failed to generate proof");
       toasts.error(`Proof generation failed: ${error.message}`);
     }
@@ -131,7 +150,10 @@
   <div class="space-y-4">
     <!-- Device Capability Info -->
     {#if capabilityMessage}
-      <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg text-sm">
+      <div 
+        class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg text-sm"
+        data-testid="device-capability"
+      >
         <p class="text-blue-800 dark:text-blue-200">{capabilityMessage}</p>
       </div>
     {/if}
@@ -146,6 +168,7 @@
         disabled={$zkProofStore.generating}
         class="w-full p-3 sm:p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white min-h-[44px] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50"
         aria-label="Select proof type"
+        data-testid="proof-type-selector"
       >
         <option value="exact">Exact Score Proof</option>
         <option value="threshold">Threshold Proof (Selective Disclosure)</option>
@@ -173,6 +196,7 @@
           step="10000"
           disabled={$zkProofStore.generating}
           class="w-full p-3 sm:p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white min-h-[44px] focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
+          data-testid="threshold-input"
         />
         <p class="text-xs text-gray-500 mt-1">
           Threshold: {(threshold / 1e6).toFixed(2)} (0.00 - 1.00 scale)
@@ -189,6 +213,7 @@
           class="w-full flex flex-col items-center justify-center gap-2 px-4 py-3 min-h-[44px] bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
           aria-label="Generate ZK proof"
           role="button"
+          data-testid="generate-proof-button"
         >
           {#if $zkProofStore.generating}
             <div class="flex flex-col items-center gap-2 w-full">
@@ -196,16 +221,16 @@
                 <Spinner />
                 <span>Generating {proofType} Proof...</span>
               </div>
-              <div class="text-sm text-purple-200">
+              <div class="text-sm text-purple-200" data-testid="proof-stage">
                 {progressStage} ({progress}%)
               </div>
-              <div class="w-full bg-purple-800 rounded-full h-2">
+              <div class="w-full bg-purple-800 rounded-full h-2" data-testid="proof-progress-bar">
                 <div
                   class="bg-purple-300 h-2 rounded-full transition-all duration-300"
                   style="width: {progress}%"
                 ></div>
               </div>
-              <div class="text-xs text-purple-200">
+              <div class="text-xs text-purple-200" data-testid="elapsed-time">
                 Elapsed: {formatElapsedTime(elapsedTimeMs)}
               </div>
             </div>
@@ -225,6 +250,7 @@
             class="w-full flex items-center justify-center gap-2 px-4 py-2 min-h-[44px] bg-red-600 text-white rounded-lg hover:bg-red-700 touch-manipulation"
             aria-label="Cancel proof generation"
             role="button"
+            data-testid="cancel-proof-button"
           >
             <X class="h-4 w-4" />
             <span>Cancel</span>
@@ -234,6 +260,7 @@
         <!-- Success Card -->
         <div
           class="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg"
+          data-testid="proof-success"
         >
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-2 text-green-800 dark:text-green-200">
@@ -245,6 +272,7 @@
                 class="px-2 py-1 rounded text-xs font-medium {getMethodBadgeColor(
                   $zkProofStore.proofData.method
                 )}"
+                data-testid="proof-method-badge"
               >
                 {$zkProofStore.proofData.method.toUpperCase()}
               </span>
@@ -253,7 +281,7 @@
           <div class="text-sm text-green-600 dark:text-green-300 space-y-1">
             <p>Your reputation has been successfully proven using zero-knowledge cryptography.</p>
             {#if $zkProofStore.proofData.durationMs}
-              <p class="font-mono">
+              <p class="font-mono" data-testid="proof-duration">
                 Generation time: {formatElapsedTime($zkProofStore.proofData.durationMs)}
               </p>
             {/if}
@@ -275,6 +303,7 @@
       {#if $zkProofStore.error}
         <div
           class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg"
+          data-testid="proof-error"
         >
           <div class="flex items-center gap-2 text-red-800 dark:text-red-200 mb-1">
             <AlertCircle class="h-5 w-5" />
