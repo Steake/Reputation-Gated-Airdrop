@@ -7,8 +7,9 @@ export { loadEzkl, isEzklLoaded, unloadEzkl, type EZKLProver } from "./ezkl";
 
 export {
   circuitManager,
+  CIRCUIT_HASHES,
   type CircuitArtifacts,
-  type CircuitMetadata,
+  type CircuitCacheStats,
 } from "./circuit-manager";
 
 export {
@@ -19,3 +20,18 @@ export {
   type ProofOptions,
   type ProgressCallback,
 } from "./hybrid-prover";
+
+export {
+  deviceCapability,
+  getCapabilityMessage,
+  type DeviceCapabilities,
+  type ProofRoutingPolicy,
+} from "./device-capability";
+
+export {
+  proofServiceClient,
+  type RemoteProofRequest,
+  type RemoteProofResponse,
+} from "./proof-service-client";
+
+export { circuitDB, type DBEntry } from "./db";

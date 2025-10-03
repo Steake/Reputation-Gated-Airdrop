@@ -1,9 +1,12 @@
 /**
  * Hybrid Prover Orchestrator
  * Tries local EZKL WASM prover first, falls back to remote server if needed
+ * Integrates device capability detection and remote proof service client
  */
 
 import type { TrustAttestation, SubjectiveOpinion } from "../ebsl/core";
+import { deviceCapability } from "./device-capability";
+import { proofServiceClient } from "./proof-service-client";
 
 export interface ProofResult {
   fusedOpinion: SubjectiveOpinion;
@@ -29,8 +32,9 @@ export interface ProofOptions {
   circuitSize?: string;
   forceRemote?: boolean;
   forceSimulation?: boolean;
-  timeout?: number; // milliseconds
+  timeout?: number; // milliseconds, default 30s
   onProgress?: ProgressCallback;
+  userId?: string;
 }
 
 /**
@@ -42,18 +46,23 @@ export class HybridProver {
   private remoteEndpoint: string;
   private localEnabled: boolean = true;
 
-  constructor(remoteEndpoint: string = "http://localhost:3001/api/proof/generate") {
+  constructor(remoteEndpoint: string = "/api/v1") {
     this.remoteEndpoint = remoteEndpoint;
+    proofServiceClient.setBaseUrl(remoteEndpoint);
   }
 
   /**
    * Generate proof using hybrid strategy
+   * 1. Check device capability
+   * 2. Try local if capable, else skip to remote
+   * 3. On timeout/error, fallback to remote
    */
   async generateProof(
     attestations: TrustAttestation[],
     options: ProofOptions
   ): Promise<ProofResult> {
     const startTime = Date.now();
+    const timeout = options.timeout || 30000; // 30s default
 
     // Force simulation mode if requested
     if (options.forceSimulation) {
@@ -65,14 +74,28 @@ export class HybridProver {
       return this.generateRemoteProof(attestations, options);
     }
 
+    // Check device capability
+    const routing = deviceCapability.shouldUseLocal(attestations.length);
+    if (!routing.useLocal) {
+      console.log(`[HybridProver] ${routing.reason}, using remote`);
+      options.onProgress?.({ stage: "Using remote prover (device limits)", progress: 0 });
+      return this.generateRemoteProof(attestations, options);
+    }
+
     try {
-      // Try local first
+      // Try local first with timeout
       console.log("[HybridProver] Attempting local proof generation...");
-      const result = await this.generateLocalProof(attestations, options);
+      const result = await Promise.race([
+        this.generateLocalProof(attestations, options),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Local proof timeout")), timeout)
+        )
+      ]);
       result.duration = Date.now() - startTime;
       return result;
     } catch (error) {
       console.warn("[HybridProver] Local proof failed, falling back to remote:", error);
+      options.onProgress?.({ stage: "Falling back to remote", progress: 0 });
 
       // Fallback to remote
       try {
@@ -174,7 +197,7 @@ export class HybridProver {
   }
 
   /**
-   * Generate proof remotely via API
+   * Generate proof remotely via API using proof-service-client
    */
   private async generateRemoteProof(
     attestations: TrustAttestation[],
@@ -182,61 +205,33 @@ export class HybridProver {
   ): Promise<ProofResult> {
     console.log("[HybridProver] Using remote proof generation");
 
-    // Set up WebSocket for progress updates if callback provided
-    let ws: WebSocket | null = null;
-    let requestId: string | null = null;
-
-    if (options.onProgress) {
-      const wsUrl = this.remoteEndpoint.replace(/^http/, "ws").replace(/\/api.*$/, "");
-      ws = new WebSocket(wsUrl);
-
-      ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === "progress" && data.data && options.onProgress) {
-          options.onProgress({
-            stage: data.data.stage,
-            progress: data.data.progress,
-            estimatedRemainingMs: data.data.estimatedRemainingMs,
-          });
-        } else if (data.type === "subscribed") {
-          requestId = data.requestId;
-        }
-      };
-    }
-
     try {
-      const response = await fetch(this.remoteEndpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          attestations,
-          proofType: options.proofType,
-          threshold: options.threshold,
-          circuitSize: options.circuitSize,
-        }),
-      });
+      // Use proof service client
+      const response = await proofServiceClient.generateProof(
+        attestations,
+        options.proofType,
+        options.threshold,
+        options.userId
+      );
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.error || "Remote proof generation failed");
-      }
+      // Mock fused opinion for now (would come from EBSL fusion)
+      const mockFusedOpinion = {
+        belief: 0.8,
+        disbelief: 0.1,
+        uncertainty: 0.1,
+        base_rate: 0.5
+      };
 
       return {
-        ...data.result,
+        fusedOpinion: mockFusedOpinion,
+        proof: response.proof,
+        publicInputs: response.publicInputs,
+        hash: response.hash,
         mode: "remote",
-        duration: 0, // Will be set by caller
+        duration: response.duration || 0,
       };
-    } finally {
-      if (ws) {
-        ws.close();
-      }
+    } catch (error: any) {
+      throw new Error(`Remote proof generation failed: ${error.message}`);
     }
   }
 

@@ -13,6 +13,8 @@ export interface ZKProofState {
     proof: number[] | null;
     publicInputs: number[] | null;
     hash: string | null;
+    method?: "local" | "remote" | "simulation"; // Added: Proof generation method
+    durationMs?: number; // Added: Proof generation duration in milliseconds
     communityId?: string;
     encryptedMetadata?: string; // Base64 encoded encrypted metadata
   };
@@ -29,6 +31,8 @@ export const zkProofStore = writable<ZKProofState>({
     proof: null,
     publicInputs: null,
     hash: null,
+    method: undefined,
+    durationMs: undefined,
     communityId: undefined,
     encryptedMetadata: undefined,
   },
@@ -47,6 +51,8 @@ export const zkProofActions = {
         proof: null,
         publicInputs: null,
         hash: null,
+        method: undefined,
+        durationMs: undefined,
         communityId: undefined,
         encryptedMetadata: undefined,
       },
@@ -64,6 +70,8 @@ export const zkProofActions = {
     publicInputs: number[],
     hash: string,
     proofType: "exact" | "threshold" | "gated",
+    method?: "local" | "remote" | "simulation",
+    durationMs?: number,
     communityId?: string,
     encryptedMetadata?: string
   ) =>
@@ -76,6 +84,8 @@ export const zkProofActions = {
         proof,
         publicInputs,
         hash,
+        method,
+        durationMs,
         communityId,
         encryptedMetadata,
       },
