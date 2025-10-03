@@ -63,14 +63,12 @@ describe("Proof Generation Metrics", () => {
 
   describe("Metrics Snapshot", () => {
     it("should calculate average duration", () => {
-      const startTime = Date.now();
       collector.startProof("proof-1", "default", 10);
       // Add small delay
       const delay = 5;
       setTimeout(() => {}, delay);
       collector.completeProof("proof-1", true);
 
-      const startTime2 = Date.now();
       collector.startProof("proof-2", "default", 10);
       setTimeout(() => {}, delay);
       collector.completeProof("proof-2", true);

@@ -203,10 +203,7 @@ export class MetricsCollector {
     const variance = this.calculateVariance(durations);
     const varianceComponent =
       median > 0 && variance > 0 ? (1 / (1 + variance / median)) * 0.2 : 0.1;
-    const confidence = Math.min(
-      0.9,
-      0.3 + (sampleSize / 100) * 0.5 + varianceComponent
-    );
+    const confidence = Math.min(0.9, 0.3 + (sampleSize / 100) * 0.5 + varianceComponent);
 
     return {
       estimatedDurationMs: estimate,
