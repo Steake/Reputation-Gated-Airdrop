@@ -66,3 +66,20 @@ export {
   type CachedProof,
   type WebSocketMessage,
 } from "./api";
+
+// Worker Pool (Horizontal Scaling)
+export {
+  WorkerPoolManager,
+  workerPool,
+  type WorkerNode,
+  type WorkerTask,
+} from "./workerPool";
+
+// Performance Profiler
+export {
+  PerformanceProfiler,
+  performanceProfiler,
+  type ProfilingConfig,
+  type ProfilingResult,
+  type ProfilingReport,
+} from "./profiler";
