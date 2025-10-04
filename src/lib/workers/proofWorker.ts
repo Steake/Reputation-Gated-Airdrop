@@ -114,14 +114,13 @@ async function generateProof(
     });
 
     // Determine circuit size based on attestations count
-    const circuitSize =
-      data.circuitSize || determineCircuitSize(data.attestations.length);
+    const circuitSize = data.circuitSize || determineCircuitSize(data.attestations.length);
 
     // Use simulation mode if requested or EZKL not initialized
     if (data.useSimulation || !isInitialized) {
       console.log("[ProofWorker] Using simulation mode");
       const proof = await simulateZKProof(fusedOpinion, data.proofType, data.threshold);
-      
+
       return {
         fusedOpinion,
         proof,

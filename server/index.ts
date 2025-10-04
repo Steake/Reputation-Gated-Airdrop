@@ -7,7 +7,14 @@ import express, { Request, Response } from "express";
 import { createServer } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import cors from "cors";
-import { proofPipeline, proofQueue, metricsCollector, ProofPriority, workerPool, performanceProfiler } from "../src/lib/proof/index.js";
+import {
+  proofPipeline,
+  proofQueue,
+  metricsCollector,
+  ProofPriority,
+  workerPool,
+  performanceProfiler,
+} from "../src/lib/proof/index.js";
 import type { ProofGenerationProgress } from "../src/lib/proof/pipeline.js";
 import type { TrustAttestation } from "../src/lib/ebsl/core.js";
 
@@ -244,23 +251,20 @@ app.post("/api/profiling/start", async (req: Request, res: Response) => {
 
       for (let i = 0; i < (iterations || 3); i++) {
         // Create mock attestations for profiling
-        const mockAttestations: TrustAttestation[] = Array.from(
-          { length: size },
-          (_, idx) => ({
-            source: `0xsource${idx}`,
-            target: "0xtarget",
-            opinion: {
-              belief: Math.random() * 0.5 + 0.3,
-              disbelief: Math.random() * 0.2,
-              uncertainty: Math.random() * 0.3,
-              base_rate: 0.5,
-            },
-            attestation_type: "trust" as const,
-            weight: 1.0,
-            created_at: Date.now(),
-            expires_at: Date.now() + 86400000,
-          })
-        );
+        const mockAttestations: TrustAttestation[] = Array.from({ length: size }, (_, idx) => ({
+          source: `0xsource${idx}`,
+          target: "0xtarget",
+          opinion: {
+            belief: Math.random() * 0.5 + 0.3,
+            disbelief: Math.random() * 0.2,
+            uncertainty: Math.random() * 0.3,
+            base_rate: 0.5,
+          },
+          attestation_type: "trust" as const,
+          weight: 1.0,
+          created_at: Date.now(),
+          expires_at: Date.now() + 86400000,
+        }));
 
         const startTime = Date.now();
         try {
@@ -279,8 +283,7 @@ app.post("/api/profiling/start", async (req: Request, res: Response) => {
         networkSize: size,
         iterations: iterationResults,
         avgDuration:
-          iterationResults.reduce((sum, r) => sum + (r.duration || 0), 0) /
-          iterationResults.length,
+          iterationResults.reduce((sum, r) => sum + (r.duration || 0), 0) / iterationResults.length,
       });
     }
 

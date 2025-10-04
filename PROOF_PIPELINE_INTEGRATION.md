@@ -17,12 +17,14 @@ This update extends the proof generation pipeline with:
 ### 1. Backend Server (`server/index.ts`)
 
 **Features:**
+
 - REST API endpoints for proof generation, queue management, and metrics
 - WebSocket server for real-time updates
 - Worker pool management endpoints
 - Performance profiling API
 
 **Start Server:**
+
 ```bash
 cd server
 npm install
@@ -30,6 +32,7 @@ npm run dev
 ```
 
 **API Endpoints:**
+
 - `POST /api/proof/generate` - Generate proof
 - `GET /api/queue/stats` - Queue statistics
 - `GET /api/metrics/snapshot` - Performance metrics
@@ -39,6 +42,7 @@ npm run dev
 ### 2. UI Component (`src/lib/components/ProofPipelineUI.svelte`)
 
 **Features:**
+
 - Real-time queue statistics display
 - Performance metrics visualization
 - Duration prediction
@@ -46,6 +50,7 @@ npm run dev
 - Progress tracking with ETA
 
 **Usage:**
+
 ```svelte
 <script>
   import ProofPipelineUI from "$lib/components/ProofPipelineUI.svelte";
@@ -54,16 +59,13 @@ npm run dev
   let attestations = [...]; // Your attestations
 </script>
 
-<ProofPipelineUI 
-  {attestations}
-  proofType="exact"
-  priority={ProofPriority.HIGH}
-/>
+<ProofPipelineUI {attestations} proofType="exact" priority={ProofPriority.HIGH} />
 ```
 
 ### 3. Worker Pool Manager (`src/lib/proof/workerPool.ts`)
 
 **Features:**
+
 - Distributed worker registration
 - Load balancing algorithms
 - Automatic task reassignment
@@ -71,6 +73,7 @@ npm run dev
 - Heartbeat monitoring
 
 **Usage:**
+
 ```typescript
 import { workerPool } from "$lib/proof";
 
@@ -89,6 +92,7 @@ console.log(`Active workers: ${stats.activeWorkers}`);
 ### 4. Performance Profiler (`src/lib/proof/profiler.ts`)
 
 **Features:**
+
 - Multi-circuit benchmarking
 - Network size analysis
 - Statistical analysis (avg, min, max, P50, P95, P99)
@@ -96,6 +100,7 @@ console.log(`Active workers: ${stats.activeWorkers}`);
 - HTML report generation
 
 **Usage:**
+
 ```typescript
 import { performanceProfiler } from "$lib/proof";
 
@@ -105,7 +110,7 @@ const report = await performanceProfiler.profile({
   iterations: 10,
   warmupIterations: 2,
   includeMemory: true,
-  includeCPU: true
+  includeCPU: true,
 });
 
 // Generate HTML report
@@ -137,11 +142,7 @@ Replace or update the existing `ZKMLProver.svelte` to use the new `ProofPipeline
   import { ProofPriority } from "$lib/proof";
 </script>
 
-<ProofPipelineUI 
-  attestations={$attestations}
-  proofType="exact"
-  priority={ProofPriority.NORMAL}
-/>
+<ProofPipelineUI attestations={$attestations} proofType="exact" priority={ProofPriority.NORMAL} />
 ```
 
 ### Step 3: Configure WebSocket Connection
@@ -151,7 +152,7 @@ The UI component automatically connects to `ws://localhost:3001`. For production
 ```svelte
 <!-- In ProofPipelineUI.svelte -->
 <script>
-  const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:3001';
+  const wsUrl = import.meta.env.VITE_WS_URL || "ws://localhost:3001";
   wsConnection = new WebSocket(wsUrl);
 </script>
 ```
@@ -234,18 +235,21 @@ curl -X POST http://localhost:3001/api/profiling/comprehensive \
 ## Performance Characteristics
 
 ### With Backend Server
+
 - **Throughput**: Up to 4 concurrent proofs per worker
 - **Latency**: Real-time progress updates (<100ms)
 - **Scalability**: Horizontal scaling with worker pools
 - **Reliability**: Automatic retry and circuit fallback
 
 ### With Worker Pool (4 workers)
+
 - **Throughput**: Up to 16 concurrent proofs
 - **Load Balancing**: Automatic task distribution
 - **Fault Tolerance**: Task reassignment on worker failure
 - **Auto-scaling**: Recommendations based on utilization
 
 ### Performance Profiling
+
 - **Small circuits** (10-50): 2-5s
 - **Medium circuits** (50-200): 5-15s
 - **Large circuits** (200+): 15-60s
@@ -253,6 +257,7 @@ curl -X POST http://localhost:3001/api/profiling/comprehensive \
 ## API Examples
 
 ### Generate Proof with Progress
+
 ```javascript
 // Connect WebSocket first
 const ws = new WebSocket('ws://localhost:3001');
@@ -280,9 +285,9 @@ const response = await fetch('http://localhost:3001/api/proof/generate', {
 ```
 
 ### Monitor Queue
+
 ```javascript
-const stats = await fetch('http://localhost:3001/api/queue/stats')
-  .then(r => r.json());
+const stats = await fetch("http://localhost:3001/api/queue/stats").then((r) => r.json());
 
 console.log(`Queued: ${stats.totalQueued}`);
 console.log(`Processing: ${stats.totalProcessing}`);
@@ -290,17 +295,18 @@ console.log(`Completed: ${stats.totalCompleted}`);
 ```
 
 ### Export Metrics
+
 ```javascript
-const metrics = await fetch('http://localhost:3001/api/metrics/export')
-  .then(r => r.json());
+const metrics = await fetch("http://localhost:3001/api/metrics/export").then((r) => r.json());
 
 // Save to file or analyze
-console.log('Performance metrics:', metrics);
+console.log("Performance metrics:", metrics);
 ```
 
 ## Testing
 
 ### Test Backend Server
+
 ```bash
 # Health check
 curl http://localhost:3001/health
@@ -312,14 +318,16 @@ curl -X POST http://localhost:3001/api/proof/generate \
 ```
 
 ### Test WebSocket
+
 ```javascript
-const ws = new WebSocket('ws://localhost:3001');
-ws.onopen = () => console.log('Connected');
-ws.onmessage = (event) => console.log('Received:', event.data);
-ws.send(JSON.stringify({ type: 'subscribe', requestId: 'test-123' }));
+const ws = new WebSocket("ws://localhost:3001");
+ws.onopen = () => console.log("Connected");
+ws.onmessage = (event) => console.log("Received:", event.data);
+ws.send(JSON.stringify({ type: "subscribe", requestId: "test-123" }));
 ```
 
 ### Test Worker Pool
+
 ```bash
 # Register worker
 curl -X POST http://localhost:3001/api/workers/register \
@@ -335,6 +343,7 @@ curl http://localhost:3001/api/workers/stats
 ### Production Setup
 
 1. **Environment Variables**
+
 ```bash
 PORT=3001
 NODE_ENV=production
@@ -342,6 +351,7 @@ WS_URL=wss://your-domain.com
 ```
 
 2. **Start Server**
+
 ```bash
 cd server
 npm run build
@@ -349,6 +359,7 @@ npm start
 ```
 
 3. **Reverse Proxy** (nginx)
+
 ```nginx
 upstream proof_server {
     server localhost:3001;
@@ -372,6 +383,7 @@ server {
 ```
 
 4. **Deploy Workers** (Optional)
+
 ```bash
 # Deploy to multiple machines
 for i in {1..4}; do
@@ -388,6 +400,7 @@ done
 ## Monitoring
 
 ### Health Checks
+
 ```bash
 # Server health
 curl http://localhost:3001/health
@@ -400,7 +413,9 @@ watch -n 5 'curl -s http://localhost:3001/api/workers/stats | jq'
 ```
 
 ### Metrics Dashboard
+
 Access real-time metrics via the API:
+
 - Success rate
 - Average duration
 - P50, P95, P99 latencies
@@ -410,16 +425,19 @@ Access real-time metrics via the API:
 ## Troubleshooting
 
 ### WebSocket Not Connecting
+
 - Check server is running: `curl http://localhost:3001/health`
 - Verify WebSocket port: Default is 3001
 - Check firewall rules
 
 ### High Queue Size
+
 - Add more workers to increase throughput
 - Increase `maxConcurrency` per worker
 - Check for failing proofs and adjust retry strategy
 
 ### Slow Performance
+
 - Run profiling: `POST /api/profiling/comprehensive`
 - Check circuit optimization recommendations
 - Monitor resource usage (CPU, memory)
@@ -438,6 +456,7 @@ Access real-time metrics via the API:
 ## Support
 
 For issues or questions:
+
 - Check the API documentation
 - Review the profiling reports
 - Monitor the queue and metrics

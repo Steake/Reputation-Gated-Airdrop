@@ -68,12 +68,7 @@ export {
 } from "./api";
 
 // Worker Pool (Horizontal Scaling)
-export {
-  WorkerPoolManager,
-  workerPool,
-  type WorkerNode,
-  type WorkerTask,
-} from "./workerPool";
+export { WorkerPoolManager, workerPool, type WorkerNode, type WorkerTask } from "./workerPool";
 
 // Performance Profiler
 export {

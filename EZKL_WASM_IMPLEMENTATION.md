@@ -13,11 +13,13 @@ All requirements from the comment have been fully implemented and verified.
 ### 1. EZKL JS Prover in Web Worker ✅
 
 **Files:**
+
 - `src/lib/zkml/ezkl.ts` (95 lines) - Lazy loader for `@ezkljs/engine`
 - `src/lib/workers/proofWorker.ts` (Enhanced) - Worker with EZKL integration
 - `src/lib/zkml/hybrid-prover.ts` (270 lines) - Orchestrator with local→remote fallback
 
 **Features:**
+
 - Lazy loading of EZKL WASM engine
 - Web Worker handles `{init, prove, cancel}` messages
 - Streams progress events (0-100%)
@@ -33,10 +35,12 @@ All requirements from the comment have been fully implemented and verified.
 ### 2. Circuit Fetch + Persistent Cache (IndexedDB) ✅
 
 **Files:**
+
 - `src/lib/zkml/circuit-manager.ts` (280 lines) - Circuit manager with SHA-256 integrity
 - `src/lib/zkml/db.ts` (185 lines) - IndexedDB helper with versioned store
 
 **Features:**
+
 - Downloads from `/circuits/ebsl_{size}/` with files:
   - `_compiled.wasm` - Compiled circuit
   - `settings.json` - Circuit settings
@@ -53,6 +57,7 @@ All requirements from the comment have been fully implemented and verified.
 ✅ Tampered file → integrity error via SHA-256 check
 
 **API:**
+
 ```typescript
 const circuit = await circuitManager.getCircuit("16");
 const stats = await circuitManager.getCacheStats();
@@ -62,9 +67,11 @@ const stats = await circuitManager.getCacheStats();
 ### 3. Device Capability Guardrails ✅
 
 **File:**
+
 - `src/lib/zkml/device-capability.ts` (180 lines)
 
 **Features:**
+
 - Detects User Agent, RAM (`navigator.deviceMemory`), browser type
 - Identifies iOS Safari and low-power devices
 - Maintains routing policy:
@@ -78,6 +85,7 @@ const stats = await circuitManager.getCacheStats();
 ✅ Capable desktop → Uses local EZKL WASM
 
 **Policy:**
+
 ```typescript
 {
   maxLocalOpinions: 32,
@@ -89,15 +97,18 @@ const stats = await circuitManager.getCacheStats();
 ### 4. Fallback Client to Remote ✅
 
 **File:**
+
 - `src/lib/zkml/proof-service-client.ts` (125 lines)
 
 **Features:**
+
 - Hits `/api/v1/generate-proof` endpoint
 - 60s default timeout with AbortController
 - Health check and status endpoints
 - Proper error handling and response types
 
 **Integration:**
+
 - Hybrid prover uses proof-service-client for remote fallback
 - 30s timeout on local → automatic fallback to remote
 - Returns result with mode ("local"/"remote"/"simulation")
@@ -109,23 +120,27 @@ const stats = await circuitManager.getCacheStats();
 ### 5. UI Plumbing & UX ✅
 
 **File:**
+
 - `src/lib/components/ZKMLProver.svelte` (310 lines - completely rewritten)
 
 **Features:**
 
 **Form Integration:**
+
 - Wired to `hybridProver.generateProof()`
 - Uses `$attestations` store for data
 - Supports "exact" and "threshold" proof types
 - Threshold slider with real-time value display
 
 **Progress Display:**
+
 - Real-time stage descriptions
 - Animated progress bar (0-100%)
 - Elapsed time counter (updates every 100ms)
 - Format: `X.Xs` (e.g., "12.5s")
 
 **Method Badge:**
+
 - Color-coded badges:
   - **LOCAL** (green) - Browser WASM
   - **REMOTE** (blue) - Server-side
@@ -134,18 +149,21 @@ const stats = await circuitManager.getCacheStats();
 - Persisted in zkproof store
 
 **Cancel Button:**
+
 - Red button with X icon
 - Visible only during generation
 - Calls `hybridProver.cancelJob()`
 - Shows cancellation toast
 
 **Error Handling:**
+
 - Clear error messages in red card
 - Toast notifications for all scenarios
 - "Try Again" button to reset
 - Device capability guidance
 
 **Device Capability Display:**
+
 - Blue info card showing capability status
 - Examples:
   - "Local WASM proving available"
@@ -159,9 +177,11 @@ const stats = await circuitManager.getCacheStats();
 ## Modified Store
 
 **File:**
+
 - `src/lib/stores/zkproof.ts` - Enhanced with method and timing
 
 **Added Fields:**
+
 ```typescript
 {
   method?: "local" | "remote" | "simulation";
@@ -172,9 +192,11 @@ const stats = await circuitManager.getCacheStats();
 ## Module Exports
 
 **File:**
+
 - `src/lib/zkml/index.ts` - Updated with all new exports
 
 **Exports:**
+
 - `circuitManager`, `CIRCUIT_HASHES`, `CircuitArtifacts`, `CircuitCacheStats`
 - `deviceCapability`, `getCapabilityMessage`, `DeviceCapabilities`, `ProofRoutingPolicy`
 - `proofServiceClient`, `RemoteProofRequest`, `RemoteProofResponse`
@@ -192,12 +214,14 @@ const stats = await circuitManager.getCacheStats();
 ## File Summary
 
 ### New Files (4)
+
 1. `src/lib/zkml/db.ts` (185 lines) - IndexedDB helper
 2. `src/lib/zkml/device-capability.ts` (180 lines) - Device detection
 3. `src/lib/zkml/proof-service-client.ts` (125 lines) - Remote API client
 4. Total: ~490 new lines
 
 ### Modified Files (5)
+
 1. `src/lib/zkml/circuit-manager.ts` (280 lines) - Rewritten with proper file naming
 2. `src/lib/zkml/hybrid-prover.ts` (270 lines) - Integrated device capability
 3. `src/lib/zkml/index.ts` (35 lines) - Updated exports
@@ -235,6 +259,7 @@ hybridProver.generateProof()
 ## Testing Scenarios
 
 ### Scenario 1: Capable Desktop (Chrome, 8GB RAM)
+
 1. Device detection → "Local WASM proving available"
 2. Generate proof → Uses local worker
 3. Progress updates stream in real-time
@@ -242,17 +267,20 @@ hybridProver.generateProof()
 5. Duration: 5-15 seconds
 
 ### Scenario 2: iOS Safari
+
 1. Device detection → "Using remote prover (Browser iOS Safari not supported)"
 2. Generate proof → Skips local, goes straight to remote
 3. Success card shows "REMOTE" badge
 4. Duration: 10-20 seconds (network + server)
 
 ### Scenario 3: Low-RAM Laptop (2GB RAM)
+
 1. Device detection → "Using remote prover (Insufficient RAM: 2GB required: 4GB)"
 2. Generate proof → Routes to remote
 3. Success card shows "REMOTE" badge
 
 ### Scenario 4: Local Timeout
+
 1. Device detection → Local capable
 2. Generate proof → Starts local
 3. Progress updates for 30s
@@ -260,6 +288,7 @@ hybridProver.generateProof()
 5. Success card shows "REMOTE" badge with longer duration
 
 ### Scenario 5: Cancellation
+
 1. Click "Generate proof"
 2. Progress bar animates
 3. Click "Cancel" button
@@ -268,6 +297,7 @@ hybridProver.generateProof()
 6. Toast: "Proof generation cancelled"
 
 ### Scenario 6: Circuit Cache
+
 1. **First Run:**
    - Downloads circuits from `/circuits/ebsl_16/`
    - SHA-256 verification
@@ -288,20 +318,24 @@ hybridProver.generateProof()
 ## Performance Benchmarks
 
 ### Circuit Downloads (First Time)
+
 - 16-op circuit: ~2-3 MB, 2-5 seconds
 - 32-op circuit: ~5-8 MB, 5-10 seconds
 
 ### Proof Generation (Local WASM)
+
 - 16-op: 2-5 seconds
 - 32-op: 5-15 seconds
 - 64-op: 15-30 seconds
 
 ### Proof Generation (Remote)
+
 - Network overhead: +2-5 seconds
 - Server processing: 5-20 seconds
 - Total: 7-25 seconds
 
 ### Memory Usage
+
 - Local WASM: 100-300MB peak
 - Circuit cache: 10-50MB persistent
 - UI overhead: <10MB
@@ -369,6 +403,7 @@ hybridProver.generateProof()
 ✅ **All requirements completed successfully!**
 
 The implementation provides a production-ready, client-side EZKL WASM proof generation system with:
+
 - Persistent circuit caching with integrity verification
 - Intelligent device capability routing
 - Automatic remote fallback on errors/timeout

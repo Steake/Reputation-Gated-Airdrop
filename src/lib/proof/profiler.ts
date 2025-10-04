@@ -85,9 +85,7 @@ export class PerformanceProfiler {
     try {
       for (const circuitType of config.circuitTypes) {
         for (const networkSize of config.networkSizes) {
-          console.log(
-            `Profiling ${circuitType} circuit with ${networkSize} attestations...`
-          );
+          console.log(`Profiling ${circuitType} circuit with ${networkSize} attestations...`);
 
           // Warmup iterations
           if (config.warmupIterations) {
@@ -118,9 +116,7 @@ export class PerformanceProfiler {
             .sort((a, b) => a - b);
 
           const avgDuration =
-            durations.length > 0
-              ? durations.reduce((sum, d) => sum + d, 0) / durations.length
-              : 0;
+            durations.length > 0 ? durations.reduce((sum, d) => sum + d, 0) / durations.length : 0;
           const minDuration = durations.length > 0 ? durations[0] : 0;
           const maxDuration = durations.length > 0 ? durations[durations.length - 1] : 0;
 
@@ -131,7 +127,8 @@ export class PerformanceProfiler {
               : 0;
           const stdDev = Math.sqrt(variance);
 
-          const successRate = iterationResults.filter((r) => r.success).length / iterationResults.length;
+          const successRate =
+            iterationResults.filter((r) => r.success).length / iterationResults.length;
 
           const p50 = this.getPercentile(durations, 0.5);
           const p95 = this.getPercentile(durations, 0.95);
@@ -158,10 +155,8 @@ export class PerformanceProfiler {
 
       const totalDuration = Date.now() - startTime;
       const overallSuccessRate =
-        results.reduce(
-          (sum, r) => sum + r.statistics.successRate * r.iterations,
-          0
-        ) / results.reduce((sum, r) => sum + r.iterations, 0);
+        results.reduce((sum, r) => sum + r.statistics.successRate * r.iterations, 0) /
+        results.reduce((sum, r) => sum + r.iterations, 0);
 
       const recommendations = this.generateRecommendations(results);
 
@@ -197,23 +192,20 @@ export class PerformanceProfiler {
     cpuPercent?: number;
   }> {
     // Create mock attestations
-    const attestations: TrustAttestation[] = Array.from(
-      { length: networkSize },
-      (_, idx) => ({
-        source: `0xsource${idx}`,
-        target: "0xtarget",
-        opinion: {
-          belief: Math.random() * 0.5 + 0.3,
-          disbelief: Math.random() * 0.2,
-          uncertainty: Math.random() * 0.3,
-          base_rate: 0.5,
-        },
-        attestation_type: "trust" as const,
-        weight: 1.0,
-        created_at: Date.now(),
-        expires_at: Date.now() + 86400000,
-      })
-    );
+    const attestations: TrustAttestation[] = Array.from({ length: networkSize }, (_, idx) => ({
+      source: `0xsource${idx}`,
+      target: "0xtarget",
+      opinion: {
+        belief: Math.random() * 0.5 + 0.3,
+        disbelief: Math.random() * 0.2,
+        uncertainty: Math.random() * 0.3,
+        base_rate: 0.5,
+      },
+      attestation_type: "trust" as const,
+      weight: 1.0,
+      created_at: Date.now(),
+      expires_at: Date.now() + 86400000,
+    }));
 
     const startTime = Date.now();
     let memoryBefore: number | undefined;

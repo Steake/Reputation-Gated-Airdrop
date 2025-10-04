@@ -237,7 +237,9 @@ export class WorkerPoolManager extends EventEmitter {
     return {
       proof: Array.from({ length: 8 }, () => Math.floor(Math.random() * 1000000)),
       publicInputs: [750000],
-      hash: "0x" + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join(""),
+      hash:
+        "0x" +
+        Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join(""),
       fusedOpinion: {
         belief: 0.7,
         disbelief: 0.2,
