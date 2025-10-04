@@ -67,7 +67,7 @@ export class HybridProver {
 
     // Check feature flags first (for quick testing/debugging)
     const flags = getFeatureFlags();
-    
+
     if (flags.forceSimulation || options.forceSimulation) {
       console.log("[HybridProver] Feature flag: force simulation");
       return this.generateLocalProof(attestations, { ...options, useSimulation: true });
@@ -86,7 +86,7 @@ export class HybridProver {
           this.generateLocalProof(attestations, options),
           new Promise<never>((_, reject) =>
             setTimeout(() => reject(new Error("Local proof timeout")), timeout)
-          )
+          ),
         ]);
         result.duration = Date.now() - startTime;
         return result;
@@ -113,7 +113,7 @@ export class HybridProver {
         this.generateLocalProof(attestations, options),
         new Promise<never>((_, reject) =>
           setTimeout(() => reject(new Error("Local proof timeout")), timeout)
-        )
+        ),
       ]);
       result.duration = Date.now() - startTime;
       return result;
@@ -243,7 +243,7 @@ export class HybridProver {
         belief: 0.8,
         disbelief: 0.1,
         uncertainty: 0.1,
-        base_rate: 0.5
+        base_rate: 0.5,
       };
 
       return {

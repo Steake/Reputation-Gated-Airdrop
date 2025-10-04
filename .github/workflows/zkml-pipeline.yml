@@ -19,10 +19,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "yarn"
+          cache: "npm"
 
       - name: Install dependencies
-        run: yarn install
+        run: npm ci
 
       - name: Create test environment file
         run: |
@@ -47,19 +47,19 @@ jobs:
           EOF
 
       # - name: Format check
-      #   run: yarn format && git diff --exit-code
+      #   run: npm run format && git diff --exit-code
 
       # - name: Lint check
-      #   run: yarn lint || echo "Linting issues found but not blocking"
+      #   run: npm run lint || echo "Linting issues found but not blocking"
 
       # - name: Type check
       #   run: npx svelte-check --tsconfig ./tsconfig.json
 
       # - name: Unit tests
-      #   run: yarn test:unit || echo "Unit tests failed but not blocking"
+      #   run: npm run test:unit || echo "Unit tests failed but not blocking"
 
       - name: Build application
-        run: yarn build
+        run: npm run build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -77,10 +77,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "yarn"
+          cache: "npm"
 
       - name: Install dependencies
-        run: yarn install
+        run: npm ci
 
       - name: Install Playwright
         run: npx playwright install --with-deps
@@ -108,10 +108,10 @@ jobs:
           EOF
 
       - name: Build application
-        run: yarn build
+        run: npm run build
 
       # - name: Run E2E tests
-      #   run: yarn test:e2e
+      #   run: npm run test:e2e
 
       # - name: Upload test results
       #   uses: actions/upload-artifact@v4
@@ -132,13 +132,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "yarn"
+          cache: "npm"
 
       - name: Install dependencies
-        run: yarn install
+        run: npm ci
 
       - name: Build for staging
-        run: yarn build
+        run: npm run build
         env:
           VITE_CHAIN_ID: ${{ vars.STAGING_CHAIN_ID }}
           VITE_RPC_URL: ${{ vars.STAGING_RPC_URL }}
@@ -166,13 +166,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "yarn"
+          cache: "npm"
 
       - name: Install dependencies
-        run: yarn install
+        run: npm ci
 
       - name: Build for production
-        run: yarn build
+        run: npm run build
         env:
           VITE_CHAIN_ID: ${{ vars.PRODUCTION_CHAIN_ID }}
           VITE_RPC_URL: ${{ vars.PRODUCTION_RPC_URL }}
