@@ -47,3 +47,4 @@ logs/
 temp/**
 deployed-addresses.json
 demo-results.json
+yarn.lock
