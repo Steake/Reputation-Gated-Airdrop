@@ -1,25 +1,57 @@
 /**
  * Web Worker for offloading computationally intensive proof generation
- * Handles EBSL fusion and ZK proof simulation in parallel
+ * Handles EBSL fusion and real EZKL-WASM proof generation
  */
 
 // Import EBSL engine (assuming it's available in worker context)
 import type { SubjectiveOpinion, TrustAttestation } from "../ebsl/core";
 import { ebslEngine } from "../ebsl/core";
+import { loadEzkl } from "../zkml/ezkl";
+import { circuitManager } from "../zkml/circuit-manager";
+
+// Worker state
+let isInitialized = false;
+let ezklProver: any = null;
+let currentJobId: string | null = null;
+let isCancelled = false;
 
 // Listen for messages from main thread
 self.onmessage = function (e) {
-  const { type, data } = e.data;
+  const { type, data, jobId } = e.data;
 
   switch (type) {
-    case "GENERATE_PROOF":
-      generateProof(data)
-        .then((result) => {
-          self.postMessage({ type: "PROOF_GENERATED", result });
+    case "INIT":
+      initWorker()
+        .then(() => {
+          self.postMessage({ type: "INIT_SUCCESS" });
         })
         .catch((error) => {
-          self.postMessage({ type: "PROOF_ERROR", error: error.message });
+          self.postMessage({ type: "INIT_ERROR", error: error.message });
         });
+      break;
+
+    case "GENERATE_PROOF":
+      currentJobId = jobId;
+      isCancelled = false;
+      generateProof(data, jobId)
+        .then((result) => {
+          if (!isCancelled) {
+            self.postMessage({ type: "PROOF_GENERATED", result, jobId });
+          }
+        })
+        .catch((error) => {
+          if (!isCancelled) {
+            self.postMessage({ type: "PROOF_ERROR", error: error.message, jobId });
+          }
+        });
+      break;
+
+    case "CANCEL":
+      if (currentJobId === data.jobId) {
+        isCancelled = true;
+        currentJobId = null;
+        self.postMessage({ type: "CANCELLED", jobId: data.jobId });
+      }
       break;
 
     case "FUSE_OPINIONS":
@@ -33,28 +65,188 @@ self.onmessage = function (e) {
 };
 
 /**
- * Generate ZK proof using EBSL fusion in worker
+ * Initialize worker with EZKL engine
  */
-async function generateProof(data: {
-  attestations: TrustAttestation[];
-  proofType: "exact" | "threshold";
-  threshold?: number;
-}) {
+async function initWorker() {
+  if (isInitialized) return;
+
+  console.log("[ProofWorker] Initializing EZKL engine...");
+  ezklProver = await loadEzkl();
+  isInitialized = true;
+  console.log("[ProofWorker] EZKL engine initialized");
+}
+
+/**
+ * Generate ZK proof using EBSL fusion and real EZKL
+ */
+async function generateProof(
+  data: {
+    attestations: TrustAttestation[];
+    proofType: "exact" | "threshold";
+    threshold?: number;
+    circuitSize?: string;
+    useSimulation?: boolean;
+  },
+  jobId: string
+) {
   try {
+    // Check cancellation
+    if (isCancelled) return;
+
+    // Progress: Start
+    self.postMessage({
+      type: "PROGRESS",
+      jobId,
+      progress: { stage: "Fusing opinions", progress: 0 },
+    });
+
     // Perform EBSL fusion
     const fusedOpinion = ebslEngine.fuseMultipleOpinions(data.attestations);
 
-    // Simulate ZK proof generation (replace with real EZKL-WASM when available)
-    const proof = await simulateZKProof(fusedOpinion, data.proofType, data.threshold);
+    // Check cancellation
+    if (isCancelled) return;
+
+    // Progress: Fusion complete
+    self.postMessage({
+      type: "PROGRESS",
+      jobId,
+      progress: { stage: "Loading circuit", progress: 20 },
+    });
+
+    // Determine circuit size based on attestations count
+    const circuitSize =
+      data.circuitSize || determineCircuitSize(data.attestations.length);
+
+    // Use simulation mode if requested or EZKL not initialized
+    if (data.useSimulation || !isInitialized) {
+      console.log("[ProofWorker] Using simulation mode");
+      const proof = await simulateZKProof(fusedOpinion, data.proofType, data.threshold);
+      
+      return {
+        fusedOpinion,
+        proof,
+        publicInputs: generatePublicInputs(fusedOpinion, data.proofType, data.threshold),
+        hash: generateProofHash(proof, fusedOpinion),
+        mode: "simulation",
+      };
+    }
+
+    // Check cancellation
+    if (isCancelled) return;
+
+    // Load circuit artifacts
+    const circuit = await circuitManager.getCircuit(circuitSize);
+
+    // Check cancellation
+    if (isCancelled) return;
+
+    // Progress: Circuit loaded
+    self.postMessage({
+      type: "PROGRESS",
+      jobId,
+      progress: { stage: "Generating witness", progress: 40 },
+    });
+
+    // Prepare input for witness generation
+    const input = prepareWitnessInput(fusedOpinion, data.proofType, data.threshold);
+
+    // Generate witness
+    const witness = await ezklProver.genWitness(input, circuit.compiledCircuit);
+
+    // Check cancellation
+    if (isCancelled) return;
+
+    // Progress: Witness generated
+    self.postMessage({
+      type: "PROGRESS",
+      jobId,
+      progress: { stage: "Generating proof", progress: 60 },
+    });
+
+    // Generate proof
+    const proof = await ezklProver.prove(
+      witness,
+      circuit.provingKey,
+      circuit.compiledCircuit,
+      circuit.srs
+    );
+
+    // Check cancellation
+    if (isCancelled) return;
+
+    // Progress: Proof generated
+    self.postMessage({
+      type: "PROGRESS",
+      jobId,
+      progress: { stage: "Finalizing", progress: 90 },
+    });
+
+    // Convert proof to array format
+    const proofArray = Array.from(proof);
+    const publicInputs = generatePublicInputs(fusedOpinion, data.proofType, data.threshold);
+    const hash = generateProofHash(proofArray, fusedOpinion);
 
     return {
       fusedOpinion,
-      proof,
-      publicInputs: generatePublicInputs(fusedOpinion, data.proofType, data.threshold),
-      hash: generateProofHash(proof, fusedOpinion),
+      proof: proofArray,
+      publicInputs,
+      hash,
+      mode: "ezkl",
+      circuitSize,
     };
   } catch (error) {
+    console.error("[ProofWorker] Proof generation failed:", error);
     throw new Error(`Proof generation failed: ${error}`);
+  }
+}
+
+/**
+ * Determine circuit size based on attestation count
+ */
+function determineCircuitSize(attestationCount: number): string {
+  if (attestationCount <= 16) return "small";
+  if (attestationCount <= 64) return "medium";
+  return "large";
+}
+
+/**
+ * Prepare witness input from fused opinion
+ */
+function prepareWitnessInput(
+  fusedOpinion: SubjectiveOpinion,
+  proofType: "exact" | "threshold",
+  threshold?: number
+): any {
+  const score = ebslEngine.opinionToReputation(fusedOpinion);
+  const score1e6 = Math.round(score * 1000000);
+
+  // Convert opinion to fixed-point integers for circuit
+  const belief = Math.round(fusedOpinion.belief * 1000000);
+  const disbelief = Math.round(fusedOpinion.disbelief * 1000000);
+  const uncertainty = Math.round(fusedOpinion.uncertainty * 1000000);
+  const baseRate = Math.round(fusedOpinion.base_rate * 1000000);
+
+  if (proofType === "exact") {
+    return {
+      belief,
+      disbelief,
+      uncertainty,
+      base_rate: baseRate,
+      score: score1e6,
+    };
+  } else {
+    const thresholdValue = threshold || 600000;
+    const isAbove = score1e6 >= thresholdValue ? 1 : 0;
+
+    return {
+      belief,
+      disbelief,
+      uncertainty,
+      base_rate: baseRate,
+      score: score1e6,
+      threshold: thresholdValue,
+      is_above: isAbove,
+    };
   }
 }
 

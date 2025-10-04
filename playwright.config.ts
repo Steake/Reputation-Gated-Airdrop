@@ -1,17 +1,59 @@
-import type { PlaywrightTestConfig } from "@playwright/test";
+import { defineConfig, devices } from "@playwright/test";
 
-const config: PlaywrightTestConfig = {
-  webServer: {
-    command: "npm run build && npm run preview",
-    port: 4173,
-    // Set a higher timeout for builds
-    timeout: 120 * 1000,
-  },
-  testDir: "tests/e2e",
-  // Fail the build on CI if you accidentally left test.only in the source code.
-  forbidOnly: !!process.env.CI,
-  // Retry on CI only.
-  retries: process.env.CI ? 2 : 0,
-};
+/**
+ * Playwright configuration for cross-browser E2E testing
+ * Tests proof generation on Desktop Chrome, iOS Safari (WebKit), and Android Chrome
+ */
+export default defineConfig({
+	testDir: "./tests/e2e",
+	fullyParallel: true,
+	forbidOnly: !!process.env.CI,
+	retries: process.env.CI ? 2 : 0,
+	workers: process.env.CI ? 1 : undefined,
+	reporter: "html",
+	use: {
+		baseURL: "http://localhost:5173",
+		trace: "on-first-retry",
+		screenshot: "only-on-failure",
+		video: "retain-on-failure",
+	},
 
-export default config;
+	projects: [
+		{
+			name: "Desktop Chrome",
+			use: {
+				...devices["Desktop Chrome"],
+				viewport: { width: 1280, height: 720 },
+			},
+			testMatch: /prover\.(local|fallback)\.test\.ts/,
+			timeout: 10000, // 10s for quick proof tests
+		},
+		{
+			name: "iOS Safari",
+			use: {
+				...devices["iPhone 13"],
+				// Use WebKit engine for iOS Safari testing
+				browserName: "webkit",
+			},
+			testMatch: /prover\.(local|fallback)\.test\.ts/,
+			timeout: 15000, // Slightly longer for mobile
+		},
+		{
+			name: "Android Chrome",
+			use: {
+				...devices["Pixel 5"],
+				// Use Chromium for Android Chrome testing
+				browserName: "chromium",
+			},
+			testMatch: /prover\.(local|fallback)\.test\.ts/,
+			timeout: 15000, // Slightly longer for mobile
+		},
+	],
+
+	webServer: {
+		command: "npm run dev",
+		url: "http://localhost:5173",
+		reuseExistingServer: !process.env.CI,
+		timeout: 120000,
+	},
+});
