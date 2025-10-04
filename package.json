@@ -70,6 +70,7 @@
     "dotenv": "^17.2.1",
     "ethers": "^6.15.0",
     "ethersjs": "^0.0.1-security",
+    "graphql": "^16.11.0",
     "graphql-request": "^7.2.0",
     "lucide-svelte": "^0.378.0",
     "three": "^0.180.0",

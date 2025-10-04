@@ -17,4 +17,16 @@ export default defineConfig({
   test: {
     include: ["src/**/*.{test,spec}.{js,ts}"],
   },
+  optimizeDeps: {
+    include: ["graphql"],
+    exclude: ["@ezkljs/engine"],
+  },
+  worker: {
+    format: "es",
+  },
+  build: {
+    rollupOptions: {
+      external: [],
+    },
+  },
 });
