@@ -143,10 +143,23 @@ jobs:
           VITE_CHAIN_ID: ${{ vars.STAGING_CHAIN_ID }}
           VITE_RPC_URL: ${{ vars.STAGING_RPC_URL }}
           VITE_TOKEN_ADDR: ${{ vars.STAGING_TOKEN_ADDR }}
+          VITE_CAMPAIGN: ${{ vars.STAGING_CAMPAIGN }}
+          VITE_FLOOR_SCORE: ${{ vars.STAGING_FLOOR_SCORE }}
+          VITE_CAP_SCORE: ${{ vars.STAGING_CAP_SCORE }}
+          VITE_MIN_PAYOUT: ${{ vars.STAGING_MIN_PAYOUT }}
+          VITE_MAX_PAYOUT: ${{ vars.STAGING_MAX_PAYOUT }}
+          VITE_CURVE: ${{ vars.STAGING_CURVE }}
           VITE_AIRDROP_ECDSA_ADDR: ${{ vars.STAGING_AIRDROP_ECDSA_ADDR }}
           VITE_AIRDROP_ZK_ADDR: ${{ vars.STAGING_AIRDROP_ZK_ADDR }}
-          VITE_ZKML_PROVER_ADDR: ${{ vars.STAGING_ZKML_PROVER_ADDR }}
+          VITE_VERIFIER_ADDR: ${{ vars.STAGING_VERIFIER_ADDR }}
+          VITE_API_BASE: ${{ vars.STAGING_API_BASE }}
+          VITE_DEBUG: ${{ vars.STAGING_DEBUG }}
           VITE_WALLETCONNECT_PROJECT_ID: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
+          PUBLIC_CHAIN_ID: ${{ vars.STAGING_CHAIN_ID }}
+          PUBLIC_RPC_URL: ${{ vars.STAGING_RPC_URL }}
+          PUBLIC_TOKEN_ADDR: ${{ vars.STAGING_TOKEN_ADDR }}
+          PUBLIC_CAMPAIGN: ${{ vars.STAGING_CAMPAIGN }}
+          PUBLIC_WALLETCONNECT_PROJECT_ID: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
 
       - name: Deploy to staging
         run: |
@@ -177,10 +190,23 @@ jobs:
           VITE_CHAIN_ID: ${{ vars.PRODUCTION_CHAIN_ID }}
           VITE_RPC_URL: ${{ vars.PRODUCTION_RPC_URL }}
           VITE_TOKEN_ADDR: ${{ vars.PRODUCTION_TOKEN_ADDR }}
+          VITE_CAMPAIGN: ${{ vars.PRODUCTION_CAMPAIGN }}
+          VITE_FLOOR_SCORE: ${{ vars.PRODUCTION_FLOOR_SCORE }}
+          VITE_CAP_SCORE: ${{ vars.PRODUCTION_CAP_SCORE }}
+          VITE_MIN_PAYOUT: ${{ vars.PRODUCTION_MIN_PAYOUT }}
+          VITE_MAX_PAYOUT: ${{ vars.PRODUCTION_MAX_PAYOUT }}
+          VITE_CURVE: ${{ vars.PRODUCTION_CURVE }}
           VITE_AIRDROP_ECDSA_ADDR: ${{ vars.PRODUCTION_AIRDROP_ECDSA_ADDR }}
           VITE_AIRDROP_ZK_ADDR: ${{ vars.PRODUCTION_AIRDROP_ZK_ADDR }}
-          VITE_ZKML_PROVER_ADDR: ${{ vars.PRODUCTION_ZKML_PROVER_ADDR }}
+          VITE_VERIFIER_ADDR: ${{ vars.PRODUCTION_VERIFIER_ADDR }}
+          VITE_API_BASE: ${{ vars.PRODUCTION_API_BASE }}
+          VITE_DEBUG: ${{ vars.PRODUCTION_DEBUG }}
           VITE_WALLETCONNECT_PROJECT_ID: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
+          PUBLIC_CHAIN_ID: ${{ vars.PRODUCTION_CHAIN_ID }}
+          PUBLIC_RPC_URL: ${{ vars.PRODUCTION_RPC_URL }}
+          PUBLIC_TOKEN_ADDR: ${{ vars.PRODUCTION_TOKEN_ADDR }}
+          PUBLIC_CAMPAIGN: ${{ vars.PRODUCTION_CAMPAIGN }}
+          PUBLIC_WALLETCONNECT_PROJECT_ID: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
 
       - name: Deploy to production
         run: |
