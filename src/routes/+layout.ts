@@ -1,29 +1,26 @@
-import { parseConfig } from "$lib/config";
-import { error } from "@sveltejs/kit";
 import { browser } from "$app/environment";
+import { parseConfig } from "$lib/config";
 
 export function load() {
-  // Only validate config on the client side to avoid SSR issues with env vars
+  // Only parse config client-side where VITE_ variables are available
   if (browser) {
     const configResult = parseConfig();
-
     if ("error" in configResult) {
-      const errorMessages = configResult.error.errors
-        .map((e) => `${e.path.join(".")}: ${e.message}`)
-        .join("\n");
-      throw error(
-        500,
-        `Application configuration is invalid. Please check your .env file.\n\nDetails:\n${errorMessages}`
-      );
+      // Return error state to be handled in layout component
+      return {
+        config: null,
+        configError: configResult.error,
+      };
     }
-
     return {
       config: configResult,
+      configError: null,
     };
   }
 
-  // Return empty config for SSR
+  // Return null config for SSR (will be populated client-side)
   return {
     config: null,
+    configError: null,
   };
 }

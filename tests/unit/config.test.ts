@@ -1,14 +1,58 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 // Mock import.meta.env
 vi.mock("$app/environment", () => ({
   browser: true,
 }));
 
+const ENV_KEYS = [
+  "VITE_CHAIN_ID",
+  "PUBLIC_CHAIN_ID",
+  "VITE_RPC_URL",
+  "PUBLIC_RPC_URL",
+  "VITE_AIRDROP_ECDSA_ADDR",
+  "VITE_AIRDROP_ZK_ADDR",
+  "VITE_VERIFIER_ADDR",
+  "VITE_TOKEN_ADDR",
+  "PUBLIC_TOKEN_ADDR",
+  "VITE_CAMPAIGN",
+  "PUBLIC_CAMPAIGN",
+  "VITE_FLOOR_SCORE",
+  "VITE_CAP_SCORE",
+  "VITE_MIN_PAYOUT",
+  "VITE_MAX_PAYOUT",
+  "VITE_CURVE",
+  "VITE_API_BASE",
+  "VITE_DEBUG",
+  "PUBLIC_DEBUG",
+  "VITE_WALLETCONNECT_PROJECT_ID",
+  "PUBLIC_WALLETCONNECT_PROJECT_ID",
+];
+
+let originalEnvSnapshot: Record<string, string | undefined> = {};
+
 describe("config parser", () => {
   beforeEach(() => {
     // Reset mocks before each test
     vi.resetModules();
+    vi.unstubAllEnvs();
+    originalEnvSnapshot = {};
+    for (const key of ENV_KEYS) {
+      originalEnvSnapshot[key] = process.env[key];
+      delete process.env[key];
+    }
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    for (const key of ENV_KEYS) {
+      const value = originalEnvSnapshot[key];
+      if (typeof value === "undefined") {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    }
   });
 
   const validEnv = {

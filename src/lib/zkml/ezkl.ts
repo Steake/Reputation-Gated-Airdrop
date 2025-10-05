@@ -7,7 +7,12 @@ let ezklInstance: any = null;
 let loadingPromise: Promise<any> | null = null;
 
 export interface EZKLProver {
-  prove: (witness: any, pk: Uint8Array, compiledCircuit: Uint8Array, srs: Uint8Array) => Promise<Uint8Array>;
+  prove: (
+    witness: any,
+    pk: Uint8Array,
+    compiledCircuit: Uint8Array,
+    srs: Uint8Array
+  ) => Promise<Uint8Array>;
   verify: (proof: Uint8Array, vk: Uint8Array, settings: any) => Promise<boolean>;
   genWitness: (input: any, compiledCircuit: Uint8Array) => Promise<Uint8Array>;
 }
@@ -31,18 +36,23 @@ export async function loadEzkl(): Promise<EZKLProver> {
   loadingPromise = (async () => {
     try {
       console.log("[EZKL] Loading @ezkljs/engine...");
-      
+
       // Dynamic import to avoid bundling WASM in main bundle
       const ezkl = await import("@ezkljs/engine");
-      
+
       // Initialize WASM
       await ezkl.init();
-      
+
       console.log("[EZKL] Engine loaded successfully");
 
       // Create prover interface
       const prover: EZKLProver = {
-        prove: async (witness: any, pk: Uint8Array, compiledCircuit: Uint8Array, srs: Uint8Array) => {
+        prove: async (
+          witness: any,
+          pk: Uint8Array,
+          compiledCircuit: Uint8Array,
+          srs: Uint8Array
+        ) => {
           try {
             const proof = await ezkl.prove(witness, pk, compiledCircuit, srs);
             return proof;

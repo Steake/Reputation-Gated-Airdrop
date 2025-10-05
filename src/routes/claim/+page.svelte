@@ -3,6 +3,7 @@
   import { walletMock } from "$lib/stores/walletMock";
   import { score } from "$lib/stores/score";
   import { airdrop } from "$lib/stores/airdrop";
+  import type { AirdropState } from "$lib/stores/airdrop";
   import ClaimCard from "$lib/components/ClaimCard.svelte";
   import ChecklistItem from "$lib/components/ChecklistItem.svelte";
   import { onMount } from "svelte";
@@ -37,17 +38,24 @@
   // Calculate expected payout based on score
   $: expectedPayout = calculatePayout($score.value || 0, $airdrop);
 
-  function calculatePayout(scoreValue: number, airdropConfig: typeof $airdrop): number {
+  function calculatePayout(scoreValue: number, airdropConfig: Partial<AirdropState>): number {
     if (!scoreValue || !airdropConfig.floor || !airdropConfig.cap) return 0;
 
     if (scoreValue < airdropConfig.floor) return 0;
 
     const clampedScore = Math.min(scoreValue, airdropConfig.cap);
-    const normalizedScore =
-      (clampedScore - airdropConfig.floor) / (airdropConfig.cap - airdropConfig.floor);
+    const range = airdropConfig.cap - airdropConfig.floor;
+    if (range <= 0) {
+      return Number(airdropConfig.maxPayout ?? 0n);
+    }
 
-    const payoutRange = (airdropConfig.maxPayout || 1000) - (airdropConfig.minPayout || 100);
-    return (airdropConfig.minPayout || 100) + normalizedScore * payoutRange;
+    const normalizedScore = (clampedScore - airdropConfig.floor) / range;
+
+    const minPayout = Number(airdropConfig.minPayout ?? 0n);
+    const maxPayout = Number(airdropConfig.maxPayout ?? minPayout);
+    const payoutRange = Math.max(0, maxPayout - minPayout);
+
+    return minPayout + normalizedScore * payoutRange;
   }
 </script>
 

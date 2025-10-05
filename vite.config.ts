@@ -14,6 +14,12 @@ export default defineConfig({
     }),
     sveltekit(),
   ],
+  server: {
+    fs: {
+      // Allow serving files from the artifacts directory
+      allow: [".."],
+    },
+  },
   test: {
     include: ["src/**/*.{test,spec}.{js,ts}"],
   },

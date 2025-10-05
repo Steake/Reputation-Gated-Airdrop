@@ -17,7 +17,7 @@ export type MockWalletState = {
 
 // Default mock state
 const defaultMockState: MockWalletState = {
-  enabled: true, // Start with mock mode enabled for testing
+  enabled: false, // Start with mock mode disabled by default
   connectionState: "disconnected",
   walletType: null,
   address: null,

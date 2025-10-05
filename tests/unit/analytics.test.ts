@@ -1,15 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import {
-  analyticsStore,
-  trackProofGenStart,
-  trackProofGenDuration,
-  trackProofGenSuccess,
-  trackClaimAttempt,
-  trackClaimSuccess,
-  trackAttestationQuery,
-} from "../../src/lib/stores/analytics";
 
-// Mock localStorage
+type AnalyticsExports = typeof import("$lib/stores/analytics");
+
+interface WindowWithGtag extends Window {
+  gtag?: (...args: unknown[]) => void;
+}
+
 const mockLocalStorage = {
   getItem: vi.fn(),
   setItem: vi.fn(),
@@ -17,83 +13,109 @@ const mockLocalStorage = {
   clear: vi.fn(),
 };
 
-Object.defineProperty(window, "localStorage", {
-  value: mockLocalStorage,
-});
+let analyticsStore: AnalyticsExports["analyticsStore"];
+let trackProofGenStart: AnalyticsExports["trackProofGenStart"];
+let trackProofGenDuration: AnalyticsExports["trackProofGenDuration"];
+let trackProofGenSuccess: AnalyticsExports["trackProofGenSuccess"];
+let trackClaimAttempt: AnalyticsExports["trackClaimAttempt"];
+let trackClaimSuccess: AnalyticsExports["trackClaimSuccess"];
+let trackAttestationQuery: AnalyticsExports["trackAttestationQuery"];
 
-// Mock gtag type
-interface WindowWithGtag extends Window {
-  gtag: (...args: unknown[]) => void;
+function assignLocalStorage() {
+  Object.defineProperty(window, "localStorage", {
+    configurable: true,
+    enumerable: true,
+    writable: true,
+    value: mockLocalStorage,
+  });
+}
+
+function resetLocalStorageMocks() {
+  mockLocalStorage.getItem.mockReset();
+  mockLocalStorage.setItem.mockReset();
+  mockLocalStorage.removeItem.mockReset();
+  mockLocalStorage.clear.mockReset();
+}
+
+function collectEvents() {
+  const events: unknown[] = [];
+  const unsubscribe = analyticsStore.subscribe((value) => {
+    events.splice(0, events.length, ...value);
+  });
+  return { events, unsubscribe };
 }
 
 describe("Analytics Store", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+  beforeEach(async () => {
+    vi.resetModules();
+    resetLocalStorageMocks();
     mockLocalStorage.getItem.mockReturnValue(null);
-    // Mock window.gtag
+    assignLocalStorage();
     (window as WindowWithGtag).gtag = vi.fn();
+
+    const module = await import("$lib/stores/analytics");
+    analyticsStore = module.analyticsStore;
+    trackProofGenStart = module.trackProofGenStart;
+    trackProofGenDuration = module.trackProofGenDuration;
+    trackProofGenSuccess = module.trackProofGenSuccess;
+    trackClaimAttempt = module.trackClaimAttempt;
+    trackClaimSuccess = module.trackClaimSuccess;
+    trackAttestationQuery = module.trackAttestationQuery;
+
+    analyticsStore.clear();
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    analyticsStore.clear();
+    vi.restoreAllMocks();
   });
 
   it("should track events and persist to localStorage", () => {
-    const events: any[] = [];
-    const unsubscribe = analyticsStore.subscribe((value) => {
-      events.push(...value);
-    });
+    const { events, unsubscribe } = collectEvents();
 
     trackProofGenStart("exact", false);
 
-    expect(events.length).toBe(1);
-    expect(events[0].eventType).toBe("proofGenStart");
-    expect(events[0].metadata.proofType).toBe("exact");
-    expect(events[0].metadata.anonymous).toBe(false);
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
-      "analytics_events",
-      JSON.stringify(
-        expect.arrayContaining([
-          expect.objectContaining({
-            eventType: "proofGenStart",
-            metadata: { proofType: "exact", anonymous: false },
-          }),
-        ])
-      )
-    );
+    expect(events).toHaveLength(1);
+    expect((events[0] as { eventType: string }).eventType).toBe("proofGenStart");
+    expect((events[0] as { metadata: unknown }).metadata).toEqual({
+      proofType: "exact",
+      anonymous: false,
+    });
+
+    const lastCall = mockLocalStorage.setItem.mock.calls.at(-1);
+    expect(lastCall).toBeDefined();
+    if (lastCall) {
+      const [, payload] = lastCall;
+      const parsed = JSON.parse(payload as string);
+      expect(parsed).toEqual(events);
+    }
 
     unsubscribe();
   });
 
   it("should limit persisted events to last 100", () => {
-    // Simulate 101 events
     for (let i = 0; i < 101; i++) {
       trackClaimAttempt(i, `community${i}`);
     }
 
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
-      "analytics_events",
-      expect.stringContaining(
-        JSON.stringify(
-          expect.arrayContaining([
-            expect.objectContaining({
-              eventType: "claimAttempt",
-              metadata: { score: 100, community: "community100" },
-            }),
-          ])
-        )
-      )
-    );
-    // Should not include the first event
-    expect(mockLocalStorage.setItem).not.toHaveBeenCalledWith(expect.stringContaining("score: 0"));
+    const lastCall = mockLocalStorage.setItem.mock.calls.at(-1);
+    expect(lastCall).toBeDefined();
+    if (lastCall) {
+      const [, payload] = lastCall;
+      const parsed = JSON.parse(payload as string);
+      expect(parsed).toHaveLength(100);
+      expect(parsed[0]?.metadata).toEqual({ score: 1, community: "community1" });
+      expect(parsed.at(-1)?.metadata).toEqual({ score: 100, community: "community100" });
+    }
   });
 
   it("should call gtag when available", () => {
-    (window as WindowWithGtag).gtag = vi.fn();
+    const gtagSpy = vi.fn();
+    (window as WindowWithGtag).gtag = gtagSpy;
 
     trackProofGenSuccess("threshold", true, 5000);
 
-    expect((window as WindowWithGtag).gtag).toHaveBeenCalledWith("event", "proofGenSuccess", {
+    expect(gtagSpy).toHaveBeenCalledWith("event", "proofGenSuccess", {
       proofType: "threshold",
       anonymous: true,
       duration: 5000,
@@ -103,21 +125,18 @@ describe("Analytics Store", () => {
   it("should not call gtag when not available", () => {
     delete (window as WindowWithGtag).gtag;
 
-    trackClaimSuccess(750, "trust-network");
-
-    expect((window as WindowWithGtag).gtag).not.toHaveBeenCalled();
+    expect(() => trackClaimSuccess(750, "trust-network")).not.toThrow();
+    expect("gtag" in window).toBe(false);
   });
 
-  it("should load events from localStorage on init", () => {
+  it("should load events from localStorage on reload", () => {
     const mockEvents = [
       { timestamp: "2023-01-01T00:00:00.000Z", eventType: "testEvent", metadata: { test: true } },
     ];
-    mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockEvents));
+    mockLocalStorage.getItem.mockReturnValueOnce(JSON.stringify(mockEvents));
 
-    const events: unknown[] = [];
-    const unsubscribe = analyticsStore.subscribe((value) => {
-      events.push(...value);
-    });
+    const { events, unsubscribe } = collectEvents();
+    analyticsStore.reloadFromStorage();
 
     expect(events).toEqual(mockEvents);
 
@@ -125,45 +144,50 @@ describe("Analytics Store", () => {
   });
 
   it("should handle convenience functions correctly", () => {
-    const events: unknown[] = [];
-    const unsubscribe = analyticsStore.subscribe((value) => {
-      events.push(...value);
-    });
+    const { events, unsubscribe } = collectEvents();
 
     trackAttestationQuery(250);
     trackClaimAttempt(600, "web3-community");
     trackProofGenDuration("gated", false, 3000);
 
-    expect(events.length).toBe(3);
-    expect((events[0] as any).eventType).toBe("attestationQuery");
-    expect((events[0] as any).metadata.duration).toBe(250);
-    expect((events[1] as any).eventType).toBe("claimAttempt");
-    expect((events[1] as any).metadata.score).toBe(600);
-    expect((events[1] as any).metadata.community).toBe("web3-community");
-    expect((events[2] as any).eventType).toBe("proofGenDuration");
-    expect((events[2] as any).metadata.duration).toBe(3000);
+    expect(events.map((event) => (event as { eventType: string }).eventType)).toEqual([
+      "attestationQuery",
+      "claimAttempt",
+      "proofGenDuration",
+    ]);
+    expect((events[0] as { metadata: unknown }).metadata).toEqual({ duration: 250 });
+    expect((events[1] as { metadata: unknown }).metadata).toEqual({
+      score: 600,
+      community: "web3-community",
+    });
+    expect((events[2] as { metadata: unknown }).metadata).toEqual({
+      proofType: "gated",
+      anonymous: false,
+      duration: 3000,
+    });
 
     unsubscribe();
   });
 
   it("should not persist or call gtag in non-browser environment", () => {
     const originalWindow = global.window;
+    const originalLocalStorage = (globalThis as { localStorage?: unknown }).localStorage;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     delete (global as any).window;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    delete (globalThis as any).localStorage;
 
-    const events: unknown[] = [];
-    const unsubscribe = analyticsStore.subscribe((value) => {
-      events.push(...value);
-    });
+    const { events, unsubscribe } = collectEvents();
 
     trackProofGenStart("anonymous", true);
 
-    expect(events.length).toBe(1);
+    expect(events).toHaveLength(1);
     expect(mockLocalStorage.setItem).not.toHaveBeenCalled();
-    expect((window as WindowWithGtag).gtag).not.toBeCalled();
 
-    // Restore window
     global.window = originalWindow;
-
+    if (originalLocalStorage !== undefined) {
+      (globalThis as { localStorage?: unknown }).localStorage = originalLocalStorage;
+    }
     unsubscribe();
   });
 });

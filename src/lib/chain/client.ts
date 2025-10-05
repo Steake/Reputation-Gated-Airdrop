@@ -5,6 +5,7 @@ import {
   createPublicClient,
   createWalletClient,
   custom,
+  fallback,
   http,
   type EIP1193Provider,
   type Chain,
@@ -25,7 +26,7 @@ function getViemChain(chainId: number): Chain {
     id: info.chainId,
     name: info.name,
     nativeCurrency,
-    rpcUrls: { default: { http: [info.rpcUrl] } },
+    rpcUrls: { default: { http: info.rpcUrls } },
     blockExplorers: {
       default: { name: `${info.name} Explorer`, url: info.explorer },
     },
@@ -40,13 +41,21 @@ function getCurrentChainId(): number {
   return Number(import.meta.env.VITE_CHAIN_ID || "11155111");
 }
 
-export function getPublicClient() {
-  const chainId = getCurrentChainId();
+export function getPublicClient(chainOverride?: number) {
+  const chainId = chainOverride ?? getCurrentChainId();
   const chain = getViemChain(chainId);
-  const rpcUrl = getChainInfo(chainId).rpcUrl;
+  const info = getChainInfo(chainId);
+  const transports = info.rpcUrls.map((url) => http(url, { timeout: 30000 }));
+  const transport =
+    transports.length === 1
+      ? transports[0]
+      : fallback(transports, {
+          rank: false,
+        });
+
   return createPublicClient({
     chain,
-    transport: http(rpcUrl),
+    transport,
   });
 }
 

@@ -42,10 +42,11 @@ function getCurrentChainId(): number {
 export async function initEthersProvider(): Promise<ethers.Provider> {
   const chainId = getCurrentChainId();
   const info = getChainInfo(chainId);
+  const primaryRpc = info.rpcUrls[0] ?? info.rpcUrl;
 
   if (!browser) {
     // Server-side: use JsonRpcProvider with current chain
-    return new ethers.JsonRpcProvider(info.rpcUrl, chainId);
+    return new ethers.JsonRpcProvider(primaryRpc, chainId);
   }
 
   // Client-side: try to use connected wallet
@@ -55,7 +56,7 @@ export async function initEthersProvider(): Promise<ethers.Provider> {
   }
 
   // Fallback to RPC provider with current chain
-  return new ethers.JsonRpcProvider(info.rpcUrl, chainId);
+  return new ethers.JsonRpcProvider(primaryRpc, chainId);
 }
 
 /**

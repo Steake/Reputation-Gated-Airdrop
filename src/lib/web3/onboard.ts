@@ -1,12 +1,48 @@
 import { browser } from "$app/environment";
 import { writable, get } from "svelte/store";
-import Onboard, { type OnboardAPI, type WalletState } from "@web3-onboard/core";
+import Onboard, { type OnboardAPI, type WalletState as OnboardWalletState } from "@web3-onboard/core";
 import injectedModule from "@web3-onboard/injected-wallets";
 import walletConnectModule from "@web3-onboard/walletconnect";
 import coinbaseModule from "@web3-onboard/coinbase";
+import { getChainInfo } from "$lib/chain/constants";
+import { wallet, selectedChainId } from "$lib/stores/wallet";
+
+function syncWalletStore(ws: OnboardWalletState[] = []) {
+  wallets.set(ws);
+
+  const primary = ws[0];
+  if (primary) {
+    const primaryChain = primary.chains?.[0] ?? (primary as OnboardWalletState & {
+      chain?: OnboardWalletState["chains"][number];
+    }).chain;
+    const chainIdHex = primaryChain?.id;
+    const chainId = chainIdHex ? parseInt(chainIdHex, 16) : undefined;
+    const address = primary.accounts?.[0]?.address as `0x${string}` | undefined;
+
+    wallet.update((current) => ({
+      ...current,
+      connected: true,
+      address,
+      chainId,
+      selectedChainId: chainId ?? current.selectedChainId,
+      error: null,
+    }));
+
+    if (chainId) {
+      selectedChainId.set(chainId);
+    }
+  } else {
+    wallet.update((current) => ({
+      ...current,
+      connected: false,
+      address: undefined,
+      chainId: undefined,
+    }));
+  }
+}
 
 export const onboard = writable<OnboardAPI | null>(null);
-export const wallets = writable<WalletState[]>([]);
+export const wallets = writable<OnboardWalletState[]>([]);
 
 export async function initOnboard() {
   if (!browser) return null;
@@ -55,6 +91,8 @@ export async function initOnboard() {
     darkMode: true,
   });
 
+  const sepoliaInfo = getChainInfo(11155111);
+
   const ob = Onboard({
     wallets: [injected, walletConnect, coinbase],
     chains: [
@@ -69,7 +107,7 @@ export async function initOnboard() {
         id: "0xaa36a7", // Sepolia
         token: "ETH",
         label: "Sepolia Testnet",
-        rpcUrl: "https://rpc.sepolia.org",
+        rpcUrl: sepoliaInfo.rpcUrl,
         blockExplorerUrl: "https://sepolia.etherscan.io",
       },
       {
@@ -133,7 +171,8 @@ export async function initOnboard() {
     },
   });
 
-  ob.state.select("wallets").subscribe((ws) => wallets.set(ws));
+  ob.state.select("wallets").subscribe((ws) => syncWalletStore(ws));
+  syncWalletStore(ob.state.get().wallets ?? []);
   onboard.set(ob);
   return ob;
 }
@@ -147,9 +186,10 @@ export async function connectWallet() {
     }
 
     console.log("Attempting to connect wallet...");
-    const wallets = await ob.connectWallet();
-    console.log("Connected wallets:", wallets);
-    return wallets;
+    const connectedWallets = await ob.connectWallet();
+    console.log("Connected wallets:", connectedWallets);
+    syncWalletStore(connectedWallets);
+    return connectedWallets;
   } catch (error) {
     console.error("Error connecting wallet:", error);
     throw error;
@@ -163,6 +203,7 @@ export async function disconnectWallet(label: string) {
       await ob.disconnectWallet({ label });
       console.log("Disconnected wallet:", label);
     }
+    syncWalletStore([]);
   } catch (error) {
     console.error("Error disconnecting wallet:", error);
     throw error;

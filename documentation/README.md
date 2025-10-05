@@ -4,6 +4,11 @@
 
 This directory contains comprehensive documentation for the client-side prover infrastructure that enables users to generate zero-knowledge proofs of their reputation scores for airdrop claims while preserving privacy.
 
+### Architecture Diagrams
+
+- Architecture (module boundaries): [architecture-diagram.mmd](./architecture-diagram.mmd)
+- Claim flows (sequence): [claim-flows-sequence.mmd](./claim-flows-sequence.mmd)
+
 ## Documentation Structure
 
 ### 1. Core Specifications

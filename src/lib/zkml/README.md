@@ -5,6 +5,7 @@ Client-side ZK proof generation using EZKL WASM with circuit caching and hybrid 
 ## Overview
 
 This module provides:
+
 - **EZKL WASM Integration** - Client-side proof generation in the browser
 - **Circuit Caching** - Persistent IndexedDB storage with integrity verification
 - **Hybrid Prover** - Automatic fallback from local to remote proof generation
@@ -109,6 +110,7 @@ const result = await hybridProver.generateProof(attestations, {
 ### Circuit Sizes
 
 Circuits are automatically selected based on attestation count:
+
 - **Small** (≤16 attestations): Fastest, lower memory
 - **Medium** (17-64 attestations): Balanced performance
 - **Large** (65+ attestations): Handles complex networks
@@ -135,6 +137,7 @@ await circuitManager.clearCache();
 ### Circuit Directory Structure
 
 Expected server directory layout:
+
 ```
 /circuits/
 ├── ebsl_small/
@@ -168,11 +171,13 @@ The proof worker runs in a separate thread to avoid blocking the UI:
 ### Worker Messages
 
 **Initialize:**
+
 ```javascript
 worker.postMessage({ type: "INIT" });
 ```
 
 **Generate Proof:**
+
 ```javascript
 worker.postMessage({
   type: "GENERATE_PROOF",
@@ -186,26 +191,30 @@ worker.postMessage({
 ```
 
 **Cancel:**
+
 ```javascript
 worker.postMessage({
   type: "CANCEL",
-  data: { jobId: "job-123" }
+  data: { jobId: "job-123" },
 });
 ```
 
 ### Worker Events
 
 **Progress:**
+
 ```javascript
 { type: "PROGRESS", jobId: "job-123", progress: { stage: "Generating proof", progress: 60 } }
 ```
 
 **Success:**
+
 ```javascript
 { type: "PROOF_GENERATED", jobId: "job-123", result: { proof, publicInputs, ... } }
 ```
 
 **Error:**
+
 ```javascript
 { type: "PROOF_ERROR", jobId: "job-123", error: "message" }
 ```
@@ -278,7 +287,7 @@ try {
 ```svelte
 <script>
   import { hybridProver } from "$lib/zkml";
-  
+
   async function generateProof() {
     try {
       const result = await hybridProver.generateProof(attestations, {
@@ -287,16 +296,11 @@ try {
         onProgress: (p) => {
           progress = p.progress;
           stage = p.stage;
-        }
+        },
       });
-      
+
       // Update zkProofStore with result
-      zkProofActions.setGenerated(
-        result.proof,
-        result.publicInputs,
-        result.hash,
-        proofType
-      );
+      zkProofActions.setGenerated(result.proof, result.publicInputs, result.hash, proofType);
     } catch (error) {
       zkProofActions.setError(error.message);
     }
@@ -347,21 +351,25 @@ VITE_REMOTE_PROVER_URL=https://api.example.com/proof/generate
 ## Troubleshooting
 
 ### "Failed to load EZKL engine"
+
 - Check that `@ezkljs/engine` is installed: `npm install @ezkljs/engine`
 - Verify WASM support in browser
 - Check browser console for detailed error
 
 ### "Circuit download failed"
+
 - Verify circuit files are available at `/circuits/ebsl_{size}/`
 - Check network connectivity
 - Verify file permissions
 
 ### "IndexedDB not available"
+
 - Check if browser supports IndexedDB
 - Verify browser is not in private/incognito mode
 - Check storage quota
 
 ### Slow Performance
+
 - Use appropriate circuit size for attestation count
 - Enable circuit caching for repeated proofs
 - Consider using remote prover for large proofs on mobile

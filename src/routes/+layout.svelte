@@ -11,13 +11,33 @@
   import erc20abi from "$lib/abi/erc20.abi.json";
   import { onMount } from "svelte";
   import type { Hex } from "viem";
+  import { browser } from "$app/environment";
 
-  // Layout props — we expose them as consts to avoid Svelte warnings about unused `export let` props.
-  // If these are needed for runtime mutation, convert back to `export let` intentionally.
-  export const params = undefined;
-  export const data = undefined;
-  export const form = undefined;
-  let tokenDecimals: number | undefined;
+  // Layout props handled via $page store
+
+
+  // Get config and error from page data (populated by +layout.ts)
+  $: config = $page.data?.config;
+  $: configError = $page.data?.configError;
+
+  // Format config error for display
+  $: configErrorMessage = configError
+    ? `Application configuration is invalid. Please update your environment variables.\n\n` +
+      configError.errors.map((e: any) => `${e.path.join(".")}: ${e.message}`).join("\n")
+    : null;
+
+  // Set airdrop config when config is available
+  $: if (config && browser) {
+    airdrop.set({
+      floor: config.FLOOR_SCORE,
+      cap: config.CAP_SCORE,
+      curve: config.CURVE,
+      minPayout: config.MIN_PAYOUT,
+      maxPayout: config.MAX_PAYOUT,
+      campaign: config.CAMPAIGN as `0x${string}`,
+      tokenAddress: config.TOKEN_ADDR as `0x${string}`,
+    });
+  }
 
   // Dark mode state (client-only). We persist preference in localStorage and
   // apply a `dark` class on the documentElement for Tailwind/class-based dark mode.
@@ -51,30 +71,16 @@
     mobileOpen = true;
   }
 
-  $: if ($page.data.config && !tokenDecimals) {
-    // Set airdrop config from page data
-    airdrop.set({
-      floor: $page.data.config.FLOOR_SCORE,
-      cap: $page.data.config.CAP_SCORE,
-      curve: $page.data.config.CURVE,
-      minPayout: $page.data.config.MIN_PAYOUT,
-      maxPayout: $page.data.config.MAX_PAYOUT,
-      campaign: $page.data.config.CAMPAIGN as `0x${string}`,
-      tokenAddress: $page.data.config.TOKEN_ADDR as `0x${string}`,
-    });
-  }
-
   onMount(async () => {
-    if ($page.data.config?.TOKEN_ADDR) {
+    if (config?.TOKEN_ADDR) {
       try {
         const decimals = await readContract<number>(
-          $page.data.config.TOKEN_ADDR as Hex,
+          config.TOKEN_ADDR as Hex,
           erc20abi,
           "decimals",
           []
         );
         airdrop.update((a) => ({ ...a, decimals }));
-        tokenDecimals = decimals;
       } catch (e) {
         console.error("Failed to fetch token decimals", e);
         toasts.error("Could not fetch token information.");
@@ -168,7 +174,7 @@
             >
               Explore
             </a>
-            {#if $page.data.config?.DEBUG}
+            {#if config?.DEBUG}
               <a
                 href="/debug"
                 class="nav-tab px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.2,0.0,0.2,1)]
@@ -261,9 +267,40 @@
 
   <MobileMenu bind:open={mobileOpen} on:close={() => (mobileOpen = false)} />
 
+  <!-- Configuration Error Display -->
+  {#if configErrorMessage}
+    <div class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-6 m-6">
+      <div class="flex items-start">
+        <div class="flex-shrink-0">
+          <svg
+            class="h-6 w-6 text-red-600 dark:text-red-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+        </div>
+        <div class="ml-3 flex-1">
+          <h3 class="text-lg font-medium text-red-800 dark:text-red-300">Configuration Error</h3>
+          <div class="mt-2 text-sm text-red-700 dark:text-red-400">
+            <pre class="whitespace-pre-wrap font-mono text-xs">{configErrorMessage}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  {/if}
+
   <!-- Main content with proper spacing and width constraints -->
   <main class="flex-grow container-responsive py-6 sm:py-8 content-safe">
-    <slot />
+    {#if !configErrorMessage}
+      <slot />
+    {/if}
   </main>
 
   <footer class="border-t border-[var(--border-base)] py-4 bg-[var(--bg-subtle)]">

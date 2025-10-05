@@ -1,0 +1,38 @@
+%% Mermaid sequence diagram for ECDSA and ZK claim flows
+
+sequenceDiagram
+  autonumber
+  participant U as User
+  participant UI as SvelteKit UI
+  participant ST as Stores/State
+  participant OB as Web3-Onboard
+  participant W as Wallet
+  participant VC as Viem Client
+  participant SC as Airdrop Contracts
+  participant BE as Backend API
+  participant PR as ZK Prover
+
+  rect rgb(230,255,230)
+    Note over U,SC: ECDSA Claim Path
+    U->>UI: Open Claim Page
+    UI->>OB: initOnboard()
+    OB-->>ST: WalletState updated
+    UI->>BE: GET /claim-message?address
+    BE-->>UI: message + limits
+    UI->>W: eth_sign (message)
+    W-->>UI: signature
+    UI->>SC: submitClaim(signature, amount)
+    SC-->>VC: emit Claimed
+    VC-->>ST: update ClaimState
+  end
+
+  rect rgb(230,230,255)
+    Note over U,SC: ZK Claim Path
+    U->>UI: Open Claim Page
+    UI->>ST: read ScoreState + Params
+    UI->>PR: generateProof(inputs)
+    PR-->>UI: proof + publicSignals
+    UI->>SC: verifyAndClaim(proof, signals, amount)
+    SC-->>VC: emit Claimed
+    VC-->>ST: update ClaimState
+  end

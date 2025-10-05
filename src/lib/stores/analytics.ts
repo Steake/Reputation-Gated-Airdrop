@@ -1,6 +1,6 @@
-import { writable } from "svelte/store";
+import { writable, type Subscriber, type Unsubscriber } from "svelte/store";
 
-interface AnalyticsEvent {
+export interface AnalyticsEvent {
   timestamp: string;
   eventType: string;
   metadata: Record<string, unknown>;
@@ -20,11 +20,33 @@ function saveEvents(events: AnalyticsEvent[]) {
   }
 }
 
-const { subscribe, update } = writable<AnalyticsEvent[]>(loadEvents());
+const analyticsWritable = writable<AnalyticsEvent[]>([]);
+const { subscribe: baseSubscribe, update, set } = analyticsWritable;
+
+let initialized = false;
+
+function initializeFromStorage() {
+  const events = loadEvents();
+  set(events);
+  initialized = true;
+}
+
+function ensureInitialized() {
+  if (!initialized) {
+    initializeFromStorage();
+  }
+}
 
 export const analyticsStore = {
-  subscribe,
+  subscribe(
+    run: Subscriber<AnalyticsEvent[]>,
+    invalidate?: (value?: AnalyticsEvent[]) => void
+  ): Unsubscriber {
+    ensureInitialized();
+    return baseSubscribe(run, invalidate);
+  },
   track: (eventType: string, metadata: Record<string, unknown> = {}) => {
+    ensureInitialized();
     const event: AnalyticsEvent = {
       timestamp: new Date().toISOString(),
       eventType,
@@ -39,6 +61,16 @@ export const analyticsStore = {
       }
       return newEvents;
     });
+  },
+  clear: () => {
+    initialized = true;
+    set([]);
+    if (typeof localStorage !== "undefined") {
+      localStorage.removeItem(EVENTS_KEY);
+    }
+  },
+  reloadFromStorage: () => {
+    initializeFromStorage();
   },
 };
 

@@ -1,26 +1,24 @@
 <script lang="ts">
-  import { get, writable } from "svelte/store";
+  import { get } from "svelte/store";
   import { wallet, selectedChainId } from "$lib/stores/wallet";
   import { walletMock, walletMockActions, walletConfigs } from "$lib/stores/walletMock";
-  import {
-    connectWallet,
-    disconnectWallet,
-    getPublicClient,
-    getWalletClient,
-  } from "$lib/chain/client";
+  import { connectWallet, disconnectWallet, getWalletClient } from "$lib/chain/client";
   import { CHAIN_NAMES, SUPPORTED_CHAINS } from "$lib/chain/constants";
   import { shortenAddress } from "$lib/utils";
   import { LogIn, LogOut, AlertTriangle, Clock, ChevronDown } from "lucide-svelte";
-  import type { ChainInfo } from "$lib/chain/constants";
 
   let connecting = false;
   let chainMenuOpen = false;
 
   // Supported chains for selector
-  const supportedChains = Object.entries(SUPPORTED_CHAINS).map(([key, info]) => ({
-    ...info,
-    name: CHAIN_NAMES[Number(key) as keyof typeof CHAIN_NAMES] || info.name,
-  }));
+  const supportedChains = Object.entries(SUPPORTED_CHAINS).map(([key, info]) => {
+    const derivedName = CHAIN_NAMES[Number(key) as keyof typeof CHAIN_NAMES] || `Chain ${key}`;
+    return {
+      ...info,
+      rpcUrl: info.rpcUrls[0],
+      name: derivedName,
+    };
+  });
 
   async function handleConnect() {
     if ($walletMock.enabled) {
@@ -78,23 +76,24 @@
       return;
     }
 
+    let walletClient;
     // Switch chain if connected
     try {
-      const wc = await getWalletClient();
-      if (wc) {
+      walletClient = await getWalletClient();
+      if (walletClient) {
         const hexChainId = `0x${chainId.toString(16)}`;
-        await wc.switchChain({ id: hexChainId as `0x${number}` });
+        await walletClient.switchChain({ id: hexChainId as `0x${number}` });
         selectedChainId.set(chainId);
       }
     } catch (error) {
       console.error("Failed to switch chain:", error);
       // If switch fails, try to add chain if not present
-      if (error.message.includes("chain not added")) {
+      if (walletClient && error instanceof Error && error.message.includes("chain not added")) {
         try {
           const info = supportedChains.find((c) => c.chainId === chainId);
           if (info) {
             const hexChainId = `0x${chainId.toString(16)}`;
-            await wc.addChain({
+            await walletClient.addChain({
               chain: {
                 id: hexChainId as `0x${number}`,
                 name: info.name,
@@ -102,11 +101,11 @@
                   info.chainId === 80001
                     ? { name: "MATIC", symbol: "MATIC", decimals: 18 }
                     : { name: "ETH", symbol: "ETH", decimals: 18 },
-                rpcUrls: { default: { http: [info.rpcUrl] } },
+                rpcUrls: { default: { http: info.rpcUrls } },
                 blockExplorers: { default: { name: `${info.name} Explorer`, url: info.explorer } },
               },
             });
-            await wc.switchChain({ id: hexChainId as `0x${number}` });
+            await walletClient.switchChain({ id: hexChainId as `0x${number}` });
             selectedChainId.set(chainId);
           }
         } catch (addError) {

@@ -19,10 +19,39 @@ function getEnvVar(key: string, fallback: string): string {
   return process.env[`PUBLIC_${key}`] || process.env[`VITE_${key}`] || fallback;
 }
 
+function readEnvVar(key: string): string | undefined {
+  if (typeof window !== "undefined") {
+    try {
+      const env = import.meta.env as Record<string, unknown>;
+      const value = env[`PUBLIC_${key}`] ?? env[`VITE_${key}`];
+      return typeof value === "string" ? value : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
+  return process.env[`PUBLIC_${key}`] ?? process.env[`VITE_${key}`] ?? undefined;
+}
+
+function getEnvVarList(key: string, fallback: string[]): string[] {
+  const raw = readEnvVar(key);
+  if (raw && typeof raw === "string") {
+    const values = raw
+      .split(/[,\n]/)
+      .map((part) => part.trim())
+      .filter(Boolean);
+    if (values.length > 0) {
+      return values;
+    }
+  }
+  return fallback;
+}
+
 export type ChainInfo = {
   chainId: number;
   name: string;
   rpcUrl: string;
+  rpcUrls: string[];
   explorer: string;
   tokenAddress: `0x${string}`;
   campaign: `0x${string}`;
@@ -30,11 +59,36 @@ export type ChainInfo = {
   airdropAddress?: `0x${string}`;
 };
 
-export const SUPPORTED_CHAINS: Record<number, Omit<ChainInfo, "name">> = {
+type ChainConfig = {
+  chainId: number;
+  rpcUrls: string[];
+  explorer: string;
+  tokenAddress: `0x${string}`;
+  campaign: `0x${string}`;
+  verifierAddress?: `0x${string}`;
+  airdropAddress?: `0x${string}`;
+};
+
+const DEFAULT_SEPOLIA_RPCS = Array.from(
+  new Set([
+    getEnvVar("SEPOLIA_RPC_URL", "https://rpc.sepolia.org"),
+    "https://ethereum-sepolia.publicnode.com",
+    "https://rpc.sepolia.ethpandaops.io",
+  ])
+);
+const DEFAULT_MUMBAI_RPCS = Array.from(
+  new Set([
+    getEnvVar("MUMBAI_RPC_URL", "https://rpc-mumbai.maticvigil.com"),
+    "https://polygon-mumbai-bor.publicnode.com",
+    "https://rpc.ankr.com/polygon_mumbai",
+  ])
+);
+
+export const SUPPORTED_CHAINS: Record<number, ChainConfig> = {
   11155111: {
     // Sepolia
     chainId: 11155111,
-    rpcUrl: getEnvVar("SEPOLIA_RPC_URL", "https://rpc.sepolia.org"),
+    rpcUrls: getEnvVarList("SEPOLIA_RPC_URLS", DEFAULT_SEPOLIA_RPCS),
     explorer: "https://sepolia.etherscan.io",
     tokenAddress: getEnvVar(
       "SEPOLIA_TOKEN_ADDR",
@@ -50,7 +104,7 @@ export const SUPPORTED_CHAINS: Record<number, Omit<ChainInfo, "name">> = {
   80001: {
     // Polygon Mumbai
     chainId: 80001,
-    rpcUrl: getEnvVar("MUMBAI_RPC_URL", "https://rpc-mumbai.maticvigil.com"),
+    rpcUrls: getEnvVarList("MUMBAI_RPC_URLS", DEFAULT_MUMBAI_RPCS),
     explorer: "https://mumbai.polygonscan.com",
     tokenAddress: getEnvVar(
       "MUMBAI_TOKEN_ADDR",
@@ -88,6 +142,7 @@ export function getChainInfo(chainId?: number): ChainInfo {
 
   return {
     ...config,
+    rpcUrl: config.rpcUrls[0],
     name: CHAIN_NAMES[effectiveChainId as keyof typeof CHAIN_NAMES] || `Chain ${effectiveChainId}`,
   };
 }

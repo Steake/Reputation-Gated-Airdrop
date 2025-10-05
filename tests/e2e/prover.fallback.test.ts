@@ -1,121 +1,121 @@
 /**
  * E2E Test: Remote Fallback on Worker Crash
- * 
+ *
  * Simulates worker crash and asserts remote fallback succeeds
  */
 
 import { test, expect } from "@playwright/test";
 
 test.describe("Remote Fallback", () => {
-	test("should fallback to remote on worker crash", async ({ page }) => {
-		// Navigate to prover page
-		await page.goto("/");
-		await page.waitForLoadState("networkidle");
+  test("should fallback to remote on worker crash", async ({ page }) => {
+    // Navigate to prover page
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
 
-		// Inject code to simulate worker crash
-		await page.evaluate(() => {
-			// Override Worker constructor to make it crash
-			const OriginalWorker = (window as any).Worker;
-			(window as any).Worker = class extends OriginalWorker {
-				constructor(scriptURL: string | URL, options?: WorkerOptions) {
-					super(scriptURL, options);
-					
-					// Simulate crash after init
-					setTimeout(() => {
-						this.postMessage({ type: "CRASH_SIMULATION" });
-						// Simulate worker error
-						const errorEvent = new Event("error");
-						this.dispatchEvent(errorEvent);
-					}, 100);
-				}
-			};
-		});
+    // Inject code to simulate worker crash
+    await page.evaluate(() => {
+      // Override Worker constructor to make it crash
+      const OriginalWorker = (window as any).Worker;
+      (window as any).Worker = class extends OriginalWorker {
+        constructor(scriptURL: string | URL, options?: WorkerOptions) {
+          super(scriptURL, options);
 
-		// Track console messages
-		let remoteMethodDetected = false;
-		page.on("console", (msg) => {
-			const text = msg.text();
-			if (text.includes("method") && text.includes("remote")) {
-				remoteMethodDetected = true;
-			}
-		});
+          // Simulate crash after init
+          setTimeout(() => {
+            this.postMessage({ type: "CRASH_SIMULATION" });
+            // Simulate worker error
+            const errorEvent = new Event("error");
+            this.dispatchEvent(errorEvent);
+          }, 100);
+        }
+      };
+    });
 
-		// Click generate proof button
-		await page.click('[data-testid="generate-proof-button"]');
+    // Track console messages
+    let remoteMethodDetected = false;
+    page.on("console", (msg) => {
+      const text = msg.text();
+      if (text.includes("method") && text.includes("remote")) {
+        remoteMethodDetected = true;
+      }
+    });
 
-		// Wait for proof generation to complete (should fallback to remote)
-		await page.waitForSelector('[data-testid="proof-success"]', {
-			timeout: 30000, // Allow more time for remote
-		});
+    // Click generate proof button
+    await page.click('[data-testid="generate-proof-button"]');
 
-		// Assert method badge shows "REMOTE" (fallback succeeded)
-		const methodBadge = await page.locator('[data-testid="proof-method-badge"]').textContent();
-		expect(methodBadge).toContain("REMOTE");
+    // Wait for proof generation to complete (should fallback to remote)
+    await page.waitForSelector('[data-testid="proof-success"]', {
+      timeout: 30000, // Allow more time for remote
+    });
 
-		// Assert telemetry detected remote method
-		expect(remoteMethodDetected).toBe(true);
+    // Assert method badge shows "REMOTE" (fallback succeeded)
+    const methodBadge = await page.locator('[data-testid="proof-method-badge"]').textContent();
+    expect(methodBadge).toContain("REMOTE");
 
-		console.log("✅ Fallback test passed: Worker crash → Remote fallback succeeded");
-	});
+    // Assert telemetry detected remote method
+    expect(remoteMethodDetected).toBe(true);
 
-	test("should fallback to remote on timeout", async ({ page }) => {
-		await page.goto("/");
-		await page.waitForLoadState("networkidle");
+    console.log("✅ Fallback test passed: Worker crash → Remote fallback succeeded");
+  });
 
-		// Inject code to set very short timeout
-		await page.evaluate(() => {
-			// Override hybrid prover timeout to 1ms (forces timeout)
-			(window as any).__FORCE_TIMEOUT = true;
-		});
+  test("should fallback to remote on timeout", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
 
-		// Click generate proof button
-		await page.click('[data-testid="generate-proof-button"]');
+    // Inject code to set very short timeout
+    await page.evaluate(() => {
+      // Override hybrid prover timeout to 1ms (forces timeout)
+      (window as any).__FORCE_TIMEOUT = true;
+    });
 
-		// Wait for proof generation to complete (should fallback to remote)
-		await page.waitForSelector('[data-testid="proof-success"]', {
-			timeout: 30000,
-		});
+    // Click generate proof button
+    await page.click('[data-testid="generate-proof-button"]');
 
-		// Assert method badge shows "REMOTE"
-		const methodBadge = await page.locator('[data-testid="proof-method-badge"]').textContent();
-		expect(methodBadge).toContain("REMOTE");
+    // Wait for proof generation to complete (should fallback to remote)
+    await page.waitForSelector('[data-testid="proof-success"]', {
+      timeout: 30000,
+    });
 
-		console.log("✅ Timeout fallback test passed: Timeout → Remote fallback succeeded");
-	});
+    // Assert method badge shows "REMOTE"
+    const methodBadge = await page.locator('[data-testid="proof-method-badge"]').textContent();
+    expect(methodBadge).toContain("REMOTE");
 
-	test("should fallback to remote on device capability restriction", async ({ page }) => {
-		await page.goto("/");
-		await page.waitForLoadState("networkidle");
+    console.log("✅ Timeout fallback test passed: Timeout → Remote fallback succeeded");
+  });
 
-		// Inject code to simulate low-RAM device
-		await page.evaluate(() => {
-			// Override device memory to simulate low RAM
-			Object.defineProperty(navigator, "deviceMemory", {
-				value: 2, // 2GB (below 4GB threshold)
-				writable: false,
-			});
-		});
+  test("should fallback to remote on device capability restriction", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
 
-		// Reload to apply device detection
-		await page.reload();
-		await page.waitForLoadState("networkidle");
+    // Inject code to simulate low-RAM device
+    await page.evaluate(() => {
+      // Override device memory to simulate low RAM
+      Object.defineProperty(navigator, "deviceMemory", {
+        value: 2, // 2GB (below 4GB threshold)
+        writable: false,
+      });
+    });
 
-		// Check device capability message
-		const deviceMessage = await page.locator('[data-testid="device-capability"]').textContent();
-		expect(deviceMessage).toContain("remote prover");
+    // Reload to apply device detection
+    await page.reload();
+    await page.waitForLoadState("networkidle");
 
-		// Click generate proof button
-		await page.click('[data-testid="generate-proof-button"]');
+    // Check device capability message
+    const deviceMessage = await page.locator('[data-testid="device-capability"]').textContent();
+    expect(deviceMessage).toContain("remote prover");
 
-		// Wait for proof generation to complete
-		await page.waitForSelector('[data-testid="proof-success"]', {
-			timeout: 30000,
-		});
+    // Click generate proof button
+    await page.click('[data-testid="generate-proof-button"]');
 
-		// Assert method badge shows "REMOTE"
-		const methodBadge = await page.locator('[data-testid="proof-method-badge"]').textContent();
-		expect(methodBadge).toContain("REMOTE");
+    // Wait for proof generation to complete
+    await page.waitForSelector('[data-testid="proof-success"]', {
+      timeout: 30000,
+    });
 
-		console.log("✅ Device capability test passed: Low RAM → Remote fallback");
-	});
+    // Assert method badge shows "REMOTE"
+    const methodBadge = await page.locator('[data-testid="proof-method-badge"]').textContent();
+    expect(methodBadge).toContain("REMOTE");
+
+    console.log("✅ Device capability test passed: Low RAM → Remote fallback");
+  });
 });

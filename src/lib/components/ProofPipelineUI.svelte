@@ -117,12 +117,7 @@
         },
       });
 
-      zkProofActions.setGenerated(
-        result.proof,
-        result.publicInputs,
-        result.hash,
-        proofType as any
-      );
+      zkProofActions.setGenerated(result.proof, result.publicInputs, result.hash, proofType as any);
     } catch (error: any) {
       zkProofActions.setError(error.message || "Proof generation failed");
     }
@@ -150,7 +145,9 @@
   }
 </script>
 
-<div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+<div
+  class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
+>
   <div class="flex items-center justify-between mb-4">
     <h3 class="text-xl font-bold flex items-center gap-2">
       <Activity class="h-5 w-5 text-purple-500" />

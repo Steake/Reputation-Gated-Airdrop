@@ -88,14 +88,12 @@
         result.duration
       );
 
-      toasts.success(
-        `ZK ${proofType} proof generated successfully using ${result.mode} mode!`
-      );
+      toasts.success(`ZK ${proofType} proof generated successfully using ${result.mode} mode!`);
     } catch (error: any) {
       clearInterval(elapsedInterval);
       const duration = Date.now() - startTime;
       trackProofGenDuration(proofType, false, duration);
-      
+
       // Track telemetry event for failure
       trackProof({
         method: "remote", // Assume remote on error
@@ -150,7 +148,7 @@
   <div class="space-y-4">
     <!-- Device Capability Info -->
     {#if capabilityMessage}
-      <div 
+      <div
         class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg text-sm"
         data-testid="device-capability"
       >

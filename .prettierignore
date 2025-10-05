@@ -4,3 +4,4 @@ dist
 build
 *.log
 package-lock.json
+PROOF_PIPELINE_INTEGRATION.md

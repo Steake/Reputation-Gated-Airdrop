@@ -25,10 +25,13 @@ const configSchema = z
     CURVE: z.enum(["LIN", "SQRT", "QUAD"]),
     API_BASE: z.string().url().optional(),
     DEBUG: z
-      .string()
-      .transform((val) => val === "true")
+      .union([z.string(), z.boolean()])
       .optional()
-      .default("false"),
+      .transform((val) => {
+        if (typeof val === "boolean") return val;
+        if (typeof val === "string") return val.toLowerCase() === "true";
+        return false;
+      }),
     WALLETCONNECT_PROJECT_ID: z.string().min(1),
   })
   .refine((data) => data.AIRDROP_ECDSA_ADDR || data.AIRDROP_ZK_ADDR, {
@@ -38,12 +41,50 @@ const configSchema = z
 
 export type Config = z.infer<typeof configSchema>;
 
+type EnvRecord = Record<string, string | undefined>;
+
+function collectEnv(): EnvRecord {
+  const procEnv = typeof process !== "undefined" ? (process.env ?? {}) : {};
+  const isVitest = Boolean(procEnv?.VITEST);
+
+  let metaEnv: EnvRecord = {};
+  if (!isVitest && typeof import.meta !== "undefined") {
+    const candidate = (import.meta as ImportMeta & { env?: EnvRecord }).env;
+    if (candidate) {
+      metaEnv = candidate;
+    }
+  }
+
+  return {
+    ...metaEnv,
+    ...procEnv,
+  };
+}
+
+function resolveDebugValue(env: EnvRecord): boolean {
+  const value = env.VITE_DEBUG ?? env.PUBLIC_DEBUG ?? env.DEBUG;
+  if (typeof value === "string") {
+    return value.toLowerCase() === "true";
+  }
+  return false;
+}
+
 export function parseConfig(): Config | { error: z.ZodError } {
   try {
-    // Check if we're in browser or server environment
-    const env = typeof window !== "undefined" ? import.meta.env : process.env;
+    const env = collectEnv();
+    const isBrowser = typeof window !== "undefined";
+    const debugEnabled = resolveDebugValue(env);
 
-    const config = configSchema.parse({
+    // Debug logging
+    if (isBrowser && debugEnabled) {
+      console.log("parseConfig called in browser, env.VITE_CHAIN_ID:", env.VITE_CHAIN_ID);
+      console.log(
+        "parseConfig env object keys:",
+        Object.keys(env).filter((k) => k.startsWith("VITE_"))
+      );
+    }
+
+    const rawConfig = {
       CHAIN_ID: env.VITE_CHAIN_ID || env.PUBLIC_CHAIN_ID,
       RPC_URL: env.VITE_RPC_URL || env.PUBLIC_RPC_URL,
       AIRDROP_ECDSA_ADDR: env.VITE_AIRDROP_ECDSA_ADDR,
@@ -57,10 +98,28 @@ export function parseConfig(): Config | { error: z.ZodError } {
       MAX_PAYOUT: env.VITE_MAX_PAYOUT,
       CURVE: env.VITE_CURVE,
       API_BASE: env.VITE_API_BASE,
-      DEBUG: env.VITE_DEBUG,
+      DEBUG: env.VITE_DEBUG ?? env.PUBLIC_DEBUG,
       WALLETCONNECT_PROJECT_ID:
         env.VITE_WALLETCONNECT_PROJECT_ID || env.PUBLIC_WALLETCONNECT_PROJECT_ID,
-    });
+    };
+
+    if (isBrowser && debugEnabled) {
+      console.log("parseConfig rawConfig before Zod:", rawConfig);
+      console.log("parseConfig rawConfig types:", {
+        CHAIN_ID: typeof rawConfig.CHAIN_ID,
+        FLOOR_SCORE: typeof rawConfig.FLOOR_SCORE,
+        CAP_SCORE: typeof rawConfig.CAP_SCORE,
+        MIN_PAYOUT: typeof rawConfig.MIN_PAYOUT,
+        MAX_PAYOUT: typeof rawConfig.MAX_PAYOUT,
+      });
+    }
+
+    const config = configSchema.parse(rawConfig);
+
+    if (isBrowser && debugEnabled) {
+      console.log("parseConfig SUCCESS!", config);
+    }
+
     return config;
   } catch (error) {
     if (error instanceof z.ZodError) {
