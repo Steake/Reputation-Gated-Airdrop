@@ -45,7 +45,10 @@ export function getPublicClient(chainOverride?: number) {
   const chainId = chainOverride ?? getCurrentChainId();
   const chain = getViemChain(chainId);
   const info = getChainInfo(chainId);
-  const transports = info.rpcUrls.map((url) => http(url, { timeout: 30000 }));
+  // Add lightweight retries and a reasonable timeout per RPC to mitigate transient provider slowness.
+  const transports = info.rpcUrls.map((url) =>
+    http(url, { timeout: 20000, retryCount: 2, retryDelay: 500 })
+  );
   const transport =
     transports.length === 1
       ? transports[0]

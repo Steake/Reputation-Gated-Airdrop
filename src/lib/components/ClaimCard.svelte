@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import { wallet } from "$lib/stores/wallet";
-  import { score } from "$lib/stores/score";
+  import { score, scoreActions } from "$lib/stores/score";
   import { airdrop } from "$lib/stores/airdrop";
   import { toasts } from "$lib/stores/ui";
   import { getClaimArtifact, getProofMeta } from "$lib/api/client";
@@ -21,6 +21,8 @@
   let errorMessage = "";
   let txHash: string | null = null;
   let quote: PayoutQuote | null = null;
+  let lastQuoteKey: string | null = null;
+  let pendingQuoteKey: string | null = null;
 
   const config = $page.data.config;
   // Prefer ZK path if available
@@ -29,22 +31,45 @@
     useZkPath ? config.AIRDROP_ZK_ADDR : config.AIRDROP_ECDSA_ADDR
   ) as Hex;
   const claimAbi = useZkPath ? reputationAirdropZKScaled : reputationAirdropScaled;
+  const SCORE_TOLERANCE = 5; // equals 0.000005 when scaled by 1e6
 
-  async function fetchQuote() {
-    if (typeof $score.value !== "number" || !$airdrop.decimals) return;
+  async function fetchQuote(scoreValue: number, decimals: number) {
+    if (!Number.isFinite(scoreValue) || scoreValue <= 0) return;
+    const minPayout = $airdrop.minPayout;
+    const maxPayout = $airdrop.maxPayout;
+    if (minPayout === undefined || maxPayout === undefined) return;
+
+    const key = `${scoreValue}:${decimals}:${claimContractAddress}`;
+    if (key === lastQuoteKey || key === pendingQuoteKey) return;
+
+    pendingQuoteKey = key;
     try {
+      quote = null;
       const payout = await readContract<bigint>(claimContractAddress, claimAbi, "quotePayout", [
-        BigInt($score.value),
+        BigInt(scoreValue),
       ]);
       quote = {
         payout,
-        min: $airdrop.minPayout!,
-        max: $airdrop.maxPayout!,
-        decimals: $airdrop.decimals!,
+        min: minPayout,
+        max: maxPayout,
+        decimals,
       };
+      lastQuoteKey = key;
     } catch (e) {
       console.error("Failed to fetch quote", e);
       toasts.error("Could not preview payout.");
+    } finally {
+      if (pendingQuoteKey === key) {
+        pendingQuoteKey = null;
+      }
+    }
+  }
+
+  $: {
+    const scoreValue = $score.value;
+    const decimals = $airdrop.decimals;
+    if (typeof scoreValue === "number" && decimals !== undefined) {
+      void fetchQuote(scoreValue, decimals);
     }
   }
 
@@ -57,8 +82,20 @@
       let hash: Hex;
       if (useZkPath) {
         const proofMeta = await getProofMeta($wallet.address);
-        if (proofMeta.score1e6 !== $score.value) {
-          throw new Error("Score mismatch between frontend and backend proof generation.");
+        const currentScore = $score.value;
+        if (typeof currentScore === "number") {
+          const delta = Math.abs(proofMeta.score1e6 - currentScore);
+          if (delta > SCORE_TOLERANCE) {
+            console.warn("Score mismatch detected; aligning with backend value", {
+              frontend: currentScore,
+              backend: proofMeta.score1e6,
+              delta,
+            });
+            scoreActions.setValue(proofMeta.score1e6);
+            toasts.warning("Score updated from backend proof. Refreshing payout…");
+          }
+        } else {
+          scoreActions.setValue(proofMeta.score1e6);
         }
         state = "awaiting_wallet";
         hash = await writeContract(
@@ -116,8 +153,6 @@
       state = "error";
     }
   }
-
-  fetchQuote();
 </script>
 
 <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200">

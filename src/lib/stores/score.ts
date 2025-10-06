@@ -1,6 +1,7 @@
 import { writable, derived, get } from "svelte/store";
 import { walletMock } from "./walletMock";
 import { wallet } from "./wallet";
+import { parseConfig } from "$lib/config";
 
 export type ScoreState = {
   loading: boolean;
@@ -16,6 +17,12 @@ export const score = writable<ScoreState>({
 
 const CACHE_KEY = "reputation_score_cache";
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+const parsedConfig = parseConfig();
+const isMockMode = ((): boolean => {
+  if ("error" in parsedConfig) return true;
+  return !parsedConfig.API_BASE;
+})();
 
 // Load from cache
 function loadFromCache(address: string): ScoreState | null {
@@ -93,14 +100,26 @@ export const mockScore = derived([walletMock, wallet], ([$walletMock, $wallet]) 
     };
     if (address) saveToCache(address, state);
     return state;
-  } else if (
+  }
+
+  if (!isMockMode) {
+    return {
+      loading: Boolean(address),
+      value: undefined,
+      lastUpdated: undefined,
+      error: undefined,
+      cachedAt: undefined,
+    };
+  }
+
+  if (
     $wallet.connected &&
     !$walletMock.enabled &&
     address &&
     typeof address === "string" &&
     address.startsWith("0x")
   ) {
-    // For real wallet connections without mock, generate deterministic score
+    // For real wallet connections in mock mode, generate deterministic score
     const state = {
       loading: false,
       value: generateDeterministicScore(address as `0x${string}`),

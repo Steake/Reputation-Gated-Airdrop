@@ -1,15 +1,54 @@
 <script lang="ts">
   import { wallet } from "$lib/stores/wallet";
   import { walletMock } from "$lib/stores/walletMock";
-  import { score } from "$lib/stores/score";
+  import { score, scoreActions } from "$lib/stores/score";
   import { airdrop } from "$lib/stores/airdrop";
   import type { AirdropState } from "$lib/stores/airdrop";
   import ClaimCard from "$lib/components/ClaimCard.svelte";
   import ChecklistItem from "$lib/components/ChecklistItem.svelte";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
+  import { getScore } from "$lib/api/client";
   import type { PageData } from "./$types";
+  import { browser } from "$app/environment";
+  import { formatUnits } from "viem";
 
   export let data: PageData;
+
+  let lastLoadedAddress: `0x${string}` | null = null;
+  let currentLoadAddress: `0x${string}` | null = null;
+  let unsubscribeWallet: () => void;
+
+  async function loadScore(address: `0x${string}`) {
+    if (!browser) return;
+    if (currentLoadAddress === address || lastLoadedAddress === address) return;
+
+    currentLoadAddress = address;
+    scoreActions.setLoading(true);
+
+    try {
+      const scoreData = await getScore(address);
+      if (!scoreData) {
+        throw new Error("No score data returned");
+      }
+
+      scoreActions.setValue(scoreData.score1e6 ?? 0);
+      score.update((s) => ({
+        ...s,
+        loading: false,
+        lastUpdated: scoreData.updatedAt,
+        error: undefined,
+      }));
+
+      lastLoadedAddress = address;
+    } catch (error) {
+      console.error("Failed to load score for claim page:", error);
+      scoreActions.setError("Failed to load reputation score.");
+    } finally {
+      if (currentLoadAddress === address) {
+        currentLoadAddress = null;
+      }
+    }
+  }
 
   onMount(() => {
     if (data.scoreData) {
@@ -21,6 +60,21 @@
     } else if (data.error) {
       score.set({ loading: false, error: data.error });
     }
+
+    unsubscribeWallet = wallet.subscribe(($wallet) => {
+      if (!browser) return;
+
+      if (!$walletMock.enabled && $wallet.connected && $wallet.address) {
+        void loadScore($wallet.address);
+      } else if (!$walletMock.enabled && (!$wallet.connected || !$wallet.address)) {
+        lastLoadedAddress = null;
+        scoreActions.reset();
+      }
+    });
+  });
+
+  onDestroy(() => {
+    if (unsubscribeWallet) unsubscribeWallet();
   });
 
   // Determine connection status considering both real and mock states
@@ -39,23 +93,32 @@
   $: expectedPayout = calculatePayout($score.value || 0, $airdrop);
 
   function calculatePayout(scoreValue: number, airdropConfig: Partial<AirdropState>): number {
-    if (!scoreValue || !airdropConfig.floor || !airdropConfig.cap) return 0;
-
-    if (scoreValue < airdropConfig.floor) return 0;
-
-    const clampedScore = Math.min(scoreValue, airdropConfig.cap);
-    const range = airdropConfig.cap - airdropConfig.floor;
-    if (range <= 0) {
-      return Number(airdropConfig.maxPayout ?? 0n);
+    const { floor, cap, minPayout, maxPayout, decimals } = airdropConfig;
+    if (
+      !scoreValue ||
+      floor === undefined ||
+      cap === undefined ||
+      minPayout === undefined ||
+      maxPayout === undefined ||
+      decimals === undefined
+    ) {
+      return 0;
     }
 
-    const normalizedScore = (clampedScore - airdropConfig.floor) / range;
+    if (scoreValue < floor) return 0;
 
-    const minPayout = Number(airdropConfig.minPayout ?? 0n);
-    const maxPayout = Number(airdropConfig.maxPayout ?? minPayout);
-    const payoutRange = Math.max(0, maxPayout - minPayout);
+    const clampedScore = Math.min(scoreValue, cap);
+    const range = cap - floor;
+    if (range <= 0) {
+      return Number(formatUnits(maxPayout, decimals));
+    }
 
-    return minPayout + normalizedScore * payoutRange;
+    const normalizedScore = (clampedScore - floor) / range;
+    const minTokens = Number(formatUnits(minPayout, decimals));
+    const maxTokens = Number(formatUnits(maxPayout, decimals));
+    const payoutRange = Math.max(0, maxTokens - minTokens);
+
+    return minTokens + normalizedScore * payoutRange;
   }
 </script>
 

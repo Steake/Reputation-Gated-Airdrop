@@ -63,12 +63,14 @@ function mockScore(address: string): ScoreResponse {
 }
 
 function mockClaimArtifact(address: string, campaign: string): ClaimArtifact {
+  // Ensure artifact score matches the mock score used by getScore(address)
+  const { score1e6 } = mockScore(address);
   return {
     circuitId: "mock-circuit",
     modelDigest: "0x" + "a".repeat(64),
     inputDigest: "0x" + "b".repeat(64),
     addr: address,
-    score: 750000,
+    score: score1e6,
     deadline: Math.floor(Date.now() / 1000) + 3600, // 1 hour from now
     campaign: campaign,
     sig: {
@@ -79,9 +81,11 @@ function mockClaimArtifact(address: string, campaign: string): ClaimArtifact {
   };
 }
 
-function mockProofMeta(_address: string): ProofMeta {
+function mockProofMeta(address: string): ProofMeta {
+  // Ensure proof meta score matches the mock score used by getScore(address)
+  const { score1e6 } = mockScore(address);
   return {
-    score1e6: 750000,
+    score1e6,
     calldata: "0x" + "f".repeat(128),
   };
 }

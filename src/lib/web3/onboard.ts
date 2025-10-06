@@ -19,6 +19,11 @@ function syncWalletStore(ws: OnboardWalletState[] = []) {
     const chainId = chainIdHex ? parseInt(chainIdHex, 16) : undefined;
     const address = primary.accounts?.[0]?.address as `0x${string}` | undefined;
 
+    // Guard against transient states where wallet emits without address yet; avoid flicker.
+    if (!address) {
+      return; // wait for a stable state with an address before marking connected
+    }
+
     wallet.update((current) => ({
       ...current,
       connected: true,
@@ -49,13 +54,8 @@ export async function initOnboard() {
   const existing = get(onboard);
   if (existing) return existing;
 
+  // Allow all injected wallets; still promote popular ones in UI via displayUnavailable.
   const injected = injectedModule({
-    filter: {
-      // Include popular wallets
-      [Symbol.for("web3-onboard-injected-metamask")]: true,
-      [Symbol.for("web3-onboard-injected-trust")]: true,
-      [Symbol.for("web3-onboard-injected-coinbase")]: true,
-    },
     displayUnavailable: ["MetaMask", "Trust Wallet", "Coinbase Wallet"],
   });
 
@@ -151,8 +151,9 @@ export async function initOnboard() {
       ],
     },
     connect: {
-      autoConnectLastWallet: true,
-      autoConnectAllPreviousWallet: true,
+      // Disable autoconnect to prevent modal flicker/auto-dismiss on init.
+      autoConnectLastWallet: false,
+      autoConnectAllPreviousWallet: false,
     },
     accountCenter: {
       desktop: {
