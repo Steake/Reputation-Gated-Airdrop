@@ -44,6 +44,7 @@ static/circuits/
 ```
 
 **Circuit Hashes Generated:**
+
 - `16`: `c83b07f9bbddbb8c2f66aafd19e3636e74a228a3cec4d850628194c050e3aa6c`
 - `32`: `ef952a2a2e31dc681be8849167a11b87fc3feb0ca5a34b54568377990e837d3a`
 - `64`: `dc25dbbfe507a03e53d4ab039a3d70d30412f3fe963931a34c4c4fcf2cbd9455`
@@ -51,6 +52,7 @@ static/circuits/
 ### Phase 2: Smart Contracts ✅
 
 **Deployed Addresses** (Mock for Demo):
+
 ```json
 {
   "verifier": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
@@ -66,6 +68,7 @@ static/circuits/
 ### Phase 3: Environment Configuration ✅
 
 `.env` configured with:
+
 - Chain ID: 11155111 (Sepolia)
 - RPC URLs for Sepolia and Mumbai
 - Contract addresses
@@ -86,6 +89,7 @@ static/circuits/
 ```
 
 **Build Output:**
+
 - `.svelte-kit/output/` - SSR build
 - Static assets compiled
 - Circuit hashes embedded
@@ -106,6 +110,7 @@ Server starts on: **http://localhost:5173**
 ### 2. Access the Application
 
 Open your browser and navigate to:
+
 - **Homepage**: http://localhost:5173
 - **Claim Page**: http://localhost:5173/claim
 - **Debug Page**: http://localhost:5173/debug (ZKML Component)
@@ -122,6 +127,7 @@ Open your browser and navigate to:
 **Steps:**
 
 1. **Navigate to Debug Page**
+
    ```
    http://localhost:5173/debug
    ```
@@ -157,6 +163,7 @@ Open your browser and navigate to:
      - Duration: X.Xs
 
 **Expected Outcome:**
+
 - Proof generated successfully
 - Method badge shows LOCAL (if capable device)
 - No errors in console
@@ -176,9 +183,11 @@ Open your browser and navigate to:
    - Files cached in IndexedDB
 
 2. **Open Browser DevTools**
+
    ```
    F12 → Application → Storage → IndexedDB → circuit-cache
    ```
+
    - Verify entries exist for circuits
    - Check total storage size
 
@@ -192,6 +201,7 @@ Open your browser and navigate to:
    - Console shows: `[CircuitManager] Cache hit for 16 circuit`
 
 **Expected Outcome:**
+
 - Second proof generation significantly faster
 - No network requests for circuit files
 - IndexedDB cache working correctly
@@ -227,6 +237,7 @@ Open your browser and navigate to:
    - Only public outputs: proof hash + threshold result
 
 **Expected Outcome:**
+
 - Proof generated with selective disclosure
 - User's exact reputation hidden
 - Can still claim tokens based on threshold
@@ -257,6 +268,7 @@ Open your browser and navigate to:
    - Or: `[HybridProver] Routing to remote prover (device not capable)`
 
 **Expected Outcome:**
+
 - Correct capability detection
 - Appropriate routing (local vs remote)
 - Clear user feedback on why remote is used
@@ -288,6 +300,7 @@ Open your browser and navigate to:
    - Duration: ~15-30 seconds
 
 **Expected Outcome:**
+
 - Correct circuit size selected
 - Proof generation time scales appropriately
 - All circuits cached separately in IndexedDB
@@ -319,6 +332,7 @@ Open your browser and navigate to:
    - If tampered: `[CircuitManager] Cached circuit failed integrity check, re-downloading`
 
 **Expected Outcome:**
+
 - Clear error messages
 - Graceful degradation
 - User can retry after fixing issue
@@ -362,6 +376,7 @@ Open your browser and navigate to:
    - Actionable guidance
 
 **Method Badges:**
+
 - **LOCAL** (green): `bg-green-600` - Browser WASM proof
 - **REMOTE** (blue): `bg-blue-600` - Server-side proof
 - **SIMULATION** (yellow): `bg-yellow-600` - Mock prover (dev only)
@@ -425,6 +440,7 @@ Check IndexedDB Cache
 ```
 
 **Detection Logic:**
+
 ```typescript
 if (RAM >= 4GB && !iOS Safari && opinions <= 32) {
   return "local";
@@ -440,27 +456,27 @@ if (RAM >= 4GB && !iOS Safari && opinions <= 32) {
 ### Proof Generation Times
 
 | Circuit Size | Attestations | Local (Desktop) | Remote (Server) | Memory Peak |
-|--------------|--------------|-----------------|-----------------|-------------|
+| ------------ | ------------ | --------------- | --------------- | ----------- |
 | 16           | 1-16         | 2-5s            | 7-12s           | 100-150MB   |
 | 32           | 17-32        | 5-15s           | 10-20s          | 150-250MB   |
 | 64           | 33-64        | 15-30s          | 20-40s          | 250-400MB   |
 
 ### Circuit Caching
 
-| Operation          | First Load | Cached Load | Savings |
-|--------------------|------------|-------------|---------|
-| 16 circuit         | 2-3s       | <100ms      | 95%     |
-| 32 circuit         | 3-5s       | <100ms      | 97%     |
-| 64 circuit         | 5-8s       | <100ms      | 98%     |
+| Operation  | First Load | Cached Load | Savings |
+| ---------- | ---------- | ----------- | ------- |
+| 16 circuit | 2-3s       | <100ms      | 95%     |
+| 32 circuit | 3-5s       | <100ms      | 97%     |
+| 64 circuit | 5-8s       | <100ms      | 98%     |
 
 ### Network Overhead
 
-| Operation          | Local      | Remote      | Difference |
-|--------------------|------------|-------------|------------|
-| Circuit download   | One-time   | N/A         | -          |
-| Proof generation   | In-browser | +2-5s       | Network    |
-| Total (first time) | 5-10s      | 10-20s      | 2x         |
-| Total (cached)     | 2-5s       | 10-20s      | 4x         |
+| Operation          | Local      | Remote | Difference |
+| ------------------ | ---------- | ------ | ---------- |
+| Circuit download   | One-time   | N/A    | -          |
+| Proof generation   | In-browser | +2-5s  | Network    |
+| Total (first time) | 5-10s      | 10-20s | 2x         |
+| Total (cached)     | 2-5s       | 10-20s | 4x         |
 
 ---
 
@@ -469,17 +485,20 @@ if (RAM >= 4GB && !iOS Safari && opinions <= 32) {
 ### Privacy Guarantees
 
 ✅ **Attestation Privacy**
+
 - Raw attestation data NEVER sent to server
 - Trust network topology remains private
 - Only proof sent on-chain
 
 ✅ **Selective Disclosure**
+
 - Exact proof: Reveals exact score (user choice)
 - Threshold proof: Only proves score ≥ threshold
 - Anonymous proof: No identity linkage (Semaphore)
 - Set membership: Proves tier without exact score
 
 ✅ **Cryptographic Security**
+
 - Halo2 ZK-SNARK (post-quantum resistant)
 - Poseidon hash for circuit inputs
 - SHA-256 for circuit integrity
@@ -488,16 +507,19 @@ if (RAM >= 4GB && !iOS Safari && opinions <= 32) {
 ### Attack Mitigations
 
 🛡️ **Replay Attack Prevention**
+
 - Campaign ID embedded in proof
 - Timestamp verification
 - Nonce system (contract-side)
 
 🛡️ **Circuit Tampering**
+
 - SHA-256 integrity verification
 - Automatic re-download on mismatch
 - Build-time hash manifest
 
 🛡️ **Score Inflation**
+
 - Proof verifies EBSL computation
 - Cannot fake high scores
 - Contract validates proof on-chain
@@ -509,11 +531,13 @@ if (RAM >= 4GB && !iOS Safari && opinions <= 32) {
 ### Scenario 1: Happy Path (All Features Working)
 
 **Setup:**
+
 - Desktop Chrome, 8GB RAM
 - Good network connection
 - Fresh browser (no cache)
 
 **Expected Flow:**
+
 1. Circuit downloads (2-3s)
 2. Cached in IndexedDB
 3. Local WASM proof generation (2-5s)
@@ -521,6 +545,7 @@ if (RAM >= 4GB && !iOS Safari && opinions <= 32) {
 5. Second proof instant (<100ms circuit load)
 
 **Verification:**
+
 - No errors in console
 - IndexedDB has 3 circuits
 - Method badge shows GREEN
@@ -531,17 +556,20 @@ if (RAM >= 4GB && !iOS Safari && opinions <= 32) {
 ### Scenario 2: Low-Capability Device
 
 **Setup:**
+
 - Mobile device, 2GB RAM
 - iOS Safari
 - Good network connection
 
 **Expected Flow:**
+
 1. Capability detection: "Using remote prover (Insufficient RAM)"
 2. No circuit download
 3. Remote proof generation (10-20s)
 4. Success with REMOTE badge
 
 **Verification:**
+
 - Console: "[HybridProver] Routing to remote prover"
 - No IndexedDB circuit entries
 - Method badge shows BLUE
@@ -552,10 +580,12 @@ if (RAM >= 4GB && !iOS Safari && opinions <= 32) {
 ### Scenario 3: Network Failure & Recovery
 
 **Setup:**
+
 - Desktop Chrome, 8GB RAM
 - Network goes offline mid-proof
 
 **Expected Flow:**
+
 1. Start proof generation
 2. Circuit download attempts
 3. Network error occurs
@@ -565,6 +595,7 @@ if (RAM >= 4GB && !iOS Safari && opinions <= 32) {
 7. Proof succeeds
 
 **Verification:**
+
 - Clear error message shown
 - Retry button functional
 - Proof completes after reconnection
@@ -603,6 +634,7 @@ if (RAM >= 4GB && !iOS Safari && opinions <= 32) {
 **Cause:** Circuit files not accessible
 
 **Fix:**
+
 ```bash
 # Verify circuits exist
 ls -la static/circuits/ebsl_*/
@@ -618,10 +650,11 @@ node scripts/generate-mock-circuits.cjs
 **Cause:** Hash mismatch between downloaded circuit and manifest
 
 **Fix:**
+
 1. Clear IndexedDB cache:
    ```javascript
    // Browser console
-   indexedDB.deleteDatabase('circuit-cache');
+   indexedDB.deleteDatabase("circuit-cache");
    ```
 2. Regenerate circuits:
    ```bash
@@ -639,11 +672,13 @@ node scripts/generate-mock-circuits.cjs
 **Cause:** Device doesn't meet capability requirements
 
 **Solution:** This is expected behavior
+
 - RAM < 4GB → uses remote
 - iOS Safari → uses remote
 - Opinions > 32 → uses remote (if small circuit only)
 
 **Verify:**
+
 - Check capability card message
 - Console shows routing reason
 - REMOTE badge appears (blue)
@@ -655,12 +690,14 @@ node scripts/generate-mock-circuits.cjs
 **Cause:** Worker hung or proof generation timeout
 
 **Fix:**
+
 1. Click "Cancel" button
 2. Wait 5 seconds
 3. Click "Try Again"
 4. If persists, refresh page
 
 **Prevention:**
+
 - Use smaller attestation count
 - Ensure sufficient device RAM
 - Check browser console for errors
@@ -703,6 +740,7 @@ node scripts/generate-mock-circuits.cjs
 ## 📦 Deliverables
 
 ### Code
+
 - ✅ Mock circuit artifacts (16/32/64 opinions)
 - ✅ Circuit hash manifest
 - ✅ Smart contract mock addresses
@@ -710,6 +748,7 @@ node scripts/generate-mock-circuits.cjs
 - ✅ Application build (production-ready)
 
 ### Documentation
+
 - ✅ This comprehensive demo guide
 - ✅ Quick start instructions
 - ✅ Demo flow walkthroughs
@@ -717,6 +756,7 @@ node scripts/generate-mock-circuits.cjs
 - ✅ Architecture diagrams
 
 ### Testing
+
 - ⏳ E2E tests (Playwright) - Ready to run
 - ⏳ Unit tests for circuit manager - Implemented
 - ⏳ Integration tests for hybrid prover - Implemented
@@ -748,6 +788,7 @@ node scripts/generate-mock-circuits.cjs
 ### For Production Deployment
 
 1. **Replace Mock Circuits:**
+
    ```bash
    # Generate real EZKL circuits from EBSL model
    python3 Notebooks/EBSL_EZKL.py
@@ -757,6 +798,7 @@ node scripts/generate-mock-circuits.cjs
    ```
 
 2. **Deploy Real Contracts:**
+
    ```bash
    # Set up wallet with Sepolia ETH
    export PRIVATE_KEY="0x..."
@@ -768,6 +810,7 @@ node scripts/generate-mock-circuits.cjs
    ```
 
 3. **Configure Backend Server:**
+
    ```bash
    cd server
    npm install
@@ -776,6 +819,7 @@ node scripts/generate-mock-circuits.cjs
    ```
 
 4. **Run Full Test Suite:**
+
    ```bash
    # Unit tests
    yarn test:unit
@@ -792,12 +836,14 @@ node scripts/generate-mock-circuits.cjs
 ## 📞 Support
 
 **Issues or Questions?**
+
 - Check this guide first
 - Review console errors
 - Inspect IndexedDB (DevTools → Application)
 - Check network tab for failed requests
 
 **For Real Deployment:**
+
 - See `documentation/architecture/zkml-part*.md`
 - Review `PROOF_PIPELINE_IMPLEMENTATION.md`
 - Check `EZKL_WASM_IMPLEMENTATION.md`
@@ -807,6 +853,7 @@ node scripts/generate-mock-circuits.cjs
 ## ✅ Demo Checklist
 
 ### Pre-Demo Setup
+
 - [ ] Project dependencies installed (`yarn install`)
 - [ ] Application built successfully (`npx vite build`)
 - [ ] Development server can start (`yarn dev`)
@@ -815,6 +862,7 @@ node scripts/generate-mock-circuits.cjs
 - [ ] Browser ready (Chrome/Firefox, 4GB+ RAM preferred)
 
 ### Demo Execution
+
 - [ ] Navigate to debug page successfully
 - [ ] ZKML component visible
 - [ ] First proof generates (shows progress)
@@ -825,6 +873,7 @@ node scripts/generate-mock-circuits.cjs
 - [ ] Error handling works (if tested)
 
 ### Post-Demo
+
 - [ ] No console errors
 - [ ] IndexedDB has circuits cached
 - [ ] Performance acceptable (<30s for 32 opinions)
@@ -850,6 +899,6 @@ This E2E ZKML demo showcases a production-ready, privacy-preserving reputation a
 
 ---
 
-*Generated: November 3, 2025*
-*Project: Shadowgraph Reputation-Gated Airdrop*
-*Version: 1.0*
+_Generated: November 3, 2025_
+_Project: Shadowgraph Reputation-Gated Airdrop_
+_Version: 1.0_

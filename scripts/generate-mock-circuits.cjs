@@ -8,11 +8,11 @@
  * In production, these would be replaced with actual EZKL-generated circuits.
  */
 
-const fs = require('fs');
-const crypto = require('crypto');
-const path = require('path');
+const fs = require("fs");
+const crypto = require("crypto");
+const path = require("path");
 
-const STATIC_DIR = path.join(__dirname, '..', 'static', 'circuits');
+const STATIC_DIR = path.join(__dirname, "..", "static", "circuits");
 
 // Circuit sizes (number of opinions/attestations supported)
 const CIRCUIT_SIZES = [16, 32, 64];
@@ -35,26 +35,26 @@ function generateMockCompiledCircuit(size) {
  */
 function generateMockSettings(size) {
   return {
-    "run_args": {
-      "input_scale": 5,
-      "param_scale": 5,
-      "epsilon": 0.00001,
-      "logrows": 17,
-      "commitment": "KZG",
-      "input_visibility": "Private",
-      "output_visibility": "Public",
-      "param_visibility": "Private"
+    run_args: {
+      input_scale: 5,
+      param_scale: 5,
+      epsilon: 0.00001,
+      logrows: 17,
+      commitment: "KZG",
+      input_visibility: "Private",
+      output_visibility: "Public",
+      param_visibility: "Private",
     },
-    "model_input_scales": [5],
-    "model_output_scales": [5],
-    "num_rows": 131072,
-    "total_assignments": size * size * 4, // N*N*4 trust matrix
-    "total_const_size": 1024,
-    "circuit_info": {
-      "opinion_count": size,
-      "circuit_type": "ebsl_fusion",
-      "mock": true
-    }
+    model_input_scales: [5],
+    model_output_scales: [5],
+    num_rows: 131072,
+    total_assignments: size * size * 4, // N*N*4 trust matrix
+    total_const_size: 1024,
+    circuit_info: {
+      opinion_count: size,
+      circuit_type: "ebsl_fusion",
+      mock: true,
+    },
   };
 }
 
@@ -73,10 +73,10 @@ function generateMockVerifyingKey(size) {
  * Used for integrity verification in circuit-manager
  */
 function calculateCircuitHash(compiledCircuit, verifyingKey) {
-  const hash = crypto.createHash('sha256');
+  const hash = crypto.createHash("sha256");
   hash.update(compiledCircuit);
   hash.update(verifyingKey);
-  return hash.digest('hex');
+  return hash.digest("hex");
 }
 
 /**
@@ -98,9 +98,9 @@ function generateCircuitArtifacts(size) {
   const verifyingKey = generateMockVerifyingKey(size);
 
   // Write files
-  const compiledPath = path.join(circuitDir, '_compiled.wasm');
-  const settingsPath = path.join(circuitDir, 'settings.json');
-  const vkPath = path.join(circuitDir, 'vk.key');
+  const compiledPath = path.join(circuitDir, "_compiled.wasm");
+  const settingsPath = path.join(circuitDir, "settings.json");
+  const vkPath = path.join(circuitDir, "vk.key");
 
   fs.writeFileSync(compiledPath, compiledCircuit);
   fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
@@ -131,11 +131,11 @@ function generateHashManifest(circuitHashes) {
  */
 
 export const CIRCUIT_HASHES: Record<string, string> = {
-${circuitHashes.map(({ size, hash }) => `  "${size}": "${hash}",`).join('\n')}
+${circuitHashes.map(({ size, hash }) => `  "${size}": "${hash}",`).join("\n")}
 };
 `;
 
-  const manifestPath = path.join(__dirname, '..', 'src', 'lib', 'zkml', 'circuit-hashes.ts');
+  const manifestPath = path.join(__dirname, "..", "src", "lib", "zkml", "circuit-hashes.ts");
   fs.writeFileSync(manifestPath, manifestContent);
   console.log(`\n✅ Generated hash manifest: ${manifestPath}`);
 }
@@ -144,9 +144,9 @@ ${circuitHashes.map(({ size, hash }) => `  "${size}": "${hash}",`).join('\n')}
  * Main execution
  */
 function main() {
-  console.log('🔧 Mock Circuit Artifact Generator');
-  console.log('==================================\n');
-  console.log('📁 Output directory:', STATIC_DIR);
+  console.log("🔧 Mock Circuit Artifact Generator");
+  console.log("==================================\n");
+  console.log("📁 Output directory:", STATIC_DIR);
 
   // Ensure static circuits directory exists
   if (!fs.existsSync(STATIC_DIR)) {
@@ -154,18 +154,18 @@ function main() {
   }
 
   // Generate artifacts for all circuit sizes
-  const circuitHashes = CIRCUIT_SIZES.map(size => generateCircuitArtifacts(size));
+  const circuitHashes = CIRCUIT_SIZES.map((size) => generateCircuitArtifacts(size));
 
   // Generate hash manifest for TypeScript import
   generateHashManifest(circuitHashes);
 
-  console.log('\n✨ Circuit generation complete!');
-  console.log('\n📋 Summary:');
-  console.log(`   - Generated ${CIRCUIT_SIZES.length} circuit sizes: ${CIRCUIT_SIZES.join(', ')}`);
+  console.log("\n✨ Circuit generation complete!");
+  console.log("\n📋 Summary:");
+  console.log(`   - Generated ${CIRCUIT_SIZES.length} circuit sizes: ${CIRCUIT_SIZES.join(", ")}`);
   console.log(`   - Total artifacts: ${CIRCUIT_SIZES.length * 3} files`);
   console.log(`   - Location: static/circuits/ebsl_*`);
-  console.log('\n⚠️  NOTE: These are MOCK circuits for demo purposes.');
-  console.log('   For production, generate real circuits using Notebooks/EBSL_EZKL.py\n');
+  console.log("\n⚠️  NOTE: These are MOCK circuits for demo purposes.");
+  console.log("   For production, generate real circuits using Notebooks/EBSL_EZKL.py\n");
 }
 
 // Run if called directly

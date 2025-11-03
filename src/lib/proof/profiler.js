@@ -8,221 +8,236 @@ import { ProofPriority } from "./queue";
  * Performance profiler for proof generation
  */
 export class PerformanceProfiler {
-    isRunning = false;
-    currentProgress = 0;
-    totalTests = 0;
-    /**
-     * Run comprehensive performance profiling
-     */
-    async profile(config) {
-        if (this.isRunning) {
-            throw new Error("Profiling already in progress");
-        }
-        this.isRunning = true;
-        this.currentProgress = 0;
-        const results = [];
-        const startTime = Date.now();
-        // Calculate total tests
-        this.totalTests =
-            config.circuitTypes.length *
-                config.networkSizes.length *
-                (config.iterations + (config.warmupIterations || 0));
-        let completedTests = 0;
-        try {
-            for (const circuitType of config.circuitTypes) {
-                for (const networkSize of config.networkSizes) {
-                    console.log(`Profiling ${circuitType} circuit with ${networkSize} attestations...`);
-                    // Warmup iterations
-                    if (config.warmupIterations) {
-                        for (let i = 0; i < config.warmupIterations; i++) {
-                            await this.runSingleTest(circuitType, networkSize, false);
-                            completedTests++;
-                            this.currentProgress = (completedTests / this.totalTests) * 100;
-                        }
-                    }
-                    // Actual profiling iterations
-                    const iterationResults = [];
-                    for (let i = 0; i < config.iterations; i++) {
-                        const result = await this.runSingleTest(circuitType, networkSize, config.includeMemory || config.includeCPU);
-                        iterationResults.push(result);
-                        completedTests++;
-                        this.currentProgress = (completedTests / this.totalTests) * 100;
-                    }
-                    // Calculate statistics
-                    const durations = iterationResults
-                        .filter((r) => r.success)
-                        .map((r) => r.duration)
-                        .sort((a, b) => a - b);
-                    const avgDuration = durations.length > 0 ? durations.reduce((sum, d) => sum + d, 0) / durations.length : 0;
-                    const minDuration = durations.length > 0 ? durations[0] : 0;
-                    const maxDuration = durations.length > 0 ? durations[durations.length - 1] : 0;
-                    const variance = durations.length > 0
-                        ? durations.reduce((sum, d) => sum + Math.pow(d - avgDuration, 2), 0) /
-                            durations.length
-                        : 0;
-                    const stdDev = Math.sqrt(variance);
-                    const successRate = iterationResults.filter((r) => r.success).length / iterationResults.length;
-                    const p50 = this.getPercentile(durations, 0.5);
-                    const p95 = this.getPercentile(durations, 0.95);
-                    const p99 = this.getPercentile(durations, 0.99);
-                    results.push({
-                        circuitType,
-                        networkSize,
-                        iterations: config.iterations,
-                        results: iterationResults,
-                        statistics: {
-                            avgDuration,
-                            minDuration,
-                            maxDuration,
-                            stdDev,
-                            successRate,
-                            p50,
-                            p95,
-                            p99,
-                        },
-                    });
-                }
-            }
-            const totalDuration = Date.now() - startTime;
-            const overallSuccessRate = results.reduce((sum, r) => sum + r.statistics.successRate * r.iterations, 0) /
-                results.reduce((sum, r) => sum + r.iterations, 0);
-            const recommendations = this.generateRecommendations(results);
-            return {
-                timestamp: Date.now(),
-                config,
-                results,
-                summary: {
-                    totalTests: completedTests,
-                    totalDuration,
-                    overallSuccessRate,
-                    recommendations,
-                },
-            };
-        }
-        finally {
-            this.isRunning = false;
-            this.currentProgress = 0;
-        }
+  isRunning = false;
+  currentProgress = 0;
+  totalTests = 0;
+  /**
+   * Run comprehensive performance profiling
+   */
+  async profile(config) {
+    if (this.isRunning) {
+      throw new Error("Profiling already in progress");
     }
-    /**
-     * Run a single profiling test
-     */
-    async runSingleTest(circuitType, networkSize, includeResources) {
-        // Create mock attestations
-        const attestations = Array.from({ length: networkSize }, (_, idx) => ({
-            source: `0xsource${idx}`,
-            target: "0xtarget",
-            opinion: {
-                belief: Math.random() * 0.5 + 0.3,
-                disbelief: Math.random() * 0.2,
-                uncertainty: Math.random() * 0.3,
-                base_rate: 0.5,
+    this.isRunning = true;
+    this.currentProgress = 0;
+    const results = [];
+    const startTime = Date.now();
+    // Calculate total tests
+    this.totalTests =
+      config.circuitTypes.length *
+      config.networkSizes.length *
+      (config.iterations + (config.warmupIterations || 0));
+    let completedTests = 0;
+    try {
+      for (const circuitType of config.circuitTypes) {
+        for (const networkSize of config.networkSizes) {
+          console.log(`Profiling ${circuitType} circuit with ${networkSize} attestations...`);
+          // Warmup iterations
+          if (config.warmupIterations) {
+            for (let i = 0; i < config.warmupIterations; i++) {
+              await this.runSingleTest(circuitType, networkSize, false);
+              completedTests++;
+              this.currentProgress = (completedTests / this.totalTests) * 100;
+            }
+          }
+          // Actual profiling iterations
+          const iterationResults = [];
+          for (let i = 0; i < config.iterations; i++) {
+            const result = await this.runSingleTest(
+              circuitType,
+              networkSize,
+              config.includeMemory || config.includeCPU
+            );
+            iterationResults.push(result);
+            completedTests++;
+            this.currentProgress = (completedTests / this.totalTests) * 100;
+          }
+          // Calculate statistics
+          const durations = iterationResults
+            .filter((r) => r.success)
+            .map((r) => r.duration)
+            .sort((a, b) => a - b);
+          const avgDuration =
+            durations.length > 0 ? durations.reduce((sum, d) => sum + d, 0) / durations.length : 0;
+          const minDuration = durations.length > 0 ? durations[0] : 0;
+          const maxDuration = durations.length > 0 ? durations[durations.length - 1] : 0;
+          const variance =
+            durations.length > 0
+              ? durations.reduce((sum, d) => sum + Math.pow(d - avgDuration, 2), 0) /
+                durations.length
+              : 0;
+          const stdDev = Math.sqrt(variance);
+          const successRate =
+            iterationResults.filter((r) => r.success).length / iterationResults.length;
+          const p50 = this.getPercentile(durations, 0.5);
+          const p95 = this.getPercentile(durations, 0.95);
+          const p99 = this.getPercentile(durations, 0.99);
+          results.push({
+            circuitType,
+            networkSize,
+            iterations: config.iterations,
+            results: iterationResults,
+            statistics: {
+              avgDuration,
+              minDuration,
+              maxDuration,
+              stdDev,
+              successRate,
+              p50,
+              p95,
+              p99,
             },
-            attestation_type: "trust",
-            weight: 1.0,
-            created_at: Date.now(),
-            expires_at: Date.now() + 86400000,
-        }));
-        const startTime = Date.now();
-        let memoryBefore;
-        let memoryAfter;
-        if (includeResources && typeof performance !== "undefined" && performance.memory) {
-            memoryBefore = performance.memory.usedJSHeapSize / 1024 / 1024;
+          });
         }
-        try {
-            await proofPipeline.generateProof(attestations, "exact", {
-                circuitType,
-                priority: ProofPriority.LOW,
-                maxRetries: 1,
-                timeoutMs: 60000,
-            });
-            const duration = Date.now() - startTime;
-            if (includeResources && typeof performance !== "undefined" && performance.memory) {
-                memoryAfter = performance.memory.usedJSHeapSize / 1024 / 1024;
-            }
-            return {
-                duration,
-                success: true,
-                memoryMB: memoryAfter && memoryBefore ? memoryAfter - memoryBefore : undefined,
-            };
-        }
-        catch (error) {
-            const duration = Date.now() - startTime;
-            return {
-                duration,
-                success: false,
-                error: error.message,
-            };
-        }
+      }
+      const totalDuration = Date.now() - startTime;
+      const overallSuccessRate =
+        results.reduce((sum, r) => sum + r.statistics.successRate * r.iterations, 0) /
+        results.reduce((sum, r) => sum + r.iterations, 0);
+      const recommendations = this.generateRecommendations(results);
+      return {
+        timestamp: Date.now(),
+        config,
+        results,
+        summary: {
+          totalTests: completedTests,
+          totalDuration,
+          overallSuccessRate,
+          recommendations,
+        },
+      };
+    } finally {
+      this.isRunning = false;
+      this.currentProgress = 0;
     }
-    /**
-     * Generate performance recommendations
-     */
-    generateRecommendations(results) {
-        const recommendations = [];
-        // Check for high failure rates
-        const highFailureRates = results.filter((r) => r.statistics.successRate < 0.9);
-        if (highFailureRates.length > 0) {
-            recommendations.push(`Consider increasing timeout or resources for: ${highFailureRates
-                .map((r) => `${r.circuitType}(${r.networkSize})`)
-                .join(", ")}`);
-        }
-        // Check for high variability
-        const highVariability = results.filter((r) => r.statistics.stdDev > r.statistics.avgDuration * 0.5);
-        if (highVariability.length > 0) {
-            recommendations.push(`High performance variability detected in: ${highVariability
-                .map((r) => `${r.circuitType}(${r.networkSize})`)
-                .join(", ")}. Consider optimizing resource allocation.`);
-        }
-        // Check for slow circuits
-        const slowCircuits = results.filter((r) => r.statistics.avgDuration > 30000);
-        if (slowCircuits.length > 0) {
-            recommendations.push(`Slow performance in: ${slowCircuits
-                .map((r) => `${r.circuitType}(${r.networkSize})`)
-                .join(", ")}. Consider circuit optimization or smaller batch sizes.`);
-        }
-        // Scaling recommendations
-        const largeNetworks = results.filter((r) => r.networkSize > 100);
-        if (largeNetworks.length > 0 && largeNetworks.some((r) => r.statistics.avgDuration > 15000)) {
-            recommendations.push("Consider implementing circuit batching or parallel processing for large networks.");
-        }
-        if (recommendations.length === 0) {
-            recommendations.push("Performance is within acceptable parameters.");
-        }
-        return recommendations;
+  }
+  /**
+   * Run a single profiling test
+   */
+  async runSingleTest(circuitType, networkSize, includeResources) {
+    // Create mock attestations
+    const attestations = Array.from({ length: networkSize }, (_, idx) => ({
+      source: `0xsource${idx}`,
+      target: "0xtarget",
+      opinion: {
+        belief: Math.random() * 0.5 + 0.3,
+        disbelief: Math.random() * 0.2,
+        uncertainty: Math.random() * 0.3,
+        base_rate: 0.5,
+      },
+      attestation_type: "trust",
+      weight: 1.0,
+      created_at: Date.now(),
+      expires_at: Date.now() + 86400000,
+    }));
+    const startTime = Date.now();
+    let memoryBefore;
+    let memoryAfter;
+    if (includeResources && typeof performance !== "undefined" && performance.memory) {
+      memoryBefore = performance.memory.usedJSHeapSize / 1024 / 1024;
     }
-    /**
-     * Calculate percentile
-     */
-    getPercentile(sortedArray, percentile) {
-        if (sortedArray.length === 0)
-            return 0;
-        const index = Math.ceil(sortedArray.length * percentile) - 1;
-        return sortedArray[Math.max(0, index)];
+    try {
+      await proofPipeline.generateProof(attestations, "exact", {
+        circuitType,
+        priority: ProofPriority.LOW,
+        maxRetries: 1,
+        timeoutMs: 60000,
+      });
+      const duration = Date.now() - startTime;
+      if (includeResources && typeof performance !== "undefined" && performance.memory) {
+        memoryAfter = performance.memory.usedJSHeapSize / 1024 / 1024;
+      }
+      return {
+        duration,
+        success: true,
+        memoryMB: memoryAfter && memoryBefore ? memoryAfter - memoryBefore : undefined,
+      };
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      return {
+        duration,
+        success: false,
+        error: error.message,
+      };
     }
-    /**
-     * Get current progress
-     */
-    getProgress() {
-        return this.currentProgress;
+  }
+  /**
+   * Generate performance recommendations
+   */
+  generateRecommendations(results) {
+    const recommendations = [];
+    // Check for high failure rates
+    const highFailureRates = results.filter((r) => r.statistics.successRate < 0.9);
+    if (highFailureRates.length > 0) {
+      recommendations.push(
+        `Consider increasing timeout or resources for: ${highFailureRates
+          .map((r) => `${r.circuitType}(${r.networkSize})`)
+          .join(", ")}`
+      );
     }
-    /**
-     * Check if profiling is running
-     */
-    isProfilerRunning() {
-        return this.isRunning;
+    // Check for high variability
+    const highVariability = results.filter(
+      (r) => r.statistics.stdDev > r.statistics.avgDuration * 0.5
+    );
+    if (highVariability.length > 0) {
+      recommendations.push(
+        `High performance variability detected in: ${highVariability
+          .map((r) => `${r.circuitType}(${r.networkSize})`)
+          .join(", ")}. Consider optimizing resource allocation.`
+      );
     }
-    /**
-     * Export profiling report
-     */
-    exportReport(report) {
-        return JSON.stringify(report, null, 2);
+    // Check for slow circuits
+    const slowCircuits = results.filter((r) => r.statistics.avgDuration > 30000);
+    if (slowCircuits.length > 0) {
+      recommendations.push(
+        `Slow performance in: ${slowCircuits
+          .map((r) => `${r.circuitType}(${r.networkSize})`)
+          .join(", ")}. Consider circuit optimization or smaller batch sizes.`
+      );
     }
-    /**
-     * Generate HTML report
-     */
-    generateHTMLReport(report) {
-        const html = `
+    // Scaling recommendations
+    const largeNetworks = results.filter((r) => r.networkSize > 100);
+    if (largeNetworks.length > 0 && largeNetworks.some((r) => r.statistics.avgDuration > 15000)) {
+      recommendations.push(
+        "Consider implementing circuit batching or parallel processing for large networks."
+      );
+    }
+    if (recommendations.length === 0) {
+      recommendations.push("Performance is within acceptable parameters.");
+    }
+    return recommendations;
+  }
+  /**
+   * Calculate percentile
+   */
+  getPercentile(sortedArray, percentile) {
+    if (sortedArray.length === 0) return 0;
+    const index = Math.ceil(sortedArray.length * percentile) - 1;
+    return sortedArray[Math.max(0, index)];
+  }
+  /**
+   * Get current progress
+   */
+  getProgress() {
+    return this.currentProgress;
+  }
+  /**
+   * Check if profiling is running
+   */
+  isProfilerRunning() {
+    return this.isRunning;
+  }
+  /**
+   * Export profiling report
+   */
+  exportReport(report) {
+    return JSON.stringify(report, null, 2);
+  }
+  /**
+   * Generate HTML report
+   */
+  generateHTMLReport(report) {
+    const html = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -255,7 +270,8 @@ export class PerformanceProfiler {
 
   <h2>Detailed Results</h2>
   ${report.results
-            .map((r) => `
+    .map(
+      (r) => `
     <h3>${r.circuitType} - ${r.networkSize} attestations</h3>
     <table>
       <tr>
@@ -271,13 +287,14 @@ export class PerformanceProfiler {
       <tr><td>P95</td><td>${(r.statistics.p95 / 1000).toFixed(2)}s</td></tr>
       <tr><td>P99</td><td>${(r.statistics.p99 / 1000).toFixed(2)}s</td></tr>
     </table>
-  `)
-            .join("")}
+  `
+    )
+    .join("")}
 </body>
 </html>
     `;
-        return html;
-    }
+    return html;
+  }
 }
 /**
  * Singleton instance
