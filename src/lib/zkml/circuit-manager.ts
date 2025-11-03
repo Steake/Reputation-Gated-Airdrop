@@ -8,12 +8,13 @@ import { circuitDB } from "./db";
 
 const CIRCUIT_BASE_URL = "/circuits"; // Can be configured via env
 
-// Build-time circuit hashes (should be generated during build from manifest.json)
-// In production, these would be loaded from a manifest file
+// Build-time circuit hashes generated from mock circuit artifacts
+// NOTE: These are hashes of MOCK circuits for development/testing
+// For production, replace with actual EZKL-compiled circuit hashes
 export const CIRCUIT_HASHES: Record<string, string> = {
-  "16": "0000000000000000000000000000000000000000000000000000000000000000", // 16 opinions
-  "32": "0000000000000000000000000000000000000000000000000000000000000000", // 32 opinions
-  "64": "0000000000000000000000000000000000000000000000000000000000000000", // 64 opinions
+  "16": "c878a1af656b151e1b186fbd575a3b3a46568aad369770a03ab204759901ceeb", // 16 opinions
+  "32": "9a10eeced02c1c3a430c6c7b0a2ac0d4b566e07e74c819236d9f2418ee693be1", // 32 opinions
+  "64": "17ffe9c264dd8003eea6abee8fd9162066c5c6a97220d2322ad144172d21aa43", // 64 opinions
 };
 
 export interface CircuitArtifacts {
