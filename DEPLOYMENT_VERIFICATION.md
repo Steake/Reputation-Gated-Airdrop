@@ -9,7 +9,9 @@
 ## 📦 Deployment Summary
 
 ### Hardhat Node Status
+
 ✅ **Running on port 8545**
+
 - Process ID: Logged to `/tmp/hardhat-node.pid`
 - RPC Endpoint: `http://127.0.0.1:8545`
 - Block Number: 0 (genesis)
@@ -19,16 +21,17 @@
 
 All contracts successfully deployed to local Hardhat network:
 
-| Contract | Address | Status |
-|----------|---------|--------|
-| MockVerifier | `0x5FbDB2315678afecb367f032d93F642f64180aa3` | ✅ Deployed |
-| MockSemaphoreVerifier | `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512` | ✅ Deployed |
-| ZKMLOnChainVerifier | `0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0` | ✅ Deployed |
-| MockERC20 Token | `0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9` | ✅ Deployed |
-| ReputationAirdropScaled | `0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9` | ✅ Deployed |
+| Contract                  | Address                                      | Status      |
+| ------------------------- | -------------------------------------------- | ----------- |
+| MockVerifier              | `0x5FbDB2315678afecb367f032d93F642f64180aa3` | ✅ Deployed |
+| MockSemaphoreVerifier     | `0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512` | ✅ Deployed |
+| ZKMLOnChainVerifier       | `0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0` | ✅ Deployed |
+| MockERC20 Token           | `0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9` | ✅ Deployed |
+| ReputationAirdropScaled   | `0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9` | ✅ Deployed |
 | ReputationAirdropZKScaled | `0x5FC8d32690cc91D4c39d9d3abcBD16989F875707` | ✅ Deployed |
 
 ### Deployment Log
+
 📄 Full log saved to: `logs/deploy-localhost-20251103-170953.log`
 
 ---
@@ -113,6 +116,7 @@ Status: ✅ Operational
 ### 2. Contract Deployments ✅
 
 All 6 contracts deployed successfully:
+
 - ✅ MockVerifier
 - ✅ MockSemaphoreVerifier
 - ✅ ZKMLOnChainVerifier (with verifier reference)
@@ -123,6 +127,7 @@ All 6 contracts deployed successfully:
 ### 3. Circuit Files ✅
 
 **Source Location:**
+
 ```
 static/circuits/ebsl_*/
 ├── _compiled.wasm
@@ -131,12 +136,14 @@ static/circuits/ebsl_*/
 ```
 
 **Build Output:**
+
 ```
 .svelte-kit/output/client/circuits/ebsl_*/
 └── Same structure
 ```
 
 **Verification:**
+
 - ✅ All 3 circuit sizes present (16, 32, 64)
 - ✅ SHA-256 hashes match manifest
 - ✅ Files copied to build output
@@ -145,12 +152,14 @@ static/circuits/ebsl_*/
 ### 4. Configuration ✅
 
 **Chain Configuration:**
+
 - ✅ Chain ID: 1337 (Hardhat)
 - ✅ RPC URL: http://127.0.0.1:8545
 - ✅ All contract addresses updated
 - ✅ Campaign parameters set
 
 **Circuit Configuration:**
+
 - ✅ Circuit hashes in manifest
 - ✅ Circuit manager updated
 - ✅ Integrity verification enabled
@@ -161,32 +170,32 @@ static/circuits/ebsl_*/
 
 ### Infrastructure
 
-| Component | Status | Details |
-|-----------|--------|---------|
-| Hardhat Node | 🟢 Running | Port 8545, Block 0 |
-| Smart Contracts | 🟢 Deployed | 6/6 contracts |
-| Circuit Artifacts | 🟢 Ready | 3 sizes, SHA-256 verified |
-| Application Build | 🟢 Complete | 1649 modules, 58.67s |
-| Environment Config | 🟢 Updated | Local network settings |
+| Component          | Status      | Details                   |
+| ------------------ | ----------- | ------------------------- |
+| Hardhat Node       | 🟢 Running  | Port 8545, Block 0        |
+| Smart Contracts    | 🟢 Deployed | 6/6 contracts             |
+| Circuit Artifacts  | 🟢 Ready    | 3 sizes, SHA-256 verified |
+| Application Build  | 🟢 Complete | 1649 modules, 58.67s      |
+| Environment Config | 🟢 Updated  | Local network settings    |
 
 ### Smart Contracts
 
-| Contract | Function | Status |
-|----------|----------|--------|
-| ZKMLOnChainVerifier | Verify ZK proofs on-chain | 🟢 Deployed |
-| ReputationAirdropZKScaled | ZK-based token claims | 🟢 Deployed |
-| ReputationAirdropScaled | ECDSA-based token claims | 🟢 Deployed |
-| MockERC20 | Test token for airdrops | 🟢 Deployed |
+| Contract                  | Function                  | Status      |
+| ------------------------- | ------------------------- | ----------- |
+| ZKMLOnChainVerifier       | Verify ZK proofs on-chain | 🟢 Deployed |
+| ReputationAirdropZKScaled | ZK-based token claims     | 🟢 Deployed |
+| ReputationAirdropScaled   | ECDSA-based token claims  | 🟢 Deployed |
+| MockERC20                 | Test token for airdrops   | 🟢 Deployed |
 
 ### ZKML Components
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| EZKL WASM Engine | 🟢 Bundled | ~2 MB in build |
-| Circuit Manager | 🟢 Configured | SHA-256 integrity |
-| Hybrid Prover | 🟢 Ready | Local + remote fallback |
-| Device Detection | 🟢 Implemented | RAM/browser checks |
-| Circuit Cache (IndexedDB) | 🟢 Implemented | Persistent storage |
+| Component                 | Status         | Notes                   |
+| ------------------------- | -------------- | ----------------------- |
+| EZKL WASM Engine          | 🟢 Bundled     | ~2 MB in build          |
+| Circuit Manager           | 🟢 Configured  | SHA-256 integrity       |
+| Hybrid Prover             | 🟢 Ready       | Local + remote fallback |
+| Device Detection          | 🟢 Implemented | RAM/browser checks      |
+| Circuit Cache (IndexedDB) | 🟢 Implemented | Persistent storage      |
 
 ---
 
@@ -224,6 +233,7 @@ static/circuits/ebsl_*/
 ## 🔗 Access Points
 
 ### Hardhat Node
+
 ```
 RPC Endpoint: http://127.0.0.1:8545
 Chain ID: 1337
@@ -231,6 +241,7 @@ Network: localhost
 ```
 
 ### Application URLs
+
 ```
 Homepage: http://localhost:5173/
 Debug Page: http://localhost:5173/debug
@@ -239,6 +250,7 @@ Attestations: http://localhost:5173/attestations
 ```
 
 ### Circuit Files
+
 ```
 Base URL: http://localhost:5173/circuits/
 Sizes: ebsl_16, ebsl_32, ebsl_64
@@ -297,7 +309,7 @@ Balance: 10,000 ETH
 ### Testing Readiness
 
 - [x] Contracts deployed and accessible
-- [x] Circuit files available at /circuits/*
+- [x] Circuit files available at /circuits/\*
 - [x] Circuit integrity hashes in manifest
 - [x] Environment configured correctly
 - [x] MetaMask connection instructions documented
@@ -307,6 +319,7 @@ Balance: 10,000 ETH
 ## 🎬 Next Steps for Full E2E Testing
 
 ### 1. Connect Wallet
+
 ```bash
 # Open MetaMask
 # Add Hardhat network (localhost:8545, Chain ID: 1337)
@@ -314,6 +327,7 @@ Balance: 10,000 ETH
 ```
 
 ### 2. Navigate to Application
+
 ```bash
 # Start dev server (if not running)
 yarn dev
@@ -323,6 +337,7 @@ http://localhost:5173/debug
 ```
 
 ### 3. Test ZKML Flow
+
 ```
 1. Scroll to "ZKML Reputation Verifier"
 2. Select proof type: "Exact"
@@ -334,6 +349,7 @@ http://localhost:5173/debug
 ```
 
 ### 4. Test Contract Interaction (Optional)
+
 ```
 1. Connect wallet to app
 2. Navigate to claim page
@@ -349,6 +365,7 @@ http://localhost:5173/debug
 ### Current Setup
 
 ✅ **Working:**
+
 - Hardhat node running
 - All contracts deployed
 - Circuit artifacts generated
@@ -356,6 +373,7 @@ http://localhost:5173/debug
 - Configuration updated
 
 ⚠️ **Limitations:**
+
 - Dev server needs manual restart to serve properly
 - Mock circuits (not real EZKL-generated proofs)
 - No backend proof server running
@@ -366,11 +384,13 @@ http://localhost:5173/debug
 To move beyond local testing:
 
 1. **Generate Real Circuits:**
+
    ```bash
    python3 Notebooks/EBSL_EZKL.py
    ```
 
 2. **Deploy to Testnet:**
+
    ```bash
    export PRIVATE_KEY="0x..."
    yarn deploy:sepolia
@@ -389,21 +409,21 @@ To move beyond local testing:
 
 ### Local Testing
 
-| Operation | Expected Time |
-|-----------|---------------|
-| Circuit download (first) | 2-5s |
-| Circuit cache load | <100ms |
-| Proof generation (16) | 2-5s |
-| Proof generation (32) | 5-15s |
-| Proof generation (64) | 15-30s |
+| Operation                | Expected Time |
+| ------------------------ | ------------- |
+| Circuit download (first) | 2-5s          |
+| Circuit cache load       | <100ms        |
+| Proof generation (16)    | 2-5s          |
+| Proof generation (32)    | 5-15s         |
+| Proof generation (64)    | 15-30s        |
 
 ### Memory Usage
 
-| Component | Peak Memory |
-|-----------|-------------|
-| Circuit 16 | 100-150 MB |
-| Circuit 32 | 150-250 MB |
-| Circuit 64 | 250-400 MB |
+| Component  | Peak Memory |
+| ---------- | ----------- |
+| Circuit 16 | 100-150 MB  |
+| Circuit 32 | 150-250 MB  |
+| Circuit 64 | 250-400 MB  |
 
 ---
 
@@ -412,6 +432,7 @@ To move beyond local testing:
 ### What Was Accomplished
 
 ✅ **Full local deployment complete:**
+
 1. Hardhat node running (localhost:8545)
 2. All 6 smart contracts deployed
 3. Circuit artifacts generated and verified
@@ -422,6 +443,7 @@ To move beyond local testing:
 ### What Can Be Demonstrated
 
 ✅ **Ready to show:**
+
 - Smart contract deployment
 - Circuit artifact system
 - ZKML proof generation flow

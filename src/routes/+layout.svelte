@@ -15,7 +15,6 @@
 
   // Layout props handled via $page store
 
-
   // Get config and error from page data (populated by +layout.ts)
   $: config = $page.data?.config;
   $: configError = $page.data?.configError;

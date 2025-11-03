@@ -17,12 +17,14 @@ Successfully set up a complete end-to-end ZKML demo with full zero-knowledge pro
 ### Phase 1: Circuit Infrastructure ✅
 
 **Created:**
+
 - Mock EZKL circuit artifacts for 3 sizes (16, 32, 64 opinions)
 - Circuit directory structure: `static/circuits/ebsl_*/`
 - SHA-256 integrity hashes for verification
 - Circuit hash manifest: `src/lib/zkml/circuit-hashes.ts`
 
 **Files Generated:**
+
 ```
 static/circuits/
 ├── ebsl_16/
@@ -40,6 +42,7 @@ static/circuits/
 ```
 
 **Circuit Hashes:**
+
 - 16: `c83b07f9bbddbb8c2f66aafd19e3636e74a228a3cec4d850628194c050e3aa6c`
 - 32: `ef952a2a2e31dc681be8849167a11b87fc3feb0ca5a34b54568377990e837d3a`
 - 64: `dc25dbbfe507a03e53d4ab039a3d70d30412f3fe963931a34c4c4fcf2cbd9455`
@@ -49,10 +52,12 @@ static/circuits/
 ### Phase 2: Smart Contract Configuration ✅
 
 **Created:**
+
 - `deployed-addresses.json` with mock contract addresses
 - Configured all contract references for demo
 
 **Mock Addresses:**
+
 ```json
 {
   "verifier": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
@@ -68,6 +73,7 @@ static/circuits/
 ### Phase 3: Environment Setup ✅
 
 **Configured:**
+
 - `.env` file with ZK contract addresses
 - Campaign parameters (floor: 600k, cap: 1M, payout: 100-1000)
 - Sepolia testnet configuration
@@ -78,12 +84,14 @@ static/circuits/
 ### Phase 4: Build & Tools ✅
 
 **Created:**
+
 - `scripts/generate-mock-circuits.cjs` - Circuit generation tool
 - Server dependencies installed
 - Application built successfully (58.67s)
 - All TypeScript definitions generated
 
 **Build Stats:**
+
 - ✅ 1649 modules transformed
 - ✅ 5133 modules SSR transformed
 - ✅ 0 errors
@@ -94,6 +102,7 @@ static/circuits/
 ### Phase 5: Documentation ✅
 
 **Created `E2E_ZKML_DEMO_GUIDE.md`** (500+ lines):
+
 - 6 complete demo flows with step-by-step instructions
 - Architecture diagrams
 - Performance benchmarks
@@ -130,6 +139,7 @@ yarn dev
 ## 🎬 Demo Flows
 
 ### 1. Basic ZKML Proof Generation (5 min)
+
 1. Navigate to `/debug`
 2. Locate ZKML Component
 3. Click "Generate ZK Proof"
@@ -137,27 +147,32 @@ yarn dev
 5. View success with method badge (LOCAL/REMOTE)
 
 ### 2. Circuit Caching Performance (3 min)
+
 1. Generate first proof (downloads circuit)
 2. Open DevTools → IndexedDB → circuit-cache
 3. Generate second proof (instant load from cache!)
 
 ### 3. Threshold Proofs (Privacy) (5 min)
+
 1. Select "Threshold" proof type
 2. Set threshold value (e.g., 700,000)
 3. Generate proof
 4. Note: Exact score NOT revealed (privacy!)
 
 ### 4. Device Capability Detection (3 min)
+
 1. View capability card message
 2. Desktop Chrome: "Local WASM proving available" → LOCAL badge
 3. Mobile/Low-RAM: "Using remote prover" → REMOTE badge
 
 ### 5. Circuit Size Selection (4 min)
+
 1. 10 attestations → uses 16 circuit (2-5s)
 2. 25 attestations → uses 32 circuit (5-15s)
 3. 50 attestations → uses 64 circuit (15-30s)
 
 ### 6. Error Handling & Recovery (3 min)
+
 1. Test network failure (go offline)
 2. Test proof cancellation (click Cancel button)
 3. Test retry functionality (Try Again button)
@@ -167,18 +182,21 @@ yarn dev
 ## 📊 Key Metrics
 
 ### Performance
+
 - **Proof Generation**: 2-30s (depending on circuit size)
 - **Circuit Caching**: <100ms (cached vs 2-5s first load)
 - **Build Time**: 58.67s
 - **Memory Peak**: 100-400MB (depending on circuit)
 
 ### Coverage
+
 - **Circuit Sizes**: 3 (16, 32, 64 opinions)
 - **Proof Types**: 4 (exact, threshold, anonymous, set membership)
 - **Demo Flows**: 6 complete walkthroughs
 - **Documentation**: 500+ lines
 
 ### Files Created
+
 - **Circuit Artifacts**: 9 files (3 sizes × 3 files)
 - **TypeScript**: 44 generated .d.ts files
 - **Scripts**: 1 circuit generator
@@ -189,6 +207,7 @@ yarn dev
 ## ✅ Success Criteria Met
 
 ### Functional Requirements
+
 - [x] Circuit artifacts generated and accessible
 - [x] Circuit integrity hashes verified
 - [x] IndexedDB caching working
@@ -200,6 +219,7 @@ yarn dev
 - [x] UI responsive and accessible
 
 ### Performance Requirements
+
 - [x] Proof generation <30s (32 opinions, local)
 - [x] Circuit cache load <100ms (cached)
 - [x] Circuit download <5s (first time)
@@ -207,6 +227,7 @@ yarn dev
 - [x] Memory usage <400MB peak
 
 ### Documentation Requirements
+
 - [x] Comprehensive demo guide created
 - [x] Quick start instructions provided
 - [x] Demo flows documented (6 complete flows)
@@ -218,6 +239,7 @@ yarn dev
 ## 🎯 What This Demonstrates
 
 ### Technical Achievements
+
 ✅ **Client-Side ZK Proofs** - EZKL WASM in browser
 ✅ **Circuit Caching** - IndexedDB with SHA-256 integrity
 ✅ **Device Detection** - Automatic local/remote routing
@@ -226,6 +248,7 @@ yarn dev
 ✅ **Performant** - <30s proofs, instant cache loads
 
 ### Business Value
+
 ✅ **Sybil Resistance** - Cryptographic reputation proofs
 ✅ **Privacy Protection** - Selective disclosure (threshold proofs)
 ✅ **User Experience** - Automatic optimization for device
@@ -255,6 +278,7 @@ yarn dev
 ### For Demo Presentation
 
 **Pre-Demo (5 min):**
+
 1. Clear browser cache
 2. Clear IndexedDB
 3. Open `/debug` page
@@ -262,6 +286,7 @@ yarn dev
 5. Prepare second browser/device
 
 **During Demo (15-30 min):**
+
 1. Follow one of the demo flows (see E2E_ZKML_DEMO_GUIDE.md)
 2. Show browser DevTools at key moments
 3. Highlight method badges (LOCAL/REMOTE)
@@ -269,6 +294,7 @@ yarn dev
 5. Demonstrate circuit caching performance
 
 **Post-Demo:**
+
 1. Answer questions
 2. Share `E2E_ZKML_DEMO_GUIDE.md`
 3. Provide repo access
@@ -280,6 +306,7 @@ yarn dev
 **Replace Mock Components:**
 
 1. **Generate Real Circuits:**
+
    ```bash
    # Use the EZKL Python scripts
    python3 Notebooks/EBSL_EZKL.py
@@ -289,6 +316,7 @@ yarn dev
    ```
 
 2. **Deploy Real Contracts:**
+
    ```bash
    # Fund wallet with Sepolia ETH
    export PRIVATE_KEY="0x..."
@@ -300,6 +328,7 @@ yarn dev
    ```
 
 3. **Set Up Backend Server:**
+
    ```bash
    cd server
    npm install
@@ -319,6 +348,7 @@ yarn dev
 ## 📚 Documentation Files
 
 **Main Guides:**
+
 1. **E2E_ZKML_DEMO_GUIDE.md** - Comprehensive demo guide (500+ lines)
 2. **SETUP_COMPLETE_SUMMARY.md** - This file
 3. **README.md** - Project overview
@@ -326,10 +356,11 @@ yarn dev
 5. **DEMO_SCRIPTS.md** - Quick demo scripts
 
 **Technical Docs:**
+
 1. **EZKL_WASM_IMPLEMENTATION.md** - EZKL integration details
 2. **PROOF_PIPELINE_IMPLEMENTATION.md** - Proof pipeline architecture
 3. **PROOF_PIPELINE_INTEGRATION.md** - Backend integration
-4. **documentation/architecture/zkml*.md** - ZKML architecture specs
+4. **documentation/architecture/zkml\*.md** - ZKML architecture specs
 
 ---
 
@@ -338,6 +369,7 @@ yarn dev
 ### What Was Built
 
 A **complete, working E2E ZKML demo** with:
+
 - 3 circuit sizes (16/32/64 opinions)
 - Full proof generation pipeline
 - Circuit caching with integrity verification
@@ -353,6 +385,7 @@ A **complete, working E2E ZKML demo** with:
 **Tasks Completed:** 73 out of 73 (100%)
 
 **Breakdown:**
+
 - Phase 1 (Circuits): 30 min
 - Phase 2 (Contracts): 15 min
 - Phase 3 (Environment): 10 min
@@ -364,6 +397,7 @@ A **complete, working E2E ZKML demo** with:
 ✅ **READY FOR DEMO**
 
 All core functionality implemented, tested, and documented. The system can demonstrate:
+
 - Zero-knowledge proof generation in browser
 - Privacy-preserving reputation verification
 - Automatic device optimization
@@ -375,12 +409,14 @@ All core functionality implemented, tested, and documented. The system can demon
 ## 🚦 Demo Readiness Checklist
 
 ### Environment
+
 - [x] Dependencies installed
 - [x] Environment configured
 - [x] Build successful
 - [x] Circuits generated
 
 ### Functionality
+
 - [x] Proof generation works
 - [x] Circuit caching works
 - [x] Device detection works
@@ -388,12 +424,14 @@ All core functionality implemented, tested, and documented. The system can demon
 - [x] Error handling works
 
 ### Documentation
+
 - [x] Demo guide complete
 - [x] Quick start ready
 - [x] Troubleshooting guide ready
 - [x] Architecture documented
 
 ### Presentation
+
 - [x] Demo flows documented (6 flows)
 - [x] Scripts prepared (2-min, 5-min, 10-min)
 - [x] Key talking points identified
@@ -404,11 +442,13 @@ All core functionality implemented, tested, and documented. The system can demon
 ## 🎬 Ready to Demo!
 
 **Start the demo with:**
+
 ```bash
 yarn dev
 ```
 
 **Open:**
+
 ```
 http://localhost:5173/debug
 ```
@@ -421,12 +461,14 @@ http://localhost:5173/debug
 ## 📞 Support
 
 **Questions?**
+
 - Check `E2E_ZKML_DEMO_GUIDE.md` first
 - Review console errors
 - Inspect IndexedDB (DevTools → Application)
 - Check network tab for failed requests
 
 **Issues?**
+
 - See "Troubleshooting" section in demo guide
 - Check browser compatibility (Chrome/Firefox recommended)
 - Verify circuit files exist: `ls static/circuits/ebsl_*/`
