@@ -1,0 +1,22 @@
+{
+  "run_args": {
+    "input_scale": 5,
+    "param_scale": 5,
+    "epsilon": 0.00001,
+    "logrows": 17,
+    "commitment": "KZG",
+    "input_visibility": "Private",
+    "output_visibility": "Public",
+    "param_visibility": "Private"
+  },
+  "model_input_scales": [5],
+  "model_output_scales": [5],
+  "num_rows": 131072,
+  "total_assignments": 4096,
+  "total_const_size": 1024,
+  "circuit_info": {
+    "opinion_count": 32,
+    "circuit_type": "ebsl_fusion",
+    "mock": true
+  }
+}

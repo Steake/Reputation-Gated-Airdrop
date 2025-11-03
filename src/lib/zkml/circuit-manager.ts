@@ -5,16 +5,9 @@
  */
 
 import { circuitDB } from "./db";
+import { CIRCUIT_HASHES } from "./circuit-hashes";
 
 const CIRCUIT_BASE_URL = "/circuits"; // Can be configured via env
-
-// Build-time circuit hashes (should be generated during build from manifest.json)
-// In production, these would be loaded from a manifest file
-export const CIRCUIT_HASHES: Record<string, string> = {
-  "16": "0000000000000000000000000000000000000000000000000000000000000000", // 16 opinions
-  "32": "0000000000000000000000000000000000000000000000000000000000000000", // 32 opinions
-  "64": "0000000000000000000000000000000000000000000000000000000000000000", // 64 opinions
-};
 
 export interface CircuitArtifacts {
   compiledCircuit: Uint8Array; // _compiled.wasm

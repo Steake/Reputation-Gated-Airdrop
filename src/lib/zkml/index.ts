@@ -5,12 +5,9 @@
 
 export { loadEzkl, isEzklLoaded, unloadEzkl, type EZKLProver } from "./ezkl";
 
-export {
-  circuitManager,
-  CIRCUIT_HASHES,
-  type CircuitArtifacts,
-  type CircuitCacheStats,
-} from "./circuit-manager";
+export { circuitManager, type CircuitArtifacts, type CircuitCacheStats } from "./circuit-manager";
+
+export { CIRCUIT_HASHES } from "./circuit-hashes";
 
 export {
   HybridProver,
