@@ -9,7 +9,7 @@ import { test, expect } from "@playwright/test";
 test.describe("Remote Fallback", () => {
   test("should fallback to remote on worker crash", async ({ page }) => {
     // Navigate to prover page
-    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await page.goto("/debug", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Inject code to simulate worker crash
@@ -59,7 +59,7 @@ test.describe("Remote Fallback", () => {
   });
 
   test("should fallback to remote on timeout", async ({ page }) => {
-    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await page.goto("/debug", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Inject code to set very short timeout
@@ -84,7 +84,7 @@ test.describe("Remote Fallback", () => {
   });
 
   test("should fallback to remote on device capability restriction", async ({ page }) => {
-    await page.goto("/", { waitUntil: "domcontentloaded" });
+    await page.goto("/debug", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     // Inject code to simulate low-RAM device
