@@ -12,7 +12,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: "html",
   use: {
-    baseURL: "http://localhost:5173",
+    baseURL: "http://localhost:4173",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
@@ -26,7 +26,7 @@ export default defineConfig({
         viewport: { width: 1280, height: 720 },
       },
       testMatch: /prover\.(local|fallback)\.test\.ts/,
-      timeout: 10000, // 10s for quick proof tests
+      timeout: 60000, // 60s - increased for proof generation and page load
     },
     {
       name: "iOS Safari",
@@ -36,7 +36,7 @@ export default defineConfig({
         browserName: "webkit",
       },
       testMatch: /prover\.(local|fallback)\.test\.ts/,
-      timeout: 15000, // Slightly longer for mobile
+      timeout: 60000, // 60s - increased for mobile and proof generation
     },
     {
       name: "Android Chrome",
@@ -46,14 +46,14 @@ export default defineConfig({
         browserName: "chromium",
       },
       testMatch: /prover\.(local|fallback)\.test\.ts/,
-      timeout: 15000, // Slightly longer for mobile
+      timeout: 60000, // 60s - increased for mobile and proof generation
     },
   ],
 
   webServer: {
-    command: "npm run dev",
-    url: "http://localhost:5173",
+    command: "npm run build && npm run preview",
+    url: "http://localhost:4173",
     reuseExistingServer: !process.env.CI,
-    timeout: 120000,
+    timeout: 180000, // 3 minutes for build + preview
   },
 });

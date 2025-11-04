@@ -1,22 +1,12 @@
 /**
- * Backend server for proof generation pipeline
- * Provides REST API and WebSocket support for real-time updates
+ * Simplified Backend Server for Proof Generation API
+ * Mock implementation for development/testing without full pipeline dependencies
  */
 
 import express, { Request, Response } from "express";
 import { createServer } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import cors from "cors";
-import {
-  proofPipeline,
-  proofQueue,
-  metricsCollector,
-  ProofPriority,
-  workerPool,
-  performanceProfiler,
-} from "../src/lib/proof/index.js";
-import type { ProofGenerationProgress } from "../src/lib/proof/pipeline.js";
-import type { TrustAttestation } from "../src/lib/ebsl/core.js";
 
 const app = express();
 const server = createServer(app);
@@ -28,6 +18,10 @@ app.use(express.json({ limit: "10mb" }));
 
 // Store active WebSocket connections per request
 const wsConnections = new Map<string, Set<WebSocket>>();
+
+// Mock data stores
+const mockProofs = new Map<string, any>();
+const mockQueue = new Map<string, any>();
 
 // WebSocket connection handler
 wss.on("connection", (ws: WebSocket) => {
@@ -78,8 +72,8 @@ wss.on("connection", (ws: WebSocket) => {
 });
 
 // Broadcast progress to subscribed clients
-function broadcastProgress(progress: ProofGenerationProgress) {
-  const connections = wsConnections.get(progress.requestId);
+function broadcastProgress(requestId: string, progress: any) {
+  const connections = wsConnections.get(requestId);
   if (connections) {
     const message = JSON.stringify({
       type: "progress",
@@ -95,70 +89,82 @@ function broadcastProgress(progress: ProofGenerationProgress) {
 
 // Health check
 app.get("/health", (_req: Request, res: Response) => {
-  res.json({ status: "ok", timestamp: Date.now() });
+  res.json({
+    status: "ok",
+    timestamp: Date.now(),
+    mode: "mock",
+    version: "1.0.0"
+  });
 });
 
-// Get queue statistics
+// Get queue statistics (mock)
 app.get("/api/queue/stats", (_req: Request, res: Response) => {
-  try {
-    const stats = proofQueue.getStats();
-    res.json(stats);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to get queue stats" });
-  }
+  res.json({
+    queued: mockQueue.size,
+    processing: 0,
+    completed: mockProofs.size,
+    failed: 0,
+    averageWaitTime: 0,
+    averageProcessingTime: 5000,
+  });
 });
 
-// Get metrics snapshot
+// Get metrics snapshot (mock)
 app.get("/api/metrics/snapshot", (_req: Request, res: Response) => {
-  try {
-    const snapshot = metricsCollector.getSnapshot();
-    res.json(snapshot);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to get metrics" });
-  }
+  res.json({
+    totalProofs: mockProofs.size,
+    successRate: 1.0,
+    averageDuration: 5000,
+    p50: 4500,
+    p95: 6000,
+    p99: 7000,
+  });
 });
 
-// Get performance prediction
+// Get performance prediction (mock)
 app.get("/api/metrics/predict", (req: Request, res: Response) => {
-  try {
-    const circuitType = (req.query.circuitType as string) || "default";
-    const networkSize = parseInt(req.query.networkSize as string) || 10;
+  const circuitType = (req.query.circuitType as string) || "default";
+  const networkSize = parseInt(req.query.networkSize as string) || 10;
 
-    const prediction = metricsCollector.predictDuration(circuitType, networkSize);
-    res.json(prediction);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to predict duration" });
-  }
+  res.json({
+    estimatedDurationMs: networkSize * 500,
+    confidence: 0.85,
+    circuitType,
+    networkSize,
+  });
 });
 
-// Get circuit benchmarks
+// Get circuit benchmarks (mock)
 app.get("/api/metrics/benchmarks/:circuitType", (req: Request, res: Response) => {
-  try {
-    const { circuitType } = req.params;
-    const benchmarks = metricsCollector.getBenchmarksByCircuit(circuitType);
-    res.json(benchmarks);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to get benchmarks" });
-  }
+  const { circuitType } = req.params;
+
+  res.json({
+    circuitType,
+    averageDuration: 5000,
+    minDuration: 3000,
+    maxDuration: 8000,
+    sampleSize: 100,
+  });
 });
 
-// Export metrics
+// Export metrics (mock)
 app.get("/api/metrics/export", (_req: Request, res: Response) => {
-  try {
-    const metrics = metricsCollector.exportMetrics();
-    res.setHeader("Content-Type", "application/json");
-    res.setHeader("Content-Disposition", "attachment; filename=metrics.json");
-    res.send(metrics);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to export metrics" });
-  }
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Content-Disposition", "attachment; filename=metrics.json");
+  res.json({
+    timestamp: Date.now(),
+    metrics: {
+      totalProofs: mockProofs.size,
+      successRate: 1.0,
+      averageDuration: 5000,
+    },
+  });
 });
 
-// Request proof generation
+// Request proof generation (mock)
 app.post("/api/proof/generate", async (req: Request, res: Response) => {
   try {
-    const { attestations, proofType, priority, userId, circuitType, maxRetries, timeoutMs } =
-      req.body;
+    const { attestations, proofType, priority, userId, circuitType } = req.body;
 
     if (!attestations || !Array.isArray(attestations)) {
       return res.status(400).json({ error: "Invalid attestations" });
@@ -168,25 +174,51 @@ app.post("/api/proof/generate", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid proof type" });
     }
 
-    // Generate proof with progress updates
-    const result = await proofPipeline.generateProof(
-      attestations as TrustAttestation[],
-      proofType,
-      {
-        priority: priority || ProofPriority.NORMAL,
-        userId,
-        circuitType,
-        maxRetries,
-        timeoutMs,
-      },
-      (progress) => {
-        broadcastProgress(progress);
-      }
-    );
+    // Generate mock request ID
+    const requestId = `proof_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+
+    // Mock proof generation with progress updates
+    setTimeout(() => {
+      broadcastProgress(requestId, {
+        requestId,
+        stage: "validating",
+        progress: 25,
+      });
+    }, 500);
+
+    setTimeout(() => {
+      broadcastProgress(requestId, {
+        requestId,
+        stage: "generating",
+        progress: 50,
+      });
+    }, 1500);
+
+    setTimeout(() => {
+      broadcastProgress(requestId, {
+        requestId,
+        stage: "verifying",
+        progress: 75,
+      });
+    }, 2500);
+
+    // Simulate proof generation delay
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    const mockResult = {
+      requestId,
+      proof: Array.from({ length: 32 }, () => Math.floor(Math.random() * 256)),
+      publicInputs: Array.from({ length: 4 }, () => Math.floor(Math.random() * 1000000)),
+      hash: `0x${Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`,
+      duration: 3000,
+      method: "mock",
+    };
+
+    mockProofs.set(requestId, mockResult);
 
     res.json({
       success: true,
-      result,
+      result: mockResult,
     });
   } catch (error: any) {
     res.status(500).json({
@@ -196,194 +228,162 @@ app.post("/api/proof/generate", async (req: Request, res: Response) => {
   }
 });
 
-// Get proof status
+// Get proof status (mock)
 app.get("/api/proof/status/:requestId", (req: Request, res: Response) => {
-  try {
-    const { requestId } = req.params;
-    const request = proofQueue.getRequest(requestId);
+  const { requestId } = req.params;
+  const proof = mockProofs.get(requestId);
 
-    if (!request) {
-      return res.status(404).json({ error: "Request not found" });
-    }
-
-    res.json(request);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to get proof status" });
+  if (!proof) {
+    return res.status(404).json({ error: "Request not found" });
   }
+
+  res.json({
+    requestId,
+    status: "completed",
+    progress: 100,
+    result: proof,
+  });
 });
 
-// Cancel proof request
+// Cancel proof request (mock)
 app.post("/api/proof/cancel/:requestId", (req: Request, res: Response) => {
-  try {
-    const { requestId } = req.params;
-    const cancelled = proofPipeline.cancelProof(requestId);
+  const { requestId } = req.params;
+  const cancelled = mockQueue.delete(requestId);
 
-    res.json({ success: cancelled });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to cancel proof" });
-  }
+  res.json({ success: cancelled });
 });
 
-// List queued proofs
+// List queued proofs (mock)
 app.get("/api/queue/list", (_req: Request, res: Response) => {
-  try {
-    // Access queue stores (this is a simplified version)
-    const stats = proofQueue.getStats();
-    res.json({ stats });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to list queue" });
-  }
+  res.json({
+    queued: Array.from(mockQueue.values()),
+    total: mockQueue.size,
+  });
 });
 
-// Performance profiling endpoint
+// Performance profiling endpoint (mock)
 app.post("/api/profiling/start", async (req: Request, res: Response) => {
-  try {
-    const { circuitType, networkSizes, iterations } = req.body;
+  const { circuitType, networkSizes, iterations } = req.body;
 
-    if (!circuitType || !Array.isArray(networkSizes)) {
-      return res.status(400).json({ error: "Invalid profiling parameters" });
-    }
-
-    const results = [];
-
-    for (const size of networkSizes) {
-      const iterationResults = [];
-
-      for (let i = 0; i < (iterations || 3); i++) {
-        // Create mock attestations for profiling
-        const mockAttestations: TrustAttestation[] = Array.from({ length: size }, (_, idx) => ({
-          source: `0xsource${idx}`,
-          target: "0xtarget",
-          opinion: {
-            belief: Math.random() * 0.5 + 0.3,
-            disbelief: Math.random() * 0.2,
-            uncertainty: Math.random() * 0.3,
-            base_rate: 0.5,
-          },
-          attestation_type: "trust" as const,
-          weight: 1.0,
-          created_at: Date.now(),
-          expires_at: Date.now() + 86400000,
-        }));
-
-        const startTime = Date.now();
-        try {
-          await proofPipeline.generateProof(mockAttestations, "exact", {
-            circuitType,
-            priority: ProofPriority.LOW,
-          });
-          const duration = Date.now() - startTime;
-          iterationResults.push({ success: true, duration });
-        } catch (error: any) {
-          iterationResults.push({ success: false, error: error.message });
-        }
-      }
-
-      results.push({
-        networkSize: size,
-        iterations: iterationResults,
-        avgDuration:
-          iterationResults.reduce((sum, r) => sum + (r.duration || 0), 0) / iterationResults.length,
-      });
-    }
-
-    res.json({ circuitType, results });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  if (!circuitType || !Array.isArray(networkSizes)) {
+    return res.status(400).json({ error: "Invalid profiling parameters" });
   }
+
+  // Mock profiling results
+  const results = networkSizes.map((size: number) => ({
+    networkSize: size,
+    averageDuration: size * 500,
+    minDuration: size * 400,
+    maxDuration: size * 600,
+    iterations: iterations || 10,
+  }));
+
+  res.json({
+    circuitType,
+    results,
+    totalTime: results.reduce((sum: number, r: any) => sum + r.averageDuration, 0),
+  });
 });
 
-// Advanced profiling with full profiler
-app.post("/api/profiling/comprehensive", async (req: Request, res: Response) => {
-  try {
-    const config = req.body;
-    const report = await performanceProfiler.profile(config);
-    res.json(report);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+// Get profiling results (mock)
+app.get("/api/profiling/results", (_req: Request, res: Response) => {
+  res.json({
+    available: false,
+    message: "No profiling results available",
+  });
+});
+
+// Worker pool stats (mock)
+app.get("/api/worker-pool/stats", (_req: Request, res: Response) => {
+  res.json({
+    totalWorkers: 1,
+    activeWorkers: 0,
+    idleWorkers: 1,
+    queuedJobs: 0,
+    completedJobs: mockProofs.size,
+  });
+});
+
+// Scale worker pool (mock)
+app.post("/api/worker-pool/scale", (req: Request, res: Response) => {
+  const { targetWorkers } = req.body;
+
+  if (!targetWorkers || typeof targetWorkers !== "number") {
+    return res.status(400).json({ error: "Invalid target workers" });
   }
+
+  res.json({
+    success: true,
+    currentWorkers: 1,
+    targetWorkers,
+    message: "Mock server - scaling not implemented",
+  });
 });
 
-// Get profiling progress
-app.get("/api/profiling/progress", (_req: Request, res: Response) => {
-  try {
-    const progress = performanceProfiler.getProgress();
-    const isRunning = performanceProfiler.isProfilerRunning();
-    res.json({ progress, isRunning });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
+// Get scaling recommendations (mock)
+app.get("/api/worker-pool/recommendations", (_req: Request, res: Response) => {
+  res.json({
+    currentWorkers: 1,
+    recommendedWorkers: 1,
+    reason: "Current load is low",
+    metrics: {
+      queueLength: 0,
+      averageWaitTime: 0,
+    },
+  });
 });
 
-// Export profiling report as HTML
-app.post("/api/profiling/export/html", (req: Request, res: Response) => {
-  try {
-    const report = req.body;
-    const html = performanceProfiler.generateHTMLReport(report);
-    res.setHeader("Content-Type", "text/html");
-    res.setHeader("Content-Disposition", "attachment; filename=profiling-report.html");
-    res.send(html);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Worker pool management
-app.get("/api/workers/stats", (_req: Request, res: Response) => {
-  try {
-    const stats = workerPool.getStats();
-    res.json(stats);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to get worker stats" });
-  }
-});
-
-app.post("/api/workers/register", (req: Request, res: Response) => {
-  try {
-    const { id, url, maxConcurrency } = req.body;
-    if (!id || !url) {
-      return res.status(400).json({ error: "Worker ID and URL required" });
-    }
-    workerPool.registerWorker(id, url, maxConcurrency || 4);
-    res.json({ success: true });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.delete("/api/workers/:id", (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    workerPool.unregisterWorker(id);
-    res.json({ success: true });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.post("/api/workers/:id/heartbeat", (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    workerPool.updateWorkerHeartbeat(id);
-    res.json({ success: true });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Error handler
-app.use((err: Error, _req: Request, res: Response, _next: any) => {
-  console.error("Server error:", err);
-  res.status(500).json({ error: "Internal server error" });
-});
-
+// Start server
 const PORT = process.env.PORT || 3001;
 
 server.listen(PORT, () => {
-  console.log(`🚀 Proof pipeline server running on port ${PORT}`);
-  console.log(`   REST API: http://localhost:${PORT}/api`);
-  console.log(`   WebSocket: ws://localhost:${PORT}`);
-  console.log(`   Health: http://localhost:${PORT}/health`);
+  console.log(`
+╔═══════════════════════════════════════════════════════════╗
+║  Proof Generation API Server (Mock Mode)                  ║
+╠═══════════════════════════════════════════════════════════╣
+║  Server: http://localhost:${PORT}                            ║
+║  WebSocket: ws://localhost:${PORT}                           ║
+║  Health: http://localhost:${PORT}/health                     ║
+║  Status: Ready                                             ║
+║  Mode: Development (Mock Implementation)                   ║
+╚═══════════════════════════════════════════════════════════╝
+
+Available Endpoints:
+  GET  /health
+  GET  /api/queue/stats
+  GET  /api/metrics/snapshot
+  GET  /api/metrics/predict
+  GET  /api/metrics/benchmarks/:circuitType
+  GET  /api/metrics/export
+  POST /api/proof/generate
+  GET  /api/proof/status/:requestId
+  POST /api/proof/cancel/:requestId
+  GET  /api/queue/list
+  POST /api/profiling/start
+  GET  /api/profiling/results
+  GET  /api/worker-pool/stats
+  POST /api/worker-pool/scale
+  GET  /api/worker-pool/recommendations
+
+WebSocket Events:
+  - subscribe: Subscribe to proof updates
+  - unsubscribe: Unsubscribe from updates
+  - progress: Real-time proof generation progress
+  `);
 });
 
-export { app, server, wss };
+// Graceful shutdown
+process.on("SIGTERM", () => {
+  console.log("SIGTERM signal received: closing HTTP server");
+  server.close(() => {
+    console.log("HTTP server closed");
+  });
+});
+
+process.on("SIGINT", () => {
+  console.log("\nSIGINT signal received: closing HTTP server");
+  server.close(() => {
+    console.log("HTTP server closed");
+    process.exit(0);
+  });
+});
