@@ -4,6 +4,12 @@ import { defineConfig, devices } from "@playwright/test";
  * Playwright configuration for cross-browser E2E testing
  * Tests proof generation on Desktop Chrome, iOS Safari (WebKit), and Android Chrome
  */
+
+// In CI, build happens separately in workflow, so only run preview
+// In dev, build first then preview for convenience
+const getWebServerCommand = () =>
+  process.env.CI ? "npm run preview" : "npm run build && npm run preview";
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
@@ -51,9 +57,7 @@ export default defineConfig({
   ],
 
   webServer: {
-    // In CI, only run preview (build happens separately in workflow)
-    // In dev, build first then preview for convenience
-    command: process.env.CI ? "npm run preview" : "npm run build && npm run preview",
+    command: getWebServerCommand(),
     url: "http://localhost:4173",
     reuseExistingServer: !process.env.CI,
     timeout: 120000, // 2 minutes for preview server startup

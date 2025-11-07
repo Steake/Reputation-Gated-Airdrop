@@ -30,7 +30,7 @@ test.describe("Basic Smoke Tests", () => {
     console.log("✓ App container found");
 
     // Wait for main heading to appear, indicating JS initialization
-    await page.waitForSelector("h1, [data-app], #app", { timeout: 5000 });
+    await page.waitForSelector("h1", { timeout: 5000 });
 
     if (errors.length > 0) {
       console.warn("⚠ Console errors detected:", errors);
