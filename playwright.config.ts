@@ -51,9 +51,11 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: "npm run build && npm run preview",
+    // In CI, only run preview (build happens separately in workflow)
+    // In dev, build first then preview for convenience
+    command: process.env.CI ? "npm run preview" : "npm run build && npm run preview",
     url: "http://localhost:4173",
     reuseExistingServer: !process.env.CI,
-    timeout: 180000, // 3 minutes for build + preview
+    timeout: 120000, // 2 minutes for preview server startup
   },
 });

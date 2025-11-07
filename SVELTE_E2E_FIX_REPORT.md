@@ -17,6 +17,7 @@ Successfully resolved SvelteKit build issues that were blocking E2E tests. The a
 ### 1. SvelteKit "untrack" Export Error
 
 **Problem:**
+
 ```
 "untrack" is not exported by "node_modules/svelte/src/runtime/ssr.js"
 "fork" is not exported by "node_modules/svelte/src/runtime/ssr.js"
@@ -30,9 +31,11 @@ SvelteKit versions 2.35+ and 2.48.4 expect Svelte 5 runtime features (`untrack`,
 Downgraded @sveltejs/kit from 2.43.5 → 2.10.0
 
 **Files Changed:**
+
 - package.json: `@sveltejs/kit@2.10.0`
 
 **Verification:**
+
 ```bash
 npm run build  # ✅ No untrack/fork/settled errors
 ```
@@ -42,6 +45,7 @@ npm run build  # ✅ No untrack/fork/settled errors
 ### 2. Missing handleError Export
 
 **Problem:**
+
 ```
 "handleError" is not exported by "src/hooks.client.js"
 ```
@@ -53,9 +57,11 @@ SvelteKit 2.0-2.10 expects a `handleError` export from client hooks, but it wasn
 Added handleError function to `src/hooks.client.js` with Sentry integration.
 
 **Files Changed:**
+
 - `src/hooks.client.js`: Added handleError export
 
 **Code Added:**
+
 ```javascript
 export function handleError({ error, event }) {
   // Report to Sentry if available
@@ -63,15 +69,16 @@ export function handleError({ error, event }) {
     Sentry.captureException(error);
   }
 
-  console.error('Client error:', error);
+  console.error("Client error:", error);
 
   return {
-    message: 'An error occurred'
+    message: "An error occurred",
   };
 }
 ```
 
 **Verification:**
+
 ```bash
 npm run build  # ✅ Build completes successfully
 npm run preview  # ✅ Server starts on port 4173
@@ -89,6 +96,7 @@ With SvelteKit 2.0.0, the build didn't create `.svelte-kit/output/client` direct
 SvelteKit 2.10.0 with @sveltejs/adapter-auto@3.3.1 produces correct output structure.
 
 **Verification:**
+
 ```bash
 ls -la .svelte-kit/output/
 # Output:
@@ -122,12 +130,14 @@ ls -la .svelte-kit/output/
 **E2E Tests - Page Crash**
 
 All 5 tests in prover.local.test.ts and prover.fallback.test.ts fail with:
+
 ```
 Error: locator.textContent: Page crashed
 Error: page.click: Page crashed
 ```
 
 **Test Results:**
+
 ```
 5 failed
   ✘ Remote Fallback › should fallback to remote on worker crash
@@ -139,6 +149,7 @@ Error: page.click: Page crashed
 
 **Crash Location:**
 The crash occurs when tests try to:
+
 1. Access `[data-testid="device-capability"]` element
 2. Click `[data-testid="generate-proof-button"]`
 
@@ -204,9 +215,11 @@ The page crash is NOT a build issue but a runtime JavaScript error. Potential ca
    - Mock IndexedDB operations
 
 3. **Run Tests with Debug Logging**
+
    ```bash
    DEBUG=pw:api npm run test:e2e -- --headed
    ```
+
    - Watch browser window for errors
    - Capture console output from page
 
@@ -245,10 +258,10 @@ The page crash is NOT a build issue but a runtime JavaScript error. Potential ca
 
 ```json
 {
-  "svelte": "^4.2.7",              // Installed: 4.2.20
-  "@sveltejs/kit": "2.10.0",       // Changed from ^2.0.0
-  "@sveltejs/adapter-auto": "^3.0.0",  // Installed: 3.3.1
-  "@sveltejs/vite-plugin-svelte": "^3.0.0",  // Installed: 3.1.2
+  "svelte": "^4.2.7", // Installed: 4.2.20
+  "@sveltejs/kit": "2.10.0", // Changed from ^2.0.0
+  "@sveltejs/adapter-auto": "^3.0.0", // Installed: 3.3.1
+  "@sveltejs/vite-plugin-svelte": "^3.0.0", // Installed: 3.1.2
   "@playwright/test": "^1.44.0"
 }
 ```
@@ -281,11 +294,11 @@ The page crash is NOT a build issue but a runtime JavaScript error. Potential ca
 
 ## Test Results Summary
 
-| Test Category | Status | Passing | Total | Notes |
-|---------------|--------|---------|-------|-------|
-| Build | ✅ Pass | 1 | 1 | Clean build, no errors |
-| Preview Server | ✅ Pass | 1 | 1 | HTTP 200, serves content |
-| E2E Tests | ❌ Crash | 0 | 5 | Runtime page crash |
+| Test Category  | Status   | Passing | Total | Notes                    |
+| -------------- | -------- | ------- | ----- | ------------------------ |
+| Build          | ✅ Pass  | 1       | 1     | Clean build, no errors   |
+| Preview Server | ✅ Pass  | 1       | 1     | HTTP 200, serves content |
+| E2E Tests      | ❌ Crash | 0       | 5     | Runtime page crash       |
 
 **Overall Progress:** 40% complete (2/5 steps working)
 
@@ -337,13 +350,13 @@ npm run preview
 
 ### SvelteKit Version Compatibility Matrix
 
-| SvelteKit | Svelte | adapter-auto | Notes |
-|-----------|--------|--------------|-------|
-| 2.0.0 | 4.x | Needs 1.x | Incompatible adapter versions |
-| 2.10.0 | 4.x | 3.x | ✅ **Working combination** |
-| 2.35.0 | 4.x | 3.x | Has untrack errors |
-| 2.43.5 | 4.x/5.x | 3.x | Has untrack/fork/settled errors |
-| 2.48.4 | 4.x/5.x | 3.x | Has untrack/fork/settled errors |
+| SvelteKit | Svelte  | adapter-auto | Notes                           |
+| --------- | ------- | ------------ | ------------------------------- |
+| 2.0.0     | 4.x     | Needs 1.x    | Incompatible adapter versions   |
+| 2.10.0    | 4.x     | 3.x          | ✅ **Working combination**      |
+| 2.35.0    | 4.x     | 3.x          | Has untrack errors              |
+| 2.43.5    | 4.x/5.x | 3.x          | Has untrack/fork/settled errors |
+| 2.48.4    | 4.x/5.x | 3.x          | Has untrack/fork/settled errors |
 
 ### Build Output Structure (SvelteKit 2.10.0)
 
@@ -366,16 +379,19 @@ npm run preview
 ## Risk Assessment
 
 ### Low Risk ✅
+
 - Build process is stable
 - Dependencies are compatible
 - No breaking changes needed
 
 ### Medium Risk ⚠️
+
 - E2E tests need investigation
 - Page crash cause unknown
 - May require component refactoring
 
 ### High Risk 🔴
+
 - None currently identified
 
 ---

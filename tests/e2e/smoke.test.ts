@@ -7,6 +7,12 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Basic Smoke Tests", () => {
   test("should load homepage without crashing", async ({ page }) => {
+    // Check for any critical errors in console - set up BEFORE navigation
+    const errors: string[] = [];
+    page.on("pageerror", (error) => {
+      errors.push(error.message);
+    });
+
     // Navigate to homepage
     await page.goto("/", { waitUntil: "domcontentloaded", timeout: 30000 });
 
@@ -23,16 +29,8 @@ test.describe("Basic Smoke Tests", () => {
     expect(appExists).toBeGreaterThan(0);
     console.log("✓ App container found");
 
-    // Wait a bit for any JS to initialize
-    await page.waitForTimeout(2000);
-
-    // Check for any critical errors in console
-    const errors: string[] = [];
-    page.on("pageerror", (error) => {
-      errors.push(error.message);
-    });
-
-    await page.waitForTimeout(1000);
+    // Wait for main heading to appear, indicating JS initialization
+    await page.waitForSelector("h1, [data-app], #app", { timeout: 5000 });
 
     if (errors.length > 0) {
       console.warn("⚠ Console errors detected:", errors);

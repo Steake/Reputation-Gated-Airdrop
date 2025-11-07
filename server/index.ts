@@ -7,6 +7,7 @@ import express, { Request, Response } from "express";
 import { createServer } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import cors from "cors";
+import crypto from "crypto";
 
 const app = express();
 const server = createServer(app);
@@ -93,7 +94,7 @@ app.get("/health", (_req: Request, res: Response) => {
     status: "ok",
     timestamp: Date.now(),
     mode: "mock",
-    version: "1.0.0"
+    version: "1.0.0",
   });
 });
 
@@ -164,7 +165,7 @@ app.get("/api/metrics/export", (_req: Request, res: Response) => {
 // Request proof generation (mock)
 app.post("/api/proof/generate", async (req: Request, res: Response) => {
   try {
-    const { attestations, proofType, priority, userId, circuitType } = req.body;
+    const { attestations, proofType } = req.body;
 
     if (!attestations || !Array.isArray(attestations)) {
       return res.status(400).json({ error: "Invalid attestations" });
@@ -209,7 +210,7 @@ app.post("/api/proof/generate", async (req: Request, res: Response) => {
       requestId,
       proof: Array.from({ length: 32 }, () => Math.floor(Math.random() * 256)),
       publicInputs: Array.from({ length: 4 }, () => Math.floor(Math.random() * 1000000)),
-      hash: `0x${Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`,
+      hash: `0x${crypto.randomBytes(32).toString("hex")}`,
       duration: 3000,
       method: "mock",
     };
