@@ -132,6 +132,9 @@ If both are configured, the UI will prioritize the ZK path by default.
 - `yarn lint`: Check for linting and formatting issues.
 - `yarn format`: Automatically format the code.
 
-```
+## Related Projects
 
-```
+- **<a href="https://github.com/Steake/EQBSL">EQBSL</a>** — The trust-as-ledgered-state framework powering the reputation scoring. TypeScript/Angular.
+- **<a href="https://github.com/Steake/BitCell">BitCell</a>** — Consensus through cellular automaton warfare using EBSL trust scores. Rust.
+- **<a href="https://github.com/Steake/shannon-uncontained">shannon-uncontained</a>** — Agentic pen-testing fork with EQBSL epistemic bookkeeping. JavaScript.
+- **<a href="https://github.com/Steake/Clario">Clario</a>** — Crypto-native tutoring marketplace powered by EQBSL reputation. TypeScript/React.
