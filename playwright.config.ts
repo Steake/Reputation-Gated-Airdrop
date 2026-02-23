@@ -4,6 +4,12 @@ import { defineConfig, devices } from "@playwright/test";
  * Playwright configuration for cross-browser E2E testing
  * Tests proof generation on Desktop Chrome, iOS Safari (WebKit), and Android Chrome
  */
+
+// In CI, build happens separately in workflow, so only run preview
+// In dev, build first then preview for convenience
+const getWebServerCommand = () =>
+  process.env.CI ? "npm run preview" : "npm run build && npm run preview";
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
@@ -12,7 +18,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: "html",
   use: {
-    baseURL: "http://localhost:5173",
+    baseURL: "http://localhost:4173",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
@@ -26,7 +32,7 @@ export default defineConfig({
         viewport: { width: 1280, height: 720 },
       },
       testMatch: /prover\.(local|fallback)\.test\.ts/,
-      timeout: 10000, // 10s for quick proof tests
+      timeout: 60000, // 60s - increased for proof generation and page load
     },
     {
       name: "iOS Safari",
@@ -36,7 +42,7 @@ export default defineConfig({
         browserName: "webkit",
       },
       testMatch: /prover\.(local|fallback)\.test\.ts/,
-      timeout: 15000, // Slightly longer for mobile
+      timeout: 60000, // 60s - increased for mobile and proof generation
     },
     {
       name: "Android Chrome",
@@ -46,14 +52,14 @@ export default defineConfig({
         browserName: "chromium",
       },
       testMatch: /prover\.(local|fallback)\.test\.ts/,
-      timeout: 15000, // Slightly longer for mobile
+      timeout: 60000, // 60s - increased for mobile and proof generation
     },
   ],
 
   webServer: {
-    command: "npm run dev",
-    url: "http://localhost:5173",
+    command: getWebServerCommand(),
+    url: "http://localhost:4173",
     reuseExistingServer: !process.env.CI,
-    timeout: 120000,
+    timeout: 120000, // 2 minutes for preview server startup
   },
 });

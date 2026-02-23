@@ -48,3 +48,12 @@ temp/**
 deployed-addresses.json
 demo-results.json
 yarn.lock
+
+# Python virtual environment
+Notebooks/venv/
+
+# Playwright reports
+playwright-report/
+
+# Duplicate circuits
+Notebooks/public/

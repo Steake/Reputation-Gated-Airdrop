@@ -9,8 +9,8 @@ import { test, expect } from "@playwright/test";
 test.describe("Remote Fallback", () => {
   test("should fallback to remote on worker crash", async ({ page }) => {
     // Navigate to prover page
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
+    await page.goto("/debug", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
 
     // Inject code to simulate worker crash
     await page.evaluate(() => {
@@ -59,8 +59,8 @@ test.describe("Remote Fallback", () => {
   });
 
   test("should fallback to remote on timeout", async ({ page }) => {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
+    await page.goto("/debug", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
 
     // Inject code to set very short timeout
     await page.evaluate(() => {
@@ -84,8 +84,8 @@ test.describe("Remote Fallback", () => {
   });
 
   test("should fallback to remote on device capability restriction", async ({ page }) => {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
+    await page.goto("/debug", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
 
     // Inject code to simulate low-RAM device
     await page.evaluate(() => {
@@ -98,7 +98,7 @@ test.describe("Remote Fallback", () => {
 
     // Reload to apply device detection
     await page.reload();
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("load");
 
     // Check device capability message
     const deviceMessage = await page.locator('[data-testid="device-capability"]').textContent();

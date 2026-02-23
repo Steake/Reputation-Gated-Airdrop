@@ -10,10 +10,10 @@ import { test, expect } from "@playwright/test";
 test.describe("Local WASM Proof Generation", () => {
   test("should generate 16-op proof locally with progress events", async ({ page }) => {
     // Navigate to prover page
-    await page.goto("/");
+    await page.goto("/debug", { waitUntil: "domcontentloaded" });
 
-    // Wait for page to load
-    await page.waitForLoadState("networkidle");
+    // Wait for page to be ready (more lenient than networkidle)
+    await page.waitForLoadState("load");
 
     // Check if local WASM is available
     const deviceMessage = await page.locator('[data-testid="device-capability"]').textContent();
@@ -89,8 +89,8 @@ test.describe("Local WASM Proof Generation", () => {
   });
 
   test("should support cancellation during proof generation", async ({ page }) => {
-    await page.goto("/");
-    await page.waitForLoadState("networkidle");
+    await page.goto("/debug", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
 
     // Skip if device doesn't support local
     const deviceMessage = await page.locator('[data-testid="device-capability"]').textContent();

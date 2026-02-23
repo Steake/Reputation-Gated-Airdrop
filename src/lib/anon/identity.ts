@@ -5,6 +5,7 @@
  * Toggle in UI; store commitment in memory for now (no on-chain yet)
  */
 
+import { Identity } from "@semaphore-protocol/identity";
 import { localKeystore } from "../crypto/local-keystore";
 
 export interface SemaphoreIdentity {
@@ -19,18 +20,23 @@ export interface SemaphoreIdentity {
 }
 
 /**
- * Generate Semaphore identity from wallet signature
+ * Generate Semaphore identity from wallet signature using Semaphore v4
  */
 export async function generateIdentityFromSignature(signature: string): Promise<SemaphoreIdentity> {
   // Derive deterministic secret from signature
   const secret = await deriveSecret(signature);
 
-  // Generate commitment (simplified for now - would use actual Semaphore v4 lib)
-  const commitment = await generateCommitment(secret);
+  // Create Semaphore v4 identity from secret
+  // The Identity class handles Poseidon hashing internally
+  const identity = new Identity(secret);
 
-  // Generate nullifier and trapdoor
-  const nullifier = await deriveNullifier(secret);
-  const trapdoor = await deriveTrapdoor(secret);
+  // Get commitment using Semaphore v4's Poseidon hash
+  const commitment = identity.commitment.toString();
+
+  // Get nullifier and trapdoor (these are internal values in Semaphore v4)
+  // Note: In Semaphore v4, nullifier and trapdoor are derived from the secret via Poseidon hash
+  const nullifier = identity.nullifier.toString();
+  const trapdoor = identity.trapdoor.toString();
 
   return {
     secret,
@@ -72,7 +78,8 @@ export function clearIdentity(): void {
 }
 
 /**
- * Derive secret from signature using SHA-256
+ * Derive deterministic secret from signature using SHA-256
+ * This ensures the same signature always produces the same Semaphore identity
  */
 async function deriveSecret(signature: string): Promise<string> {
   const sigBytes = new Uint8Array(
@@ -87,37 +94,6 @@ async function deriveSecret(signature: string): Promise<string> {
   const hashBuffer = await crypto.subtle.digest("SHA-256", sigBytes);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-/**
- * Generate commitment from secret (simplified)
- * TODO: Replace with actual Semaphore v4 Poseidon hash
- */
-async function generateCommitment(secret: string): Promise<string> {
-  const secretBytes = new TextEncoder().encode(secret);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", secretBytes);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return "0x" + hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-/**
- * Derive nullifier from secret
- */
-async function deriveNullifier(secret: string): Promise<string> {
-  const data = new TextEncoder().encode(secret + "_nullifier");
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return "0x" + hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-/**
- * Derive trapdoor from secret
- */
-async function deriveTrapdoor(secret: string): Promise<string> {
-  const data = new TextEncoder().encode(secret + "_trapdoor");
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return "0x" + hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 /**

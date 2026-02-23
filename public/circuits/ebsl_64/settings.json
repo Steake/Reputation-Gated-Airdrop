@@ -1,0 +1,32 @@
+{
+  "run_args": {
+    "tolerance": {
+      "val": 0.0,
+      "scale": 1.0
+    },
+    "input_scale": 7,
+    "param_scale": 7,
+    "scale_rebase_multiplier": 10,
+    "lookup_range": [-32768, 32768],
+    "logrows": 19,
+    "num_inner_cols": 2,
+    "variables": ["batch_size"],
+    "input_visibility": "public",
+    "output_visibility": "public",
+    "param_visibility": "fixed"
+  },
+  "num_rows": 524288,
+  "total_assignments": 64,
+  "total_const_size": 4096,
+  "model_instance_shapes": [[1, 128]],
+  "model_output_scales": [7],
+  "model_input_scales": [7],
+  "module_sizes": {
+    "kzg": 8192
+  },
+  "required_lookups": ["range"],
+  "check_mode": "SAFE",
+  "version": "22.2.1",
+  "num_blinding_factors": null,
+  "timestamp": 1730721600
+}
