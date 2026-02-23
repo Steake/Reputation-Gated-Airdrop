@@ -1,6 +1,9 @@
 import { browser } from "$app/environment";
 import { writable, get } from "svelte/store";
-import Onboard, { type OnboardAPI, type WalletState as OnboardWalletState } from "@web3-onboard/core";
+import Onboard, {
+  type OnboardAPI,
+  type WalletState as OnboardWalletState,
+} from "@web3-onboard/core";
 import injectedModule from "@web3-onboard/injected-wallets";
 import walletConnectModule from "@web3-onboard/walletconnect";
 import coinbaseModule from "@web3-onboard/coinbase";
@@ -12,9 +15,13 @@ function syncWalletStore(ws: OnboardWalletState[] = []) {
 
   const primary = ws[0];
   if (primary) {
-    const primaryChain = primary.chains?.[0] ?? (primary as OnboardWalletState & {
-      chain?: OnboardWalletState["chains"][number];
-    }).chain;
+    const primaryChain =
+      primary.chains?.[0] ??
+      (
+        primary as OnboardWalletState & {
+          chain?: OnboardWalletState["chains"][number];
+        }
+      ).chain;
     const chainIdHex = primaryChain?.id;
     const chainId = chainIdHex ? parseInt(chainIdHex, 16) : undefined;
     const address = primary.accounts?.[0]?.address as `0x${string}` | undefined;

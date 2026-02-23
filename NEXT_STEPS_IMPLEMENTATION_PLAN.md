@@ -10,6 +10,7 @@ The Shadowgraph Reputation-Gated Airdrop project has a **comprehensive and well-
 ### Key Findings
 
 ✅ **Strengths:**
+
 - Comprehensive EZKL WASM integration framework
 - Hybrid local/remote proof generation architecture
 - Device capability detection and fallback mechanisms
@@ -19,6 +20,7 @@ The Shadowgraph Reputation-Gated Airdrop project has a **comprehensive and well-
 - Extensive documentation and implementation summaries
 
 ❌ **Critical Gaps:**
+
 - **NO ACTUAL CIRCUIT ARTIFACTS**: No compiled EZKL circuits in the codebase
 - **PLACEHOLDER CIRCUIT HASHES**: Using all-zero hashes (development mode)
 - **INCOMPLETE EZKL PIPELINE**: Python notebooks exist but haven't been run to generate circuits
@@ -29,6 +31,7 @@ The Shadowgraph Reputation-Gated Airdrop project has a **comprehensive and well-
 ### 1. EZKL Circuit Integration Status
 
 #### What's Real ✅
+
 - **EZKL Loader** (`src/lib/zkml/ezkl.ts`): Real implementation using `@ezkljs/engine`
 - **Circuit Manager** (`src/lib/zkml/circuit-manager.ts`): Complete with SHA-256 verification, IndexedDB caching
 - **Hybrid Prover** (`src/lib/zkml/hybrid-prover.ts`): Local/remote orchestration with timeout and fallback
@@ -37,6 +40,7 @@ The Shadowgraph Reputation-Gated Airdrop project has a **comprehensive and well-
 - **Service Worker**: Pre-caches circuits for offline operation
 
 #### What's Missing ❌
+
 - **No circuit files** at `/circuits/ebsl_16/`, `/circuits/ebsl_32/`, `/circuits/ebsl_64/`
 - **Required circuit artifacts** for each size:
   - `_compiled.wasm` - Compiled EZKL circuit
@@ -46,7 +50,9 @@ The Shadowgraph Reputation-Gated Airdrop project has a **comprehensive and well-
 - **No proving keys** or SRS (Structured Reference String) for proof generation
 
 #### Python Notebooks Available 📚
+
 Located in `/Notebooks/`:
+
 - `EBSL_Pipeline_Complete.ipynb` - Complete EBSL + EZKL pipeline
 - `EBSL_Torch_EZKL.ipynb` - PyTorch to EZKL conversion
 - `ebsl_full_script.py` - Production EBSL implementation
@@ -55,6 +61,7 @@ Located in `/Notebooks/`:
 ### 2. Test Infrastructure Status
 
 **Unit Tests:** ✅ All 118 tests passing
+
 - ✅ Config parsing (3 tests)
 - ✅ EBSL core algorithm (22 tests)
 - ✅ Proof pipeline (errors, metrics, queue, validation - 81 tests)
@@ -63,6 +70,7 @@ Located in `/Notebooks/`:
 - ✅ Environment template (2 tests)
 
 **E2E Tests:** ⚠️ Not run (require Playwright setup)
+
 - Wallet connection tests
 - ZKML frontend integration
 - Mobile responsive tests
@@ -70,6 +78,7 @@ Located in `/Notebooks/`:
 - Cross-chain tests
 
 **Contract Tests:** ⚠️ Not run
+
 - Verifier contracts
 - Threshold proofs
 - Gated proofs
@@ -77,11 +86,13 @@ Located in `/Notebooks/`:
 ### 3. Build Infrastructure Status
 
 ✅ **Build Process:**
+
 1. Compile contracts: `npm run compile:contracts` - **WORKS**
 2. Build frontend: `npm run build` - **WORKS** (after contracts compiled)
 3. Output: `.svelte-kit/output/` with client and server bundles
 
 ⚠️ **Warnings:**
+
 - A11y warnings (redundant button roles - minor)
 - Unused export property in `ZKMLProver.svelte` (contractAddress)
 - Adapter auto-detection warning (needs platform-specific adapter for production)
@@ -89,12 +100,14 @@ Located in `/Notebooks/`:
 ### 4. Backend API Integration Status
 
 **Current State:**
+
 - API client exists (`src/lib/api/client.ts`)
 - GraphQL client for trust network (`src/lib/api/graphqlClient.ts`)
 - Proof service client (`src/lib/zkml/proof-service-client.ts`)
 - Server directory exists (`/server/`) with backend implementation
 
 **Gaps:**
+
 - Backend server not currently running
 - API endpoints may need verification
 - Integration testing needed
@@ -102,6 +115,7 @@ Located in `/Notebooks/`:
 ### 5. Documentation Status
 
 **Excellent Documentation:**
+
 - ✅ `README.md` - Comprehensive project overview
 - ✅ `USER_GUIDE.md` - End-to-end user documentation
 - ✅ `DEMO_SCRIPTS.md` - Presentation scripts
@@ -118,7 +132,9 @@ Located in `/Notebooks/`:
 **Objective:** Replace placeholder infrastructure with actual compiled circuits
 
 **Steps:**
+
 1. **Set up Python environment:**
+
    ```bash
    cd Notebooks
    pip install -r requirements.txt
@@ -131,6 +147,7 @@ Located in `/Notebooks/`:
    - Output directory: `zkml_artifacts/`
 
 3. **Create circuit directory structure:**
+
    ```
    public/circuits/
    ├── ebsl_16/
@@ -158,6 +175,7 @@ Located in `/Notebooks/`:
    - Test in browser: Ensure circuits load and cache correctly
 
 **Success Criteria:**
+
 - ✅ All three circuit sizes compiled and cached
 - ✅ Real SHA-256 hashes in manifest (no zeros)
 - ✅ Circuit manager loads and verifies circuits
@@ -173,12 +191,15 @@ Located in `/Notebooks/`:
 **Objective:** Replace placeholder Poseidon hash with actual Semaphore v4 implementation
 
 **Current State:**
+
 - File: `src/lib/anon/identity.ts:42`
 - TODO: "Replace with actual Semaphore v4 Poseidon hash"
 - Currently using basic sha256
 
 **Steps:**
+
 1. **Install Semaphore dependencies:**
+
    ```bash
    npm install @semaphore-protocol/identity@^4.13.1
    ```
@@ -199,6 +220,7 @@ Located in `/Notebooks/`:
    - E2E tests for anonymous claims
 
 **Success Criteria:**
+
 - ✅ Poseidon hash correctly implemented
 - ✅ Identity generation deterministic
 - ✅ Commitment and nullifier valid
@@ -213,12 +235,15 @@ Located in `/Notebooks/`:
 **Objective:** Verify backend server functionality and API integration
 
 **Steps:**
+
 1. **Install backend dependencies:**
+
    ```bash
    npm run server:install
    ```
 
 2. **Start backend server:**
+
    ```bash
    npm run server:dev
    ```
@@ -241,6 +266,7 @@ Located in `/Notebooks/`:
    - Improve error handling
 
 **Success Criteria:**
+
 - ✅ Backend server starts successfully
 - ✅ All API endpoints responding
 - ✅ Remote proof generation works
@@ -255,12 +281,15 @@ Located in `/Notebooks/`:
 **Objective:** Run complete E2E test suite and fix any failures
 
 **Steps:**
+
 1. **Install Playwright:**
+
    ```bash
    npx playwright install
    ```
 
 2. **Run E2E tests:**
+
    ```bash
    npm run test:e2e
    ```
@@ -280,6 +309,7 @@ Located in `/Notebooks/`:
    - Improve error messages
 
 **Success Criteria:**
+
 - ✅ All E2E tests passing
 - ✅ Wallet integration working
 - ✅ Proof generation end-to-end functional
@@ -294,7 +324,9 @@ Located in `/Notebooks/`:
 **Objective:** Verify smart contract functionality and prepare for deployment
 
 **Steps:**
+
 1. **Run contract tests:**
+
    ```bash
    npm run test:contracts
    ```
@@ -317,6 +349,7 @@ Located in `/Notebooks/`:
    ```
 
 **Success Criteria:**
+
 - ✅ All contract tests passing
 - ✅ Verifier working correctly
 - ✅ Deployed to Sepolia testnet
@@ -331,6 +364,7 @@ Located in `/Notebooks/`:
 **Objective:** Final polish and production deployment preparation
 
 **Steps:**
+
 1. **Security audit:**
    - Review smart contracts
    - Review client-side code
@@ -362,6 +396,7 @@ Located in `/Notebooks/`:
    - Smoke tests on production
 
 **Success Criteria:**
+
 - ✅ All audits complete
 - ✅ Production-ready build
 - ✅ Monitoring in place
@@ -374,6 +409,7 @@ Located in `/Notebooks/`:
 ## Technical Debt & Future Enhancements
 
 ### Known Technical Debt
+
 1. **Deprecated packages:**
    - 67 npm vulnerabilities (46 low, 5 moderate, 13 high, 3 critical)
    - Run `npm audit fix` to address
@@ -392,6 +428,7 @@ Located in `/Notebooks/`:
    - Should use platform-specific adapter for production (adapter-static, adapter-netlify, etc.)
 
 ### Future Enhancements (Not Critical)
+
 1. **Circuit optimization:**
    - Smaller proof sizes
    - Faster proving times
@@ -422,6 +459,7 @@ Located in `/Notebooks/`:
 ## Risk Assessment
 
 ### High Risk Items
+
 1. **Circuit Generation Failure:**
    - **Risk:** Python notebooks fail to generate valid circuits
    - **Mitigation:** Test on multiple environments, have fallback circuits
@@ -438,6 +476,7 @@ Located in `/Notebooks/`:
    - **Impact:** Poor UX for low-end devices
 
 ### Medium Risk Items
+
 1. **Browser Compatibility:**
    - **Risk:** WASM not supported in some browsers
    - **Mitigation:** Feature detection, graceful degradation
@@ -454,6 +493,7 @@ Located in `/Notebooks/`:
    - **Impact:** High claim costs
 
 ### Low Risk Items
+
 1. **UI/UX Issues:**
    - **Risk:** Confusing user interface
    - **Mitigation:** User testing, iterative improvements
@@ -470,14 +510,14 @@ Located in `/Notebooks/`:
 
 **Total Estimated Time:** 4 weeks (20 working days)
 
-| Phase | Focus | Days | Status |
-|-------|-------|------|--------|
-| Phase 1 | Generate Real Circuits | 3-5 | 🔴 Critical |
-| Phase 2 | Semaphore v4 Implementation | 2-3 | 🟡 High Priority |
-| Phase 3 | Backend Validation | 3-4 | 🟡 High Priority |
-| Phase 4 | E2E Testing | 4-5 | 🟢 Medium Priority |
-| Phase 5 | Contract Testing | 3-4 | 🟢 Medium Priority |
-| Phase 6 | Production Prep | 5-7 | 🔵 Low Priority |
+| Phase   | Focus                       | Days | Status             |
+| ------- | --------------------------- | ---- | ------------------ |
+| Phase 1 | Generate Real Circuits      | 3-5  | 🔴 Critical        |
+| Phase 2 | Semaphore v4 Implementation | 2-3  | 🟡 High Priority   |
+| Phase 3 | Backend Validation          | 3-4  | 🟡 High Priority   |
+| Phase 4 | E2E Testing                 | 4-5  | 🟢 Medium Priority |
+| Phase 5 | Contract Testing            | 3-4  | 🟢 Medium Priority |
+| Phase 6 | Production Prep             | 5-7  | 🔵 Low Priority    |
 
 **Critical Path:** Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5 → Phase 6
 
@@ -488,6 +528,7 @@ Located in `/Notebooks/`:
 The project has **excellent infrastructure** and **comprehensive testing**, but requires **actual circuit artifacts** to be production-ready. The most critical blocker is generating real EZKL circuits from the existing Python notebooks.
 
 **Recommended Immediate Actions:**
+
 1. Set up Python environment and run `EBSL_Pipeline_Complete.ipynb`
 2. Generate circuits for 16, 32, and 64 opinion sizes
 3. Update circuit manifest with real hashes
@@ -501,22 +542,26 @@ Once circuits are generated and the Semaphore implementation is complete, the pr
 ## Contact & Resources
 
 **Documentation:**
+
 - Main README: `/README.md`
 - User Guide: `/USER_GUIDE.md`
 - Technical Roadmap: `/documentation/technical-implementation-roadmap.md`
 - Architecture Spec: `/documentation/architectural-specification.md`
 
 **Key Files:**
+
 - Circuit Manager: `/src/lib/zkml/circuit-manager.ts`
 - Hybrid Prover: `/src/lib/zkml/hybrid-prover.ts`
 - EZKL Loader: `/src/lib/zkml/ezkl.ts`
 - Anonymous Identity: `/src/lib/anon/identity.ts`
 
 **Testing:**
+
 - Unit Tests: `/tests/unit/`
 - E2E Tests: `/tests/e2e/`
 - Contract Tests: Run with `npm run test:contracts`
 
 **Notebooks:**
+
 - EBSL Pipeline: `/Notebooks/EBSL_Pipeline_Complete.ipynb`
 - Requirements: `/Notebooks/requirements.txt`

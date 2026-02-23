@@ -14,9 +14,9 @@ export function handleError({ error, event }) {
     Sentry.captureException(error);
   }
 
-  console.error('Client error:', error);
+  console.error("Client error:", error);
 
   return {
-    message: 'An error occurred'
+    message: "An error occurred",
   };
 }

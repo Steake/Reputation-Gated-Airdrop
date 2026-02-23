@@ -71,6 +71,7 @@ python -c "import onnx; print(f'ONNX: {onnx.__version__}')"
 ```
 
 **Expected output:**
+
 ```
 PyTorch: 2.8.0
 EZKL: 22.2.1
@@ -134,6 +135,7 @@ python ebsl_full_script.py \
 ```
 
 **Script Arguments:**
+
 - `--max-opinions`: Number of opinions the circuit can handle (16, 32, or 64)
 - `--output-dir`: Where to save circuit artifacts
 - `--skip-proof`: Skip proof generation (faster compilation, recommended)
@@ -154,6 +156,7 @@ jupyter notebook
 ```
 
 **Notebook Cells:**
+
 1. Imports and setup
 2. EBSL model definition
 3. Model testing
@@ -187,6 +190,7 @@ public/circuits/ebsl_16/
 ```
 
 **Verify file sizes:**
+
 ```bash
 # Compiled circuits should be several MB
 du -h public/circuits/ebsl_*/compiled.wasm
@@ -272,6 +276,7 @@ npm run dev
 ```
 
 **Expected browser console output:**
+
 ```
 [CircuitManager] Downloading 16 circuit...
 [CircuitManager] Downloaded 16 circuit (hash: abc123...)
@@ -291,6 +296,7 @@ npm run dev
 **Error:** `Failed building wheel for ezkl`
 
 **Solution:**
+
 ```bash
 # Install build dependencies
 sudo apt-get install build-essential libssl-dev libffi-dev python3-dev
@@ -307,6 +313,7 @@ pip install ezkl==22.2.1
 **Error:** `CUDA not available` or `torch.cuda.is_available() returns False`
 
 **Solution:**
+
 ```bash
 # Install PyTorch with CUDA support
 pip install torch==2.8.0+cu118 -f https://download.pytorch.org/whl/torch_stable.html
@@ -320,6 +327,7 @@ pip install torch==2.8.0+cpu -f https://download.pytorch.org/whl/torch_stable.ht
 **Error:** `MemoryError` or `OOM (Out of Memory)`
 
 **Solution:**
+
 ```bash
 # Reduce circuit size
 python ebsl_full_script.py --max-opinions 8  # Smaller circuit
@@ -338,6 +346,7 @@ sudo swapon /swapfile
 **Error:** Script hangs during `ezkl.compile()` step
 
 **Solution:**
+
 ```bash
 # Use more aggressive timeout
 python ebsl_full_script.py --timeout 3600  # 1 hour
@@ -354,6 +363,7 @@ ezkl compile-circuit \
 **Error:** `RuntimeError: ONNX export failed`
 
 **Solution:**
+
 ```python
 # In the notebook or script, add explicit opset version:
 torch.onnx.export(
@@ -372,6 +382,7 @@ torch.onnx.export(
 **Error:** `Circuit integrity error: downloaded circuit hash mismatch`
 
 **Solution:**
+
 ```bash
 # Regenerate manifest
 ./scripts/generate-manifest.sh
@@ -390,12 +401,13 @@ shasum -a 256 public/circuits/ebsl_16/_compiled.wasm
 ### Compilation Time
 
 | Circuit Size | Opinions | Compile Time | Memory Usage |
-|--------------|----------|--------------|--------------|
+| ------------ | -------- | ------------ | ------------ |
 | Small        | 16       | 15-30 min    | 4-8 GB       |
 | Medium       | 32       | 30-60 min    | 8-16 GB      |
 | Large        | 64       | 1-2 hours    | 16-32 GB     |
 
 **Tips:**
+
 - Use `--skip-proof` to save 50% compilation time
 - Use `--zk-strategy=balanced` for good performance/security trade-off
 - Run compilations in parallel for different sizes (if you have enough RAM)
@@ -403,7 +415,7 @@ shasum -a 256 public/circuits/ebsl_16/_compiled.wasm
 ### Proof Generation Time
 
 | Circuit Size | Opinions | Prove Time (CPU) | Prove Time (GPU) |
-|--------------|----------|------------------|------------------|
+| ------------ | -------- | ---------------- | ---------------- |
 | Small        | 16       | 2-5 seconds      | <1 second        |
 | Medium       | 32       | 5-15 seconds     | 1-3 seconds      |
 | Large        | 64       | 15-60 seconds    | 3-10 seconds     |
@@ -505,6 +517,7 @@ After successfully generating circuits:
    - Verify it completes successfully
 
 2. **Run E2E Tests:**
+
    ```bash
    npm run test:e2e
    ```
