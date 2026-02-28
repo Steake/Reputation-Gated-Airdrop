@@ -43,6 +43,7 @@ gasReporterOutput.json
 
 # Netlify build output
 .netlify/
+build/
 
 .svelte-kit/
 temp/**
