@@ -1,0 +1,30 @@
+[build]
+  command = "npm run compile:contracts && npm run build"
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Required environment variables – set these in the Netlify UI or via `netlify env:set`
+# VITE_CHAIN_ID
+# VITE_RPC_URL
+# VITE_TOKEN_ADDR
+# VITE_CAMPAIGN
+# VITE_FLOOR_SCORE
+# VITE_CAP_SCORE
+# VITE_MIN_PAYOUT
+# VITE_MAX_PAYOUT
+# VITE_CURVE
+# VITE_AIRDROP_ECDSA_ADDR
+# VITE_AIRDROP_ZK_ADDR       (optional)
+# VITE_VERIFIER_ADDR         (optional)
+# VITE_API_BASE              (optional – leave unset to run in mock mode)
+# VITE_WALLETCONNECT_PROJECT_ID
+# PUBLIC_CHAIN_ID
+# PUBLIC_RPC_URL
+# PUBLIC_TOKEN_ADDR
+# PUBLIC_CAMPAIGN
+# PUBLIC_WALLETCONNECT_PROJECT_ID
+# SENTRY_ORG                 (optional)
+# SENTRY_PROJECT             (optional)
+# SENTRY_AUTH_TOKEN          (optional)
