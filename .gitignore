@@ -41,8 +41,10 @@ coverage/
 coverage.json
 gasReporterOutput.json
 
-# Deployment logs
-logs/
+# Netlify build output
+.netlify/
+build/
+
 .svelte-kit/
 temp/**
 deployed-addresses.json

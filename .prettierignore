@@ -2,6 +2,7 @@ node_modules
 .svelte-kit
 dist
 build
+.netlify
 *.log
 package-lock.json
 PROOF_PIPELINE_INTEGRATION.md
